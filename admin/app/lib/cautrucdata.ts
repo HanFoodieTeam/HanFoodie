@@ -7,7 +7,7 @@ export interface IMaGiamGia {
   so_luong: number | null;      // có thể null
   bat_dau: string;              // kiểu DATE trong DB → string ISO
   ket_thuc: string;             // kiểu DATE trong DB → string ISO
-  an_hien: boolean | null;
+  an_hien: boolean ;
   ma_so: string;
   dieu_kien: string;
 }

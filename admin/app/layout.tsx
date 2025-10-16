@@ -41,9 +41,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Main content */}
         <div className="flex flex-col flex-1 overflow-hidden">
           <Topbar />
-          <main className="flex-1 overflow-auto p-6">{children}</main>
+          <main className="flex-1 overflow-auto p-3">{children}</main>
         </div>
       </body>
     </html>
   );
 }
+
