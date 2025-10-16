@@ -17,19 +17,19 @@ export async function GET(
 }
 
 export async function DELETE(
-    req: Request,
-    { params }: { params: { id: string } }
+  req: Request,
+  { params }: { params: { id: string } }
 ) {
-    const sp = await MaGiamGiaModel.findByPk(params.id);
-    if (!sp)
-        return NextResponse.json(
-            { thong_bao: "Không tìm thấy sản phẩm" },
-            { status: 404 }
-        );
+  const sp = await MaGiamGiaModel.findByPk(params.id);
+  if (!sp)
+    return NextResponse.json(
+      { thong_bao: "Không tìm thấy sản phẩm" },
+      { status: 404 }
+    );
 
-    await sp.destroy();
-    return NextResponse.redirect(new URL("/ma_giam_gia", req.url));
-    // return NextResponse.json({ thong_bao: "Xóa thành công" });
+  await sp.destroy();
+  return NextResponse.redirect(new URL("/ma_giam_gia", req.url));
+  // return NextResponse.json({ thong_bao: "Xóa thành công" });
 }
 
 // cập nhật mã giảm giá 
@@ -42,6 +42,7 @@ export async function POST(
 
     const ten = formData.get("ten") as string;
     const gia_tri_giam = Number(formData.get("gia_tri_giam"));
+    const loai_giam_gia = formData.get("loai_giam_gia") === "1";
     const gia_tri_toi_thieu = Number(formData.get("gia_tri_toi_thieu"));
     const so_luong = Number(formData.get("so_luong"));
     const bat_dau = formData.get("bat_dau") as string;
@@ -63,6 +64,7 @@ export async function POST(
     await maGiamGia.update({
       ten,
       gia_tri_giam,
+      loai_giam_gia,
       gia_tri_toi_thieu,
       so_luong,
       bat_dau,

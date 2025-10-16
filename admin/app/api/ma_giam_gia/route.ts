@@ -3,11 +3,11 @@ import { NextResponse } from "next/server";
 
 
 export async function GET() {
-    const sp_arr = await MaGiamGiaModel.findAll({
-        order: [['id', 'desc']]
-        
-    });
-    return NextResponse.json(sp_arr);
+  const sp_arr = await MaGiamGiaModel.findAll({
+    order: [['id', 'desc']]
+
+  });
+  return NextResponse.json(sp_arr);
 }
 
 
@@ -18,6 +18,7 @@ export async function POST(req: Request) {
 
     const ten = formData.get("ten") as string;
     const gia_tri_giam = Number(formData.get("gia_tri_giam"));
+    const loai_giam_gia = formData.get(" loai_giam_gia") === "1";
     const gia_tri_toi_thieu = Number(formData.get("gia_tri_toi_thieu"));
     const so_luong = Number(formData.get("so_luong"));
     const bat_dau = formData.get("bat_dau") as string;
@@ -29,6 +30,7 @@ export async function POST(req: Request) {
     await MaGiamGiaModel.create({
       ten,
       gia_tri_giam,
+      loai_giam_gia,
       gia_tri_toi_thieu,
       so_luong,
       bat_dau,
