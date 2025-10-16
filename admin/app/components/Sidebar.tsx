@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Home, Settings, ShoppingCart } from "lucide-react";
+import { ChevronDown, ChevronRight, Home, ClipboardList, Package, Layers, FileText, Tag, Image as ImageIcon, Gift, Star, Users, Settings } from "lucide-react";
 import Link from "next/link";
 
 const Sidebar = () => {
@@ -14,10 +14,13 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-white shadow-md flex flex-col h-full overflow-y-auto">
-      <div className="p-4 font-bold text-xl border-b">HanFoodie Admin</div>
+      {/* <div className="p-4 font-bold text-xl border-b">HanFoodie Admin</div> */}
+      <Link href="/" className="p-4 font-bold text-xl border-b">
+        HanFoodie Admin
+      </Link>
 
-      <nav className="flex-1 p-2">
-        {/* Menu item 1 */}
+      <nav className="flex-1 p-2 space-y-1">
+        {/* Dashboard */}
         <div>
           <button
             onClick={() => toggleMenu("dashboard")}
@@ -41,33 +44,169 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* Menu item 2 */}
+        {/* Đơn hàng */}
+        <Link href="/don_hang" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100">
+          <ClipboardList size={18} />
+          <span>Quản lý đơn hàng</span>
+        </Link>
+
+        {/* Sản phẩm */}
         <div>
           <button
-            onClick={() => toggleMenu("products")}
+            onClick={() => toggleMenu("san_pham")}
             className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
           >
             <div className="flex items-center space-x-2">
-              <ShoppingCart size={18} />
+              <Package size={18} />
               <span>Quản lý sản phẩm</span>
             </div>
-            {openMenus["products"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {openMenus["san_pham"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
-          {openMenus["products"] && (
+          {openMenus["san_pham"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/products" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/san_pham" className="block p-2 hover:bg-gray-100 rounded">
                 Danh sách
               </Link>
-              <Link href="/products/add" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/san_pham/them" className="block p-2 hover:bg-gray-100 rounded">
                 Thêm sản phẩm
               </Link>
             </div>
           )}
         </div>
 
-        
+        {/* Loại sản phẩm */}
+        <div>
+          <button
+            onClick={() => toggleMenu("loai_san_pham")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+          >
+            <div className="flex items-center space-x-2">
+              <Layers size={18} />
+              <span>Quản lý loại sản phẩm</span>
+            </div>
+            {openMenus["loai_san_pham"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+          {openMenus["loai_san_pham"] && (
+            <div className="ml-8 mt-1 space-y-1">
+              <Link href="/loai_san_pham" className="block p-2 hover:bg-gray-100 rounded">
+                Danh sách
+              </Link>
+              <Link href="/loai_san_pham/them" className="block p-2 hover:bg-gray-100 rounded">
+                Thêm loại
+              </Link>
+            </div>
+          )}
+        </div>
 
-        {/* Menu item 3 */}
+        {/* Bài viết */}
+        <div>
+          <button
+            onClick={() => toggleMenu("bai_viet")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+          >
+            <div className="flex items-center space-x-2">
+              <FileText size={18} />
+              <span>Quản lý bài viết</span>
+            </div>
+            {openMenus["bai_viet"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+          {openMenus["bai_viet"] && (
+            <div className="ml-8 mt-1 space-y-1">
+              <Link href="/bai_viet" className="block p-2 hover:bg-gray-100 rounded">
+                Danh sách
+              </Link>
+              <Link href="/bai_viet/them" className="block p-2 hover:bg-gray-100 rounded">
+                Thêm bài viết
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Loại bài viết */}
+        <div>
+          <button
+            onClick={() => toggleMenu("loai_bai_viet")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+          >
+            <div className="flex items-center space-x-2">
+              <Tag size={18} />
+              <span>Quản lý loại bài viết</span>
+            </div>
+            {openMenus["loai_bai_viet"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+          {openMenus["loai_bai_viet"] && (
+            <div className="ml-8 mt-1 space-y-1">
+              <Link href="/loai_bai_viet" className="block p-2 hover:bg-gray-100 rounded">
+                Danh sách
+              </Link>
+              <Link href="/loai_bai_viet/them" className="block p-2 hover:bg-gray-100 rounded">
+                Thêm loại bài viết
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Banner */}
+        <div>
+          <button
+            onClick={() => toggleMenu("banner")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+          >
+            <div className="flex items-center space-x-2">
+              <ImageIcon size={18} />
+              <span>Quản lý banner</span>
+            </div>
+            {openMenus["banner"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+          {openMenus["banner"] && (
+            <div className="ml-8 mt-1 space-y-1">
+              <Link href="/banner" className="block p-2 hover:bg-gray-100 rounded">
+                Danh sách
+              </Link>
+              <Link href="/banner/them" className="block p-2 hover:bg-gray-100 rounded">
+                Thêm banner
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Ưu đãi */}
+        <div>
+          <button
+            onClick={() => toggleMenu("ma_giam_gia")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+          >
+            <div className="flex items-center space-x-2">
+              <Gift size={18} />
+              <span>Quản lý ưu đãi</span>
+            </div>
+            {openMenus["ma_giam_gia"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+          {openMenus["ma_giam_gia"] && (
+            <div className="ml-8 mt-1 space-y-1">
+              <Link href="/ma_giam_gia" className="block p-2 hover:bg-gray-100 rounded">
+                Danh sách
+              </Link>
+              <Link href="/ma_giam_gia/them" className="block p-2 hover:bg-gray-100 rounded">
+                Thêm ưu đãi
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Đánh giá */}
+        <Link href="/danh_gia" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100">
+          <Star size={18} />
+          <span>Quản lý đánh giá</span>
+        </Link>
+
+        {/* Người dùng */}
+        <Link href="/nguoi_dung" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100">
+          <Users size={18} />
+          <span>Quản lý người dùng</span>
+        </Link>
+
+        {/* Cài đặt */}
         <Link href="/settings" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100">
           <Settings size={18} />
           <span>Cài đặt</span>
