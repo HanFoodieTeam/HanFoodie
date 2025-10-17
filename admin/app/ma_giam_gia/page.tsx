@@ -7,7 +7,7 @@ import NutXoaMGG from "./NutXoaMGG";
 
 
 
-// 🧾 Trang danh sách Mã Giảm Giá
+//  Trang danh sách Mã Giảm Giá
 export default function MaGiamGiaList() {
   const [data, setData] = useState<IMaGiamGia[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +110,7 @@ export default function MaGiamGiaList() {
         </Link>
       </div>
 
-      {/* 🧾 Bảng danh sách */}
+      {/*  Bảng danh sách */}
       <table className="table-auto w-full mt-4 border text-[0.9em]">
         <thead>
           <tr className="bg-gray-300">
