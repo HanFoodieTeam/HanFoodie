@@ -14,7 +14,7 @@ export default function MaGiamGiaList() {
   const [confirmAnHien, setConfirmAnHien] = useState<IMaGiamGia | null>(null);
 
   const [search, setSearch] = useState("");
-  const [searchQuery, setSearchQuery] = useState(""); // 👉 chỉ fetch khi nhấn nút
+  const [searchQuery, setSearchQuery] = useState(""); //  chỉ fetch khi nhấn nút
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -167,6 +167,7 @@ export default function MaGiamGiaList() {
                 <td className="p-2 text-center ">
                   <Link
                     href={`/ma_giam_gia/${mgg.id}`}
+                    
                     className="text-blue-500 hover:text-blue-700 font-bold"
                   >
                     Sửa 
@@ -181,7 +182,6 @@ export default function MaGiamGiaList() {
       </table>
 
       {/*  Phân trang */}
-      {/* 📄 Phân trang trượt 3 số, có Đầu / Cuối */}
       <div className="flex justify-center mt-4 space-x-2">
         {/* Nút Đầu */}
         <button

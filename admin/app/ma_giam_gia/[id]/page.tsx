@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { IMaGiamGia } from "@/app/lib/cautrucdata";
+import { IMaGiamGia } from "@/app/lib/cautrucdata"; // Đảm bảo đường dẫn này đúng
 
-export default function ThemMaGiamGia() {
+// Định nghĩa props để nhận ID của mã giảm giá cần sửa
+interface SuaMaGiamGiaProps {
+  params: {
+    id: string; // Next.js App Router sẽ truyền ID dưới dạng string
+  };
+}
+
+export default function SuaMaGiamGia({ params }: SuaMaGiamGiaProps) {
   const router = useRouter();
+  const id = params.id;
+
   const [form, setForm] = useState<IMaGiamGia>({
     id: 0,
     ten: "",
@@ -14,14 +23,51 @@ export default function ThemMaGiamGia() {
     gia_tri_giam: 0,
     gia_tri_toi_thieu: 0,
     so_luong: 1,
-    bat_dau: new Date().toISOString().split("T")[0], // mặc định hôm nay
+    bat_dau: new Date().toISOString().split("T")[0],
     ket_thuc: "",
     dieu_kien: "",
     an_hien: true,
   });
 
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true); // Trạng thái tải dữ liệu ban đầu
 
+  // --- 1. Lấy dữ liệu mã giảm giá hiện tại ---
+  useEffect(() => {
+    const fetchMGG = async () => {
+      try {
+        setInitialLoading(true);
+        // GIẢ ĐỊNH: Endpoint API để lấy chi tiết 1 MGG là /api/ma_giam_gia/[id]
+        const res = await fetch(`/api/ma_giam_gia/${id}`);
+        
+        if (!res.ok) {
+          throw new Error("Không tìm thấy mã giảm giá.");
+        }
+        
+        const data: IMaGiamGia = await res.json();
+
+        // Định dạng lại ngày tháng vì input type="date" cần YYYY-MM-DD
+        const formattedData = {
+          ...data,
+          bat_dau: data.bat_dau ? new Date(data.bat_dau).toISOString().split("T")[0] : "",
+          ket_thuc: data.ket_thuc ? new Date(data.ket_thuc).toISOString().split("T")[0] : "",
+        };
+
+        setForm(formattedData);
+      } catch (error) {
+        alert("Lỗi khi tải dữ liệu: " + error);
+        router.push("/ma_giam_gia"); // Quay lại trang danh sách nếu lỗi
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchMGG();
+    }
+  }, [id, router]);
+
+  // --- 2. Xử lý thay đổi form (giữ nguyên logic) ---
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -37,30 +83,38 @@ export default function ThemMaGiamGia() {
     }));
   };
 
+  // --- 3. Xử lý submit: Thay đổi POST thành PUT/PATCH ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    const res = await fetch("/api/ma_giam_gia", {
-      method: "POST",
+    // Sử dụng PUT hoặc PATCH để cập nhật dữ liệu hiện có
+    const res = await fetch(`/api/ma_giam_gia/${id}`, {
+      method: "PUT", // Hoặc PATCH
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
 
     if (res.ok) {
-      alert("✅ Thêm mã giảm giá thành công!");
+      alert("✅ Cập nhật mã giảm giá thành công!");
       router.push("/ma_giam_gia");
     } else {
-      alert("❌ Thêm thất bại, vui lòng kiểm tra lại!");
+      alert("❌ Cập nhật thất bại, vui lòng kiểm tra lại!");
     }
 
     setLoading(false);
   };
+  
+  // Hiển thị trạng thái tải dữ liệu ban đầu
+  if (initialLoading) {
+    return <div className="p-4 text-center text-xl">Đang tải dữ liệu mã giảm giá...</div>;
+  }
 
+  // --- Phần Render Form (Giống form thêm, chỉ thay đổi tiêu đề và nút) ---
   return (
     <div className="p-2 bg-white shadow rounded">
-      <h1 className="text-xl font-bold mb-4 bg-amber-300 p-2 text-center">
-        Thêm Mã Giảm Giá
+      <h1 className="text-xl font-bold mb-4 bg-yellow-400 p-2 text-center">
+        Chỉnh Sửa Mã Giảm Giá: {form.ten}
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-2 p-2">
@@ -68,27 +122,11 @@ export default function ThemMaGiamGia() {
         <div className="flex justify-between">
           <div className="w-[48%] ">
             <p className="text-lg">Tên mã giảm giá</p>
-            <input 
-              type="text" 
-              name="ten" 
-              value={form.ten} 
-              onChange={handleChange} 
-              required 
-              className="border border-gray-300 p-2 w-full rounded" 
-              placeholder="VD: Giảm 10K đơn đầu tiên" 
-            />
+            <input type="text" name="ten" value={form.ten} onChange={handleChange} required className="border border-gray-300 p-2 w-full rounded" placeholder="VD: Giảm 10K đơn đầu tiên" />
           </div>
           <div className="w-[48%]">
             <p className="text-lg">Mã số</p>
-            <input 
-              type="text" 
-              name="ma_so" 
-              value={form.ma_so} 
-              onChange={handleChange} 
-              required 
-              className="border border-gray-300 p-2 w-full rounded" 
-              placeholder="VD: NEW10K"
-            />
+            <input type="text" name="ma_so" value={form.ma_so} onChange={handleChange} required className="border border-gray-300 p-2 w-full rounded" placeholder="VD: NEW10K"/>
           </div>
         </div>
 
@@ -181,7 +219,7 @@ export default function ThemMaGiamGia() {
 
         {/* Điều kiện */}
         <div>
-          <p className="text-lg">Điều kiện ( mô tả)</p>
+          <p className="text-lg">Điều kiện (JSON hoặc mô tả)</p>
           <textarea
             name="dieu_kien"
             value={form.dieu_kien}
@@ -192,12 +230,9 @@ export default function ThemMaGiamGia() {
           />
         </div>
 
-        {/* Ẩn / Hiện  */}
-        <div className="flex items-center space-x-4">
-        
+        {/* Ẩn / Hiện */}
+        <div className="flex items-center space-x-6">
           <p className="text-lg w-24">Ẩn / Hiện</p> 
-
-         
           <div className="flex items-center space-x-4">
             <label className="flex items-center space-x-1 text-base">
                 <input
@@ -228,9 +263,9 @@ export default function ThemMaGiamGia() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded disabled:opacity-50"
         >
-          {loading ? "Đang lưu..." : "💾 Lưu mã giảm giá"}
+          {loading ? "Đang lưu..." : "✏️ Cập nhật mã giảm giá"}
         </button>
       </form>
     </div>
