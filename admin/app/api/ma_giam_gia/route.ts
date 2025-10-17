@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") || "1", 10);
   const search = searchParams.get("search") || "";
-  const limit = 5; // mỗi trang 5 item
+  const limit = 7; // mỗi trang 5 item
   const offset = (page - 1) * limit;
 
   const where = search
@@ -49,20 +49,25 @@ export async function GET(req: Request) {
 
 
 //thêm mã giảm giá
+
+
 export async function POST(req: Request) {
   try {
-    const formData = await req.formData();
+    // Đọc dữ liệu JSON thay vì formData
+    const data = await req.json();
 
-    const ten = formData.get("ten") as string;
-    const gia_tri_giam = Number(formData.get("gia_tri_giam"));
-    const loai_giam_gia = formData.get(" loai_giam_gia") === "1";
-    const gia_tri_toi_thieu = Number(formData.get("gia_tri_toi_thieu"));
-    const so_luong = Number(formData.get("so_luong"));
-    const bat_dau = formData.get("bat_dau") as string;
-    const ket_thuc = formData.get("ket_thuc") as string;
-    const an_hien = formData.get("an_hien") === "1";
-    const ma_so = formData.get("ma_so") as string;
-    const dieu_kien = formData.get("dieu_kien") as string;
+    const {
+      ten,
+      gia_tri_giam,
+      loai_giam_gia,
+      gia_tri_toi_thieu,
+      so_luong,
+      bat_dau,
+      ket_thuc,
+      an_hien,
+      ma_so,
+      dieu_kien,
+    } = data;
 
     await MaGiamGiaModel.create({
       ten,
@@ -77,8 +82,10 @@ export async function POST(req: Request) {
       dieu_kien,
     });
 
-    //  Chuyển hướng sau khi thêm thành công
-    return NextResponse.redirect("http://localhost:3002/api/ma_giam_gia");
+    return NextResponse.json(
+      { message: "Thêm mã giảm giá thành công" },
+      { status: 201 }
+    );
   } catch (error: unknown) {
     console.error("Lỗi khi thêm mã giảm giá:", error);
     const errMsg = error instanceof Error ? error.message : String(error);
@@ -88,4 +95,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
