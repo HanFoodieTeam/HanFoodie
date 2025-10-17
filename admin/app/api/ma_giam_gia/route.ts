@@ -1,14 +1,51 @@
 import { MaGiamGiaModel } from "@/app/lib/models";
 import { NextResponse } from "next/server";
+import { Op } from "sequelize";
+// hiển thị danh sách 
+// export async function GET() {
+//   const sp_arr = await MaGiamGiaModel.findAll({
+//     order: [['id', 'desc']], limit: 5,
+
+//   });
+//   return NextResponse.json(sp_arr);
+// }
 
 
-export async function GET() {
-  const sp_arr = await MaGiamGiaModel.findAll({
-    order: [['id', 'desc']]
 
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const search = searchParams.get("search") || "";
+  const limit = 5; // mỗi trang 5 item
+  const offset = (page - 1) * limit;
+
+  const where = search
+    ? {
+        [Op.or]: [
+          { ten: { [Op.like]: `%${search}%` } },
+          { ma_so: { [Op.like]: `%${search}%` } },
+        ],
+      }
+    : {};
+
+  const { rows, count } = await MaGiamGiaModel.findAndCountAll({
+    where,
+    order: [["id", "desc"]],
+    limit,
+    offset,
   });
-  return NextResponse.json(sp_arr);
+
+  const totalPages = Math.ceil(count / limit);
+
+  return NextResponse.json({
+    data: rows,
+    totalPages,
+    currentPage: page,
+  });
 }
+
+
+
 
 
 //thêm mã giảm giá
