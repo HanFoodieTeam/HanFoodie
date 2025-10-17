@@ -15,6 +15,13 @@ export const MaGiamGiaModel = db.define("ma_giam_gia", {
     type: DataTypes.INTEGER,
     allowNull: false 
   },
+
+   loai_giam_gia: { 
+    type: DataTypes.BOOLEAN,   // TINYINT(1) <-> BOOLEAN
+    allowNull: true,
+    defaultValue: false
+  }, 
+
   gia_tri_toi_thieu: { 
     type: DataTypes.INTEGER,
     allowNull: false 
