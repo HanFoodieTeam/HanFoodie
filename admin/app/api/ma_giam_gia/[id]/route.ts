@@ -86,3 +86,64 @@ export async function POST(
   }
 }
 
+
+
+
+
+// ✅ Cập nhật nhanh trạng thái Ẩn/Hiện
+// export async function PATCH(
+//   req: Request,
+//   { params }: { params: { id: string } }
+// ) {
+//   try {
+//     const { an_hien } = await req.json();
+
+//     const maGiamGia = await MaGiamGiaModel.findByPk(params.id);
+//     if (!maGiamGia) {
+//       return NextResponse.json(
+//         { message: "Không tìm thấy mã giảm giá" },
+//         { status: 404 }
+//       );
+//     }
+
+//     await maGiamGia.update({ an_hien });
+
+//     return NextResponse.json({
+//       message: "Cập nhật trạng thái thành công",
+//       ma_giam_gia: maGiamGia,
+//     });
+//   } catch (error) {
+//     console.error("Lỗi khi cập nhật trạng thái:", error);
+//     return NextResponse.json(
+//       { error: "Lỗi server khi cập nhật trạng thái" },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+// 🟢 Cập nhật ẩn/hiện nhanh
+export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
+  try {
+    const { params } = await context; // 🟢 chờ params
+    const { an_hien } = await req.json();
+
+    const mgg = await MaGiamGiaModel.findByPk((await params).id);
+    if (!mgg)
+      return NextResponse.json(
+        { message: "Không tìm thấy mã giảm giá" },
+        { status: 404 }
+      );
+
+    await mgg.update({ an_hien });
+    return NextResponse.json({ message: "Cập nhật thành công", an_hien });
+  } catch (err) {
+    console.error("PATCH lỗi:", err);
+    return NextResponse.json(
+      { error: "Lỗi khi cập nhật trạng thái" },
+      { status: 500 }
+    );
+  }
+}
+
+
+

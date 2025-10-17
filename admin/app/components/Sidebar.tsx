@@ -24,7 +24,7 @@ const Sidebar = () => {
         <div>
           <button
             onClick={() => toggleMenu("dashboard")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
           >
             <div className="flex items-center space-x-2">
               <Home size={18} />
@@ -34,10 +34,10 @@ const Sidebar = () => {
           </button>
           {openMenus["dashboard"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/overview" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/overview" className="block p-2 hover:bg-gray-200 rounded">
                 Tổng quan
               </Link>
-              <Link href="/stats" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/stats" className="block p-2 hover:bg-gray-200 rounded">
                 Thống kê
               </Link>
             </div>
@@ -45,7 +45,7 @@ const Sidebar = () => {
         </div>
 
         {/* Đơn hàng */}
-        <Link href="/don_hang" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100">
+        <Link href="/don_hang" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-200">
           <ClipboardList size={18} />
           <span>Quản lý đơn hàng</span>
         </Link>
@@ -54,7 +54,7 @@ const Sidebar = () => {
         <div>
           <button
             onClick={() => toggleMenu("san_pham")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
           >
             <div className="flex items-center space-x-2">
               <Package size={18} />
@@ -64,10 +64,10 @@ const Sidebar = () => {
           </button>
           {openMenus["san_pham"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/san_pham" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/san_pham" className="block p-2 hover:bg-gray-200 rounded">
                 Danh sách
               </Link>
-              <Link href="/san_pham/them" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/san_pham/them" className="block p-2 hover:bg-gray-200 rounded">
                 Thêm sản phẩm
               </Link>
             </div>
@@ -78,7 +78,7 @@ const Sidebar = () => {
         <div>
           <button
             onClick={() => toggleMenu("loai_san_pham")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
           >
             <div className="flex items-center space-x-2">
               <Layers size={18} />
@@ -88,10 +88,10 @@ const Sidebar = () => {
           </button>
           {openMenus["loai_san_pham"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/loai_san_pham" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/loai_san_pham" className="block p-2 hover:bg-gray-200 rounded">
                 Danh sách
               </Link>
-              <Link href="/loai_san_pham/them" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/loai_san_pham/them" className="block p-2 hover:bg-gray-200 rounded">
                 Thêm loại
               </Link>
             </div>
@@ -102,7 +102,7 @@ const Sidebar = () => {
         <div>
           <button
             onClick={() => toggleMenu("bai_viet")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
           >
             <div className="flex items-center space-x-2">
               <FileText size={18} />
@@ -112,10 +112,10 @@ const Sidebar = () => {
           </button>
           {openMenus["bai_viet"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/bai_viet" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/bai_viet" className="block p-2 hover:bg-gray-200 rounded">
                 Danh sách
               </Link>
-              <Link href="/bai_viet/them" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/bai_viet/them" className="block p-2 hover:bg-gray-200 rounded">
                 Thêm bài viết
               </Link>
             </div>
@@ -126,7 +126,7 @@ const Sidebar = () => {
         <div>
           <button
             onClick={() => toggleMenu("loai_bai_viet")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
           >
             <div className="flex items-center space-x-2">
               <Tag size={18} />
@@ -136,10 +136,10 @@ const Sidebar = () => {
           </button>
           {openMenus["loai_bai_viet"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/loai_bai_viet" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/loai_bai_viet" className="block p-2 hover:bg-gray-200 rounded">
                 Danh sách
               </Link>
-              <Link href="/loai_bai_viet/them" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/loai_bai_viet/them" className="block p-2 hover:bg-gray-200 rounded">
                 Thêm loại bài viết
               </Link>
             </div>
@@ -150,7 +150,7 @@ const Sidebar = () => {
         <div>
           <button
             onClick={() => toggleMenu("banner")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
           >
             <div className="flex items-center space-x-2">
               <ImageIcon size={18} />
@@ -160,10 +160,10 @@ const Sidebar = () => {
           </button>
           {openMenus["banner"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/banner" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/banner" className="block p-2 hover:bg-gray-200 rounded">
                 Danh sách
               </Link>
-              <Link href="/banner/them" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/banner/them" className="block p-2 hover:bg-gray-200 rounded">
                 Thêm banner
               </Link>
             </div>
@@ -174,7 +174,7 @@ const Sidebar = () => {
         <div>
           <button
             onClick={() => toggleMenu("ma_giam_gia")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-100"
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
           >
             <div className="flex items-center space-x-2">
               <Gift size={18} />
@@ -184,10 +184,10 @@ const Sidebar = () => {
           </button>
           {openMenus["ma_giam_gia"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/ma_giam_gia" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/ma_giam_gia" className="block p-2 hover:bg-gray-200 rounded">
                 Danh sách
               </Link>
-              <Link href="/ma_giam_gia/them" className="block p-2 hover:bg-gray-100 rounded">
+              <Link href="/ma_giam_gia/them" className="block p-2 hover:bg-gray-200 rounded">
                 Thêm ưu đãi
               </Link>
             </div>
@@ -195,19 +195,19 @@ const Sidebar = () => {
         </div>
 
         {/* Đánh giá */}
-        <Link href="/danh_gia" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100">
+        <Link href="/danh_gia" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-200">
           <Star size={18} />
           <span>Quản lý đánh giá</span>
         </Link>
 
         {/* Người dùng */}
-        <Link href="/nguoi_dung" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100">
+        <Link href="/nguoi_dung" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-200">
           <Users size={18} />
           <span>Quản lý người dùng</span>
         </Link>
 
         {/* Cài đặt */}
-        <Link href="/settings" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100">
+        <Link href="/settings" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-200">
           <Settings size={18} />
           <span>Cài đặt</span>
         </Link>
