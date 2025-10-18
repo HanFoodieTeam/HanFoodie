@@ -44,7 +44,7 @@ export default function MaGiamGiaList() {
 //   // Xóa tạm thời trên giao diện
 //   setData((prev) => prev.filter((item) => item.id !== id));
 
-//   // 🔁 Gọi lại API để cập nhật danh sách (và phân trang chính xác)
+//   //  Gọi lại API để cập nhật danh sách (và phân trang chính xác)
 //   await fetchData();
 // };
 

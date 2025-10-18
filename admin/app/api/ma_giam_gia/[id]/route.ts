@@ -1,7 +1,7 @@
 import { MaGiamGiaModel } from "@/app/lib/models";
 import { NextResponse } from "next/server";
 
-// 🔹 Lấy 1 mã giảm giá theo ID
+//  Lấy 1 mã giảm giá theo ID
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -18,7 +18,7 @@ export async function GET(
   return NextResponse.json(sp);
 }
 
-// 🔹 Xóa mã giảm giá
+//  Xóa mã giảm giá
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -36,7 +36,7 @@ export async function DELETE(
   return NextResponse.redirect(new URL("/ma_giam_gia", req.url));
 }
 
-// 🔹 Cập nhật mã giảm giá
+//  Cập nhật mã giảm giá
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -63,7 +63,7 @@ export async function PUT(
   }
 }
 
-// 🔹 Cập nhật trạng thái ẩn/hiện
+//  Cập nhật trạng thái ẩn/hiện
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }

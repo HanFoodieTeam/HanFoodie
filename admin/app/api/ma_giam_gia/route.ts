@@ -36,8 +36,6 @@ export async function GET(req: Request) {
 
 
 
-
-
 //thêm mã giảm giá
 export async function POST(req: Request) {
   try {
