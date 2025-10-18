@@ -39,6 +39,14 @@ export default function MaGiamGiaList() {
   const handleDeleted = (id: number) => {
     setData((prev) => prev.filter((item) => item.id !== id));
   };
+  // cập nhật lại danh sách khi xóa 
+//     const handleDeleted = async (id: number) => {
+//   // Xóa tạm thời trên giao diện
+//   setData((prev) => prev.filter((item) => item.id !== id));
+
+//   // 🔁 Gọi lại API để cập nhật danh sách (và phân trang chính xác)
+//   await fetchData();
+// };
 
   const handleToggleAnHien = (item: IMaGiamGia) => {
     setConfirmAnHien(item);
