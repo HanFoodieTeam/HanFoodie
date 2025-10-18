@@ -1,16 +1,6 @@
 import { MaGiamGiaModel } from "@/app/lib/models";
 import { NextResponse } from "next/server";
 import { Op } from "sequelize";
-// hiển thị danh sách 
-// export async function GET() {
-//   const sp_arr = await MaGiamGiaModel.findAll({
-//     order: [['id', 'desc']], limit: 5,
-
-//   });
-//   return NextResponse.json(sp_arr);
-// }
-
-
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -49,8 +39,6 @@ export async function GET(req: Request) {
 
 
 //thêm mã giảm giá
-
-
 export async function POST(req: Request) {
   try {
     // Đọc dữ liệu JSON thay vì formData

@@ -8,7 +8,7 @@ export default function NutXoaMGG({
 }: {
   id: number;
   ten: string;
-  onDeleted?: (id: number) => void; // 🟢 Trả về id để cha tự xóa trong state
+  onDeleted?: (id: number) => void; //  Trả về id để cha tự xóa trong state
 }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ export default function NutXoaMGG({
     const res = await fetch(`/api/ma_giam_gia/${id}`, { method: "DELETE" });
 
     if (res.ok) {
-      onDeleted?.(id); // ✅ Gửi id lên cha để cập nhật danh sách
+      onDeleted?.(id); //  Gửi id lên cha để cập nhật danh sách
     } else {
       alert("❌ Xóa thất bại!");
     }
