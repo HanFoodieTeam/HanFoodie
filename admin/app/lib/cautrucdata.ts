@@ -11,3 +11,14 @@ export interface IMaGiamGia {
   ma_so: string;
   dieu_kien: string;
 }
+
+export interface IDanhGia{
+  id: number;
+    noi_dung: string | null;
+    thoi_gian: string;
+    sao: number;
+    id_nguoi_dung: number;
+    id_bien_the: number;
+    an_hien: number | boolean;
+    hinh: string | null;
+}
