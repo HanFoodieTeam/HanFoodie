@@ -1,4 +1,5 @@
-import { MaGiamGiaModel } from "@/app/lib/models";
+// ✅ Đúng
+import { MaGiamGiaModel } from "../../lib/models";
 import { NextResponse } from "next/server";
 import { Op } from "sequelize";
 
