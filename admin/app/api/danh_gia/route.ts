@@ -11,8 +11,9 @@
 // }
 
 
+import { BienTheModel, DanhGiaModel, NguoiDungModel, SanPhamModel } from "@/app/lib/models";
 import { NextResponse } from "next/server";
-import { BienTheModel, DanhGiaModel, NguoiDungModel, SanPhamModel } from "../../lib/models";
+// import { BienTheModel, DanhGiaModel, NguoiDungModel, SanPhamModel } from "../../lib/models";
 
 
 export async function GET() {
