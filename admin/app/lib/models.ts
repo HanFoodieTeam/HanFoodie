@@ -14,6 +14,9 @@ export const MaGiamGiaModel = db.define("ma_giam_gia", {
   an_hien: { type: DataTypes.BOOLEAN, allowNull: true, defaultValue: false },
   ma_so: { type: DataTypes.STRING(255), allowNull: false },
   dieu_kien: { type: DataTypes.STRING(255), allowNull: true },
+  gia_tri_giam_toi_da: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null,
+    comment: "Giá trị giảm tối đa đối với mã giảm theo phần trăm",
+  },
 }, {
   tableName: "ma_giam_gia",
   timestamps: false,
@@ -123,6 +126,20 @@ export const DanhGiaModel = db.define("danh_gia", {
   timestamps: false,
 });
 
+export const DanhMucModel = db.define("danh_muc", {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  ten: { type: DataTypes.STRING(255), allowNull: false },
+  slug: { type: DataTypes.STRING(255), allowNull: true },
+  an_hien: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  hinh: { type: DataTypes.STRING(255), allowNull: true },
+  thu_tu: { type: DataTypes.INTEGER, allowNull: false },
+}, {
+  tableName: "danh_muc",
+  timestamps: false,
+});
+
+
+
 //  Quan hệ
 NguoiDungModel.hasMany(DanhGiaModel, { foreignKey: "id_nguoi_dung", as: "danh_gias" });
 DanhGiaModel.belongsTo(NguoiDungModel, { foreignKey: "id_nguoi_dung", as: "nguoi_dung" });
@@ -130,5 +147,9 @@ DanhGiaModel.belongsTo(NguoiDungModel, { foreignKey: "id_nguoi_dung", as: "nguoi
 SanPhamModel.hasMany(BienTheModel, { foreignKey: "id_san_pham", as: "bien_thes" });
 BienTheModel.belongsTo(SanPhamModel, { foreignKey: "id_san_pham", as: "san_pham" });
 
+
 BienTheModel.hasMany(DanhGiaModel, { foreignKey: "id_bien_the", as: "danh_gias" });
 DanhGiaModel.belongsTo(BienTheModel, { foreignKey: "id_bien_the", as: "bien_the" });
+
+DanhMucModel.hasMany(SanPhamModel, { foreignKey: "id_danh_muc", as: "san_phams", });
+SanPhamModel.belongsTo(DanhMucModel, { foreignKey: "id_danh_muc", as: "danh_muc", });

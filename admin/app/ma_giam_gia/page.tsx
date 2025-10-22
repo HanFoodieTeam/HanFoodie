@@ -99,15 +99,15 @@ export default function MaGiamGiaList() {
             onClick={handleSearch}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow"
           >
-            🔍 Tìm
+             Tìm
           </button>
         </div>
 
         <Link
           href="/ma_giam_gia/them"
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow"
+          className="bg-blue-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow"
         >
-          ➕ Thêm Mã Giảm Giá
+           Thêm Mã Giảm Giá
         </Link>
       </div>
 
@@ -115,17 +115,18 @@ export default function MaGiamGiaList() {
       <div className="overflow-x-auto bg-white rounded-xl shadow-md">
         <table className="min-w-full text-sm text-left border-collapse">
           <thead className="bg-gray-300 text-gray-700 uppercase">
-          {/* <thead className="bg-white/70 backdrop-blur-sm text-gray-700 uppercase shadow-sm border-b border-gray-200"> */}
+            {/* <thead className="bg-white/70 backdrop-blur-sm text-gray-700 uppercase shadow-sm border-b border-gray-200"> */}
 
             <tr>
               <th className="px-4 py-3">Tên / Mã số</th>
               <th className="px-4 py-3 text-center">Giá trị giảm</th>
+              <th className="px-4 py-3 text-center">Giảm tối đa</th>
               <th className="px-4 py-3 text-center">GTG Tối thiểu</th>
               <th className="px-4 py-3 text-center">Số lượng</th>
               <th className="px-4 py-3 text-center">Bắt đầu / Kết thúc</th>
               <th className="px-4 py-3 text-center">Điều kiện</th>
               <th className="px-4 py-3 text-center">Trạng thái</th>
-              <th className="px-4 py-3 text-center">Hành động</th>
+              <th className="px-4 py-3 text-center">Sửa</th>
             </tr>
           </thead>
           <tbody>
@@ -150,6 +151,11 @@ export default function MaGiamGiaList() {
                     {mgg.loai_giam_gia
                       ? `${mgg.gia_tri_giam}%`
                       : `${mgg.gia_tri_giam.toLocaleString("vi")} ₫`}
+                    <br />
+
+                  </td>
+                  <td className="px-4 py-3 text-center text-red-600">
+                    {mgg.gia_tri_giam_toi_da}
                   </td>
                   <td className="px-4 py-3 text-center">
                     {mgg.gia_tri_toi_thieu.toLocaleString("vi")} ₫
@@ -161,7 +167,7 @@ export default function MaGiamGiaList() {
                   </td>
                   <td className="px-4 py-3 text-center">{mgg.dieu_kien}</td>
                   <td
-                    className="px-4 py-3 text-center cursor-pointer select-none"
+                    className="px-4 py-3 text-center cursor-pointer select-none text-xl"
                     onClick={() => handleToggleAnHien(mgg)}
                   >
                     {mgg.an_hien ? "✅" : "❌"}
@@ -173,12 +179,12 @@ export default function MaGiamGiaList() {
                     >
                       Sửa
                     </Link>{" "}
-                    |{" "}
-                    <NutXoaMGG
+                    {/* |{" "} */}
+                    {/* <NutXoaMGG
                       id={mgg.id}
                       ten={mgg.ten}
                       onDeleted={handleDeleted}
-                    />
+                    /> */}
                   </td>
                 </tr>
               ))
@@ -192,11 +198,10 @@ export default function MaGiamGiaList() {
         <button
           onClick={() => setPage(1)}
           disabled={page === 1}
-          className={`px-3 py-1 rounded ${
-            page === 1
+          className={`px-3 py-1 rounded ${page === 1
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bg-gray-200 hover:bg-gray-300"
-          }`}
+            }`}
         >
           Đầu
         </button>
@@ -209,11 +214,10 @@ export default function MaGiamGiaList() {
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className={`px-3 py-1 rounded ${
-                  p === page
+                className={`px-3 py-1 rounded ${p === page
                     ? "bg-blue-500 text-white font-bold scale-105"
                     : "bg-gray-200 hover:bg-gray-300"
-                }`}
+                  }`}
               >
                 {p}
               </button>
@@ -224,11 +228,10 @@ export default function MaGiamGiaList() {
         <button
           onClick={() => setPage(totalPages)}
           disabled={page === totalPages}
-          className={`px-3 py-1 rounded ${
-            page === totalPages
+          className={`px-3 py-1 rounded ${page === totalPages
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bg-gray-200 hover:bg-gray-300"
-          }`}
+            }`}
         >
           Cuối
         </button>

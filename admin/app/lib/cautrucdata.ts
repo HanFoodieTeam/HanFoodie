@@ -10,6 +10,7 @@ export interface IMaGiamGia {
   an_hien: boolean ;
   ma_so: string;
   dieu_kien: string;
+  gia_tri_giam_toi_da: number | null;
 }
 
 // export interface IDanhGia{
@@ -37,4 +38,19 @@ export interface IDanhGia {
     ten: string;
     san_pham?: { ten: string; hinh?: string };
   };
+}
+
+export interface ISanPham {
+  id: number;
+  ten: string;
+  gia_goc: number;
+  slug: string;
+  hinh?: string | null;
+  mo_ta?: string | null;
+  an_hien: boolean;
+  tag?: string | null;
+  luot_xem: number;
+  phong_cach?: string | null;
+  trang_thai?: string | null;
+  id_danh_muc: number;
 }
