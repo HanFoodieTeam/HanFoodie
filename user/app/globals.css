@@ -8,3 +8,7 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+body {
+  background-color: #f8efef; /* sáng nhẹ, phù hợp tone #6A0A0A */
+}

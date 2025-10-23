@@ -12,9 +12,8 @@ export default function DanhMucSection({ data }: { data: IDanhMuc[] }) {
   const scrollRight = () => scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
 
   return (
-    <section className="relative -mt-6"> {/* 👈 kéo gần banner */}
-  
-
+    <section className="relative -mt-6 "> {/* Kéo gần banner */}
+      
       {/* Nút trái */}
       <button
         onClick={scrollLeft}
@@ -44,18 +43,26 @@ export default function DanhMucSection({ data }: { data: IDanhMuc[] }) {
           <Link
             key={dm.id}
             href={`/danh_muc/${dm.slug || dm.id}`}
-            className="min-w-[160px] flex-shrink-0 rounded-xl overflow-hidden 
+            className="min-w-[160px] max-w-[160px] flex-shrink-0 rounded-xl overflow-hidden 
                        shadow hover:shadow-lg transition bg-white"
           >
+            {/* Ảnh danh mục */}
             <img
-              src={dm.hinh || "/images/placeholder.jpg"}
+              src={dm.hinh || "/noimg.png"}
               alt={dm.ten}
               className="w-full h-32 object-cover"
             />
+
+            {/* Tên và số sản phẩm */}
             <div className="p-2 text-center">
-              <p className="font-medium text-gray-800 truncate">{dm.ten}</p>
+              <p
+                className="font-medium text-gray-800 truncate max-w-[140px] mx-auto block"
+                title={dm.ten}
+              >
+                {dm.ten}
+              </p>
               <p className="text-sm text-gray-500">
-                {dm.so_san_pham || 0} sản phẩm
+                {dm.so_san_pham || 10} sản phẩm
               </p>
             </div>
           </Link>
