@@ -51,7 +51,7 @@ export default function TrangChuPage() {
       <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
         <img
           src="/images/banner-home.jpg"
-          alt="Banner chính"
+          alt=""
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white">
@@ -72,7 +72,7 @@ export default function TrangChuPage() {
         <section className="relative w-full h-[220px] md:h-[240px] overflow-hidden rounded-lg">
           <img
             src="/images/banner-home.jpg"
-            alt="Banner phụ"
+            alt=""
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white">
@@ -85,11 +85,11 @@ export default function TrangChuPage() {
         <section className="relative z-10">
           <h2 className="text-lg font-semibold mb-3">Combo hấp dẫn</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {combo.map((sp) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {combo.slice(0, 6).map((sp) => (
               <div
                 key={sp.id}
-                className="flex bg-white rounded-md border border-gray-200 shadow-sm hover:shadow-md overflow-hidden transition h-[150px] hover:-translate-y-1"
+                className="flex bg-white rounded-md border border-gray-200 shadow-sm hover:shadow-md overflow-hidden transition-all hover:-translate-y-1 h-[150px]"
               >
                 {/* Ảnh bên trái */}
                 <div className="w-[40%] bg-gray-100 flex items-center justify-center overflow-hidden">
@@ -102,40 +102,39 @@ export default function TrangChuPage() {
 
                 {/* Nội dung bên phải */}
                 <div className="w-[60%] p-2 flex flex-col justify-between">
+                  {/* Tiêu đề + mô tả */}
                   <div>
                     <h3
-                      className="font-semibold text-gray-800 text-[13px] leading-tight line-clamp-2 mb-[2px]"
+                      className="font-semibold text-gray-800 text-[13px] leading-tight line-clamp-2 mb-[4px]"
                       title={sp.ten}
                     >
                       {sp.ten}
                     </h3>
-                    <p className="text-[11px] text-gray-600 line-clamp-2 mb-[3px]">
-                      {sp.mo_ta ||
-                        "Thưởng thức hương vị tuyệt hảo từ HanFoodie."}
+                    <p
+                      className="text-[11px] text-gray-600 line-clamp-2"
+                      title={sp.mo_ta}
+                    >
+                      {sp.mo_ta || "Thưởng thức hương vị tuyệt hảo từ HanFoodie."}
                     </p>
                   </div>
 
-                  {/* Giá + Nút + cùng hàng */}
-                  <div className="flex items-center justify-between mt-1">
+                  {/* Giá */}
+                  <div className="flex items-center justify-between">
                     <p className="text-[12px] font-medium text-gray-800">
                       Giá:{" "}
                       <span className="text-red-600 font-semibold">
                         {sp.gia_goc?.toLocaleString("vi-VN")}đ
                       </span>
                     </p>
-
-                    <Link
-                      href={`/san_pham/${sp.slug || sp.id}`}
-                      className="text-gray-500 hover:text-orange-500 transition"
-                    >
-                      <Plus className="w-5 h-5" />
-                    </Link>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         </section>
+
+
+
       </div>
     </main>
   );

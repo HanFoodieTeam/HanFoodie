@@ -6,7 +6,7 @@ export async function GET() {
     const sp_arr = await SanPhamModel.findAll({
       where: { id_danh_muc: 11 },
       order: [["luot_xem", "desc"]],
-      limit: 4, // nếu muốn lấy 4 sản phẩm, bỏ nếu muốn lấy tất cả
+      limit: 6, 
     });
 
     return NextResponse.json(sp_arr);
