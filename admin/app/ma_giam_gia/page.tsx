@@ -105,7 +105,7 @@ export default function MaGiamGiaList() {
 
         <Link
           href="/ma_giam_gia/them"
-          className="bg-blue-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow"
         >
            Thêm Mã Giảm Giá
         </Link>
@@ -165,7 +165,7 @@ export default function MaGiamGiaList() {
                     {formatDate(mgg.bat_dau)} <br />
                     <span className="text-red-500">{formatDate(mgg.ket_thuc)}</span>
                   </td>
-                  <td className="px-4 py-3 text-center">{mgg.dieu_kien}</td>
+                  <td className="px-4 py-3 text-center">{mgg.mo_ta}</td>
                   <td
                     className="px-4 py-3 text-center cursor-pointer select-none text-xl"
                     onClick={() => handleToggleAnHien(mgg)}

@@ -212,7 +212,7 @@ export default function QuanLyDanhGia() {
 
   //  Lấy danh sách sản phẩm để hiển thị trong bộ lọc
   const fetchSanPhams = async () => {
-    const res = await fetch("/api/san_pham_danh_gia");
+    const res = await fetch("/api/danh_gia/san_pham_danh_gia");
     const result = await res.json();
     setSanPhams(Array.isArray(result) ? result : []);
   };

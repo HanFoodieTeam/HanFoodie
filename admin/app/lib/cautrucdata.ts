@@ -9,7 +9,7 @@ export interface IMaGiamGia {
   ket_thuc: string;             // kiểu DATE trong DB → string ISO
   an_hien: boolean ;
   ma_so: string;
-  dieu_kien: string;
+  mo_ta: string;
   gia_tri_giam_toi_da: number | null;
 }
 

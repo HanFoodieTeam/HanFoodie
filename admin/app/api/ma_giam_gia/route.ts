@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       ket_thuc,
       an_hien,
       ma_so,
-      dieu_kien,
+      mo_ta,
     } = data;
 
     await MaGiamGiaModel.create({
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
       ket_thuc,
       an_hien,
       ma_so,
-      dieu_kien,
+       mo_ta,
     });
 
     return NextResponse.json(

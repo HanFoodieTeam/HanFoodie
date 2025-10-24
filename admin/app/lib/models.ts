@@ -13,7 +13,7 @@ export const MaGiamGiaModel = db.define("ma_giam_gia", {
   ket_thuc: { type: DataTypes.DATEONLY, allowNull: false },
   an_hien: { type: DataTypes.BOOLEAN, allowNull: true, defaultValue: false },
   ma_so: { type: DataTypes.STRING(255), allowNull: false },
-  dieu_kien: { type: DataTypes.STRING(255), allowNull: true },
+  mo_ta: { type: DataTypes.STRING(255), allowNull: true },
   gia_tri_giam_toi_da: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null,
     comment: "Giá trị giảm tối đa đối với mã giảm theo phần trăm",
   },
