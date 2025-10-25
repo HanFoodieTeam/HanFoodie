@@ -1,4 +1,5 @@
-import { MaGiamGiaModel } from "@/app/lib/models";
+// ✅ Đúng
+import { MaGiamGiaModel } from "../../lib/models";
 import { NextResponse } from "next/server";
 import { Op } from "sequelize";
 
@@ -36,8 +37,6 @@ export async function GET(req: Request) {
 
 
 
-
-
 //thêm mã giảm giá
 export async function POST(req: Request) {
   try {
@@ -49,12 +48,13 @@ export async function POST(req: Request) {
       gia_tri_giam,
       loai_giam_gia,
       gia_tri_toi_thieu,
+       gia_tri_giam_toi_da,
       so_luong,
       bat_dau,
       ket_thuc,
       an_hien,
       ma_so,
-      dieu_kien,
+      mo_ta,
     } = data;
 
     await MaGiamGiaModel.create({
@@ -62,12 +62,13 @@ export async function POST(req: Request) {
       gia_tri_giam,
       loai_giam_gia,
       gia_tri_toi_thieu,
+       gia_tri_giam_toi_da,
       so_luong,
       bat_dau,
       ket_thuc,
       an_hien,
       ma_so,
-      dieu_kien,
+       mo_ta,
     });
 
     return NextResponse.json(
