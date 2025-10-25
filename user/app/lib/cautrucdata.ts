@@ -20,3 +20,17 @@ export interface ISanPham {
   trang_thai?: string;
   id_danh_muc: number; // khóa ngoại liên kết với bảng danh_muc
 }
+
+export interface INguoiDung {
+  id?: number; 
+  ho_ten: string;
+  sdt: number;
+  email: string;
+  tep_khach?: string | null;
+  mat_khau: string;
+  trang_thai?: number; // 0 là khóa, 1 là hiện
+  ngay_sinh?: string | null; 
+  ma_kich_hoat?: string | null;
+  vai_tro?: number; // 0: user, 1: admin
+  ngay_tao?: Date | null;
+}
