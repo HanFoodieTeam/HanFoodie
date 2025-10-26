@@ -57,17 +57,14 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // Trả thông tin người dùng (ẩn mật khẩu)
     const nguoiDungInfo = {
-      id: nguoiDung.getDataValue("id") as number,
       ho_ten: nguoiDung.getDataValue("ho_ten") as string,
       email: nguoiDung.getDataValue("email") as string,
       sdt: nguoiDung.getDataValue("sdt") as number,
-      vai_tro: nguoiDung.getDataValue("vai_tro") as number,
-      trang_thai: nguoiDung.getDataValue("trang_thai") as number,
     };
 
     return NextResponse.json({
       thong_bao: "Đăng nhập thành công",
-      token, 
+      token,
       nguoi_dung: nguoiDungInfo,
     });
   } catch (error: unknown) {
@@ -79,8 +76,8 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
     return NextResponse.json(
-        { thong_bao: "Lỗi không xác định" },
-        { status: 500 }
+      { thong_bao: "Lỗi không xác định" },
+      { status: 500 }
     );
   }
 }

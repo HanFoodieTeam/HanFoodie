@@ -118,7 +118,7 @@ export default function RegisterForm({
             : "bg-[#6A0A0A] hover:opacity-90"
         }`}
       >
-        {dangThanhCong ? "✔ Đăng ký thành công" : "Đăng ký"}
+        {dangThanhCong ? " Đăng ký thành công" : "Đăng ký"}
       </button>
     </form>
   );

@@ -119,6 +119,9 @@ export default function Header() {
                       <Link href="/ho_so" className="flex px-4 py-2 hover:bg-gray-200 rounded-lg">
                         Hồ sơ
                       </Link>
+                       <Link href="/doi_mat_khau" className="flex px-4 py-2 hover:bg-gray-200 rounded-lg">
+                        Đổi mật khẩu
+                      </Link>
                       <button
                         onClick={handleDangXuat}
                         className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
@@ -144,7 +147,7 @@ export default function Header() {
                         // onClick={() => setShowLogin(true)}
                         className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
                       >
-                        Quên mật khâut
+                        Quên mật khẩu
                       </button>
                     </>
                   )}
@@ -202,17 +205,13 @@ export default function Header() {
                   <p className="font-medium text-[#6A0A0A] mb-2">
                     Xin chào, {nguoiDung.ho_ten}
                   </p>
-                  <Link
-                    href="/ho_so"
-                    onClick={() => setOpenMenu(false)}
-                    className="block py-2"
-                  >
+                  <Link href="/ho_so" onClick={() => setOpenMenu(false)} className="block py-2" >
                     Hồ sơ
                   </Link>
-                  <button
-                    onClick={() => {
-                      handleDangXuat();
-                      setOpenMenu(false);
+                   <Link href="/doi_mat_khau" onClick={() => setOpenMenu(false)} className="block py-2" >
+                    Đổi mật khẩu
+                  </Link>
+                  <button onClick={() => { handleDangXuat(); setOpenMenu(false);
                     }}
                     className="w-full text-left py-2 text-red-500"
                   >
@@ -221,22 +220,12 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={() => {
-                      setShowRegister(true);
-                      setOpenMenu(false);
-                    }}
-                    className="block w-full text-left py-2"
-                  >
+                  <button onClick={() => { setShowRegister(true); setOpenMenu(false); }}
+                    className="block w-full text-left py-2" >
                     Đăng ký
                   </button>
-                  <button
-                    onClick={() => {
-                      setShowLogin(true);
-                      setOpenMenu(false);
-                    }}
-                    className="block w-full text-left py-2"
-                  >
+                  <button onClick={() => { setShowLogin(true); setOpenMenu(false);  }}
+                    className="block w-full text-left py-2" >
                     Đăng nhập
                   </button>
                   <button

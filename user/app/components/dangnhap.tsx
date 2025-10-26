@@ -31,10 +31,12 @@ export default function LoginForm({ onClose, onLoginSuccess }: LoginFormProps) {
 
       const nguoiDung = {
         ...data.nguoi_dung,
-        sdt: Number(data.nguoi_dung.sdt), // ✅ đảm bảo là number
+        sdt: Number(data.nguoi_dung.sdt), //  đảm bảo là number
       };
 
       localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDung));
+      localStorage.setItem("token", data.token); //  lưu token JWT
+
       setThongBao("Đăng nhập thành công!");
       onLoginSuccess(nguoiDung);
 
@@ -50,23 +52,11 @@ export default function LoginForm({ onClose, onLoginSuccess }: LoginFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <h2 className="text-xl font-semibold text-center">Đăng nhập</h2>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full border rounded-lg p-2"
-        required
-      />
+      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border rounded-lg p-2" required />
 
       <input
-        type="password"
-        placeholder="Mật khẩu"
-        value={matKhau}
-        onChange={(e) => setMatKhau(e.target.value)}
-        className="w-full border rounded-lg p-2"
-        required
-      />
+        type="password" placeholder="Mật khẩu" value={matKhau} onChange={(e) => setMatKhau(e.target.value)}
+        className="w-full border rounded-lg p-2" required />
 
       <button
         type="submit"
