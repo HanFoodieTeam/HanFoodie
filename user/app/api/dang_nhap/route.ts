@@ -35,16 +35,17 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    const trangThai = nguoiDung.getDataValue("trang_thai") as number;
-    if (trangThai === 0) {
-      return NextResponse.json(
-        { thong_bao: "Tài khoản bị khóa" },
-        { status: 403 }
-      );
-    }
+    const trangThai = Number(nguoiDung.getDataValue("trang_thai") ?? 1);
+if (trangThai === 0) {
+  return NextResponse.json(
+    { thong_bao: "Tài khoản bị khóa" },
+    { status: 403 }
+  );
+}
+
 
     // Tạo JWT token
-    const secret = process.env.JWT_SECRET || "BAN_NHAP_SECRET_KEY_TAI_DAY";
+const secret = process.env.JWT_SECRET || "HanFoodieSecretKey123!";
     const token = jwt.sign(
       {
         id: nguoiDung.getDataValue("id"),
