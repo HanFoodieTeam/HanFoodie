@@ -45,9 +45,13 @@ export default function Header() {
   };
 
   const handleDangXuat = () => {
-    localStorage.removeItem("nguoi_dung");
+   localStorage.removeItem("nguoi_dung");
+    localStorage.removeItem("token");
     setNguoiDung(null);
     setUserOpen(false);
+
+    // reload lại để chắc chắn
+    window.location.reload();
   };
 
   return (

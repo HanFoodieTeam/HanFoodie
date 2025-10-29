@@ -1,7 +1,7 @@
 // interfaces.ts
 
 export interface IBaiViet {
-  id?: number;
+id:number;
   tieu_de: string;
   noi_dung: string;
   hinh?: string | null;
@@ -13,7 +13,7 @@ export interface IBaiViet {
 }
 
 export interface IBanner {
-  id?: number;
+id:number;
   hinh: string;
   mo_ta?: string | null;
   link?: string | null;
@@ -21,15 +21,18 @@ export interface IBanner {
 }
 
 export interface IBienThe {
-  id?: number;
+id:number;
   ten: string;
   trang_thai: boolean;
   gia_them?: number | null;
   id_san_pham: number;
+
+     san_pham?: ISanPham;
+
 }
 
 export interface IChiTietDonHang {
-  id?: number;
+id:number;
   don_gia: number;
   so_luong: number;
   json_tuy_chon?: string | null;
@@ -40,7 +43,7 @@ export interface IChiTietDonHang {
 }
 
 export interface IDanhGia {
-  id?: number;
+id:number;
   noi_dung?: string | null;
   thoi_gian: string;
   sao: number;
@@ -51,7 +54,7 @@ export interface IDanhGia {
 }
 
 export interface IDanhMuc {
-  id?: number;
+id:number;
   ten: string;
   slug?: string;
   an_hien: boolean;
@@ -60,19 +63,19 @@ export interface IDanhMuc {
 }
 
 export interface IDanhMucLoaiTuyChon {
-  id?: number;
+id:number;
   id_loai_tuy_chon?: number | null;
   id_danh_muc?: number | null;
 }
 
 export interface IDanhMucMonThem {
-  id?: number;
+id:number;
   id_mon_them?: number | null;
   id_danh_muc?: number | null;
 }
 
 export interface IDiaChi {
-  id?: number;
+id:number;
   id_nguoi_dung: number;
   so_nha: string;
   ten_duong: string;
@@ -81,7 +84,7 @@ export interface IDiaChi {
 }
 
 export interface IDonHang {
-  id?: number;
+id:number;
   ghi_chu?: string | null;
   dia_chi: string;
   id_ma_giam_gia: number;
@@ -97,17 +100,42 @@ export interface IDonHang {
   so_tien_thanh_toan: number;
 }
 
+// export interface IGioHang {
+// id:number;
+//   so_luong?: number;
+//   json_mon_them?: string | null;
+//   json_tuy_chon?: string | null;
+//   id_nguoi_dung: number;
+//   id_bien_the?: number | null;
+
+//    bien_the?: IBienThe;
+// }
+
+
 export interface IGioHang {
-  id?: number;
-  so_luong?: number;
-  json_mon_them?: string | null;
-  json_tuy_chon?: string | null;
+  id: number;
+  so_luong: number;
+  json_mon_them?: IMonThem[] | null; // danh sách món thêm
+  json_tuy_chon?: Record<string, string> | null; // key: loại tùy chọn, value: giá trị
   id_nguoi_dung: number;
   id_bien_the?: number | null;
+
+  bien_the?: {
+    id: number;
+    ten: string;
+    gia_them?: number | null;
+    san_pham?: {
+      id: number;
+      ten: string;
+      hinh: string;
+      gia_goc: number;
+    };
+  };
 }
 
+
 export interface IHinh {
-  id?: number;
+id:number;
   hinh?: string | null;
   ngay_dang?: string | null;
   thu_tu?: number | null;
@@ -115,7 +143,7 @@ export interface IHinh {
 }
 
 export interface ILoaiBaiViet {
-  id?: number;
+id:number;
   ten_loai: string;
   an_hien: boolean;
   slug?: string | null;
@@ -123,14 +151,14 @@ export interface ILoaiBaiViet {
 }
 
 export interface ILoaiTuyChon {
-  id?: number;
+id:number;
   ten: string;
   thu_tu?: number | null;
   an_hien?: boolean;
 }
 
 export interface IMaGiamGia {
-  id?: number;
+id:number;
   ten: string;
   gia_tri_giam: number;
   loai_giam_gia?: boolean;
@@ -145,7 +173,7 @@ export interface IMaGiamGia {
 }
 
 export interface IMonThem {
-  id?: number;
+id:number;
   ten: string;
   gia_them: number;
   loai_mon: number;
@@ -153,7 +181,7 @@ export interface IMonThem {
 }
 
 export interface INguoiDung {
-  id?: number;
+id:number;
   ho_ten: string;
   sdt?: number | null;
   email: string;
@@ -167,7 +195,7 @@ export interface INguoiDung {
 }
 
 export interface ISanPham {
-  id?: number;
+id:number;
   ten: string;
   gia_goc: number;
   slug?: string | null;
@@ -179,17 +207,18 @@ export interface ISanPham {
   phong_cach?: string | null;
   trang_thai?: string | null;
   id_danh_muc: number;
+
 }
 
 export interface ITuyChon {
-  id?: number;
+id:number;
   ten: string;
   an_hien: boolean;
   id_loai_tuy_chon: number;
 }
 
 export interface IYeuThich {
-  id?: number;
+id:number;
   id_nguoi_dung: number;
   id_san_pham: number;
 }
