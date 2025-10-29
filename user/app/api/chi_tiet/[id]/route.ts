@@ -181,21 +181,23 @@ export async function GET(
     const idDanhMuc = sanPham.getDataValue("id_danh_muc");
 
     // 2️⃣ Lấy biến thể của sản phẩm
-    const bienThes = await BienTheModel.findAll({
+    const bienThe = await BienTheModel.findAll({
       where: { id_san_pham: productId },
     });
 
-    // 3️⃣ Lấy món thêm thông qua bảng phụ danh_muc_mon_them
-    const danhMucMonThem = await DanhMucMonThemModel.findAll({
-      where: { id_danh_muc: idDanhMuc },
-      include: [
-        {
-          model: MonThemModel,
-          as: "mon_them",
-          attributes: ["id", "ten", "gia_them", "loai_mon", "trang_thai"],
-        },
-      ],
-    });
+    // 3️⃣ Lấy món thêm thông qua bảng phụ danh_muc_mon_them sắp xếp giá giảm dần
+  const danhMucMonThem = await DanhMucMonThemModel.findAll({
+  where: { id_danh_muc: idDanhMuc },
+  include: [
+    {
+      model: MonThemModel,
+      as: "mon_them",
+      attributes: ["id", "ten", "gia_them", "loai_mon", "trang_thai"],
+    },
+  ],
+  order: [[{ model: MonThemModel, as: "mon_them" }, "gia_them", "ASC"]],
+});
+
 
     // Lọc ra danh sách món thêm thực tế
     const monThem = danhMucMonThem
@@ -249,7 +251,7 @@ export async function GET(
     // ✅ 7️⃣ Trả kết quả đầy đủ
     return NextResponse.json({
       san_pham: sanPham,
-      bien_thes: bienThes,
+      bien_the: bienThe,
       mon_them: monThem,
       tuy_chon: danhMucTuyChon.map((t) => t.getDataValue("loai_tuy_chon")),
       danh_gia: danhGia,
