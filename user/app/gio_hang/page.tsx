@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Trash2, Minus, Plus } from "lucide-react";
 import { IGioHang } from "../lib/cautrucdata";
-
+// test
 export default function TrangGioHang() {
   const [gioHang, setGioHang] = useState<IGioHang[]>([]);
   const [loading, setLoading] = useState(true);
