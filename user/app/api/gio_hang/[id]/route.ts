@@ -110,28 +110,28 @@ export async function PUT(
         { status: 404 }
       );
 
-    // ✅ Cập nhật các trường có thể thay đổi
- const updatedData: Partial<IGioHangRecord> = {};
+    //  Cập nhật các trường có thể thay đổi
+    const updatedData: Partial<IGioHangRecord> = {};
 
-if (body.id_bien_the !== undefined)
-  updatedData.id_bien_the = body.id_bien_the;
+    if (body.id_bien_the !== undefined)
+      updatedData.id_bien_the = body.id_bien_the;
 
-if (body.so_luong !== undefined)
-  updatedData.so_luong = body.so_luong;
+    if (body.so_luong !== undefined)
+      updatedData.so_luong = body.so_luong;
 
-if (body.json_mon_them !== undefined)
-  updatedData.json_mon_them = JSON.stringify(body.json_mon_them);
+    if (body.json_mon_them !== undefined)
+      updatedData.json_mon_them = JSON.stringify(body.json_mon_them);
 
-if (body.json_tuy_chon !== undefined)
-  updatedData.json_tuy_chon = JSON.stringify(body.json_tuy_chon);
+    if (body.json_tuy_chon !== undefined)
+      updatedData.json_tuy_chon = JSON.stringify(body.json_tuy_chon);
 
-if (body.ghi_chu !== undefined)
-  updatedData.ghi_chu = body.ghi_chu;
+    if (body.ghi_chu !== undefined)
+      updatedData.ghi_chu = body.ghi_chu;
 
-await gioHang.update(updatedData);
+    await gioHang.update(updatedData);
 
 
-    // ✅ Reload lại bản ghi để lấy dữ liệu mới nhất từ DB
+    //  Reload lại bản ghi để lấy dữ liệu mới nhất từ DB
     await gioHang.reload({
       include: [
         {

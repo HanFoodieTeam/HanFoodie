@@ -1,185 +1,3 @@
-// // // // // "use client";
-// // // // // import { useEffect, useState } from "react";
-// // // // // import Image from "next/image";
-// // // // // import { Trash2, Minus, Plus } from "lucide-react";
-// // // // // import { IGioHang } from "../lib/cautrucdata";
-// // // // // export default function TrangGioHang() {
-// // // // //   const [gioHang, setGioHang] = useState<IGioHang[]>([]);
-// // // // //   const [loading, setLoading] = useState(true);
-
-// // // // //   useEffect(() => {
-// // // // //     const fetchCart = async () => {
-// // // // //       try {
-// // // // //         const token = localStorage.getItem("token");
-// // // // //         if (!token) return setLoading(false);
-
-// // // // //         const res = await fetch("/api/gio_hang", {
-// // // // //           cache: "no-store",
-// // // // //           headers: { Authorization: `Bearer ${token}` },
-// // // // //         });
-// // // // //         if (!res.ok) throw new Error("Không thể tải giỏ hàng");
-
-// // // // //         const data: IGioHang[] = await res.json();
-// // // // //         setGioHang(data);
-// // // // //       } catch (err) {
-// // // // //         console.error(err);
-// // // // //         setGioHang([]);
-// // // // //       } finally {
-// // // // //         setLoading(false);
-// // // // //       }
-// // // // //     };
-
-// // // // //     fetchCart();
-// // // // //   }, []);
-
-// // // // //   const updateQuantity = async (id: number, so_luong: number) => {
-// // // // //     if (so_luong <= 0) return;
-// // // // //     try {
-// // // // //       await fetch(`/api/gio_hang/${id}`, {
-// // // // //         method: "PUT",
-// // // // //         headers: { "Content-Type": "application/json" },
-// // // // //         body: JSON.stringify({ so_luong }),
-// // // // //       });
-// // // // //       setGioHang((prev) =>
-// // // // //         prev.map((item) => (item.id === id ? { ...item, so_luong } : item))
-// // // // //       );
-// // // // //     } catch (err) {
-// // // // //       console.error("Lỗi cập nhật:", err);
-// // // // //     }
-// // // // //   };
-
-// // // // //   const removeItem = async (id: number) => {
-// // // // //     if (!confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
-// // // // //     try {
-// // // // //       const token = localStorage.getItem("token");
-// // // // //       if (!token) {
-// // // // //         alert("Vui lòng đăng nhập trước khi thao tác!");
-// // // // //         return;
-// // // // //       }
-
-// // // // //       await fetch(`/api/gio_hang/${id}`, {
-// // // // //         method: "DELETE",
-// // // // //         headers: {
-// // // // //           "Content-Type": "application/json",
-// // // // //           Authorization: `Bearer ${token}`,
-// // // // //         },
-// // // // //       });
-
-// // // // //       setGioHang((prev) => prev.filter((item) => item.id !== id));
-// // // // //     } catch (err) {
-// // // // //       console.error("Lỗi khi xóa:", err);
-// // // // //     }
-// // // // //   };
-
-// // // // //   const tongTien = gioHang.reduce((sum, item) => {
-// // // // //     const gia_goc = item.bien_the?.san_pham?.gia_goc ?? 0;
-// // // // //     const gia_them = item.bien_the?.gia_them ?? 0;
-// // // // //     const so_luong = item.so_luong ?? 1;
-// // // // //     return sum + (gia_goc + gia_them) * so_luong;
-// // // // //   }, 0);
-
-// // // // //   if (loading)
-// // // // //     return <div className="p-6 text-gray-500">Đang tải giỏ hàng...</div>;
-
-// // // // //   if (!gioHang.length)
-// // // // //     return (
-// // // // //       <div className="p-6 text-center text-gray-500">
-// // // // //         Giỏ hàng của bạn đang trống 😢
-// // // // //       </div>
-// // // // //     );
-
-// // // // //   return (
-// // // // //     <div className="max-w-5xl mx-auto p-6">
-// // // // //       <h1 className="text-2xl font-semibold mb-6">🛒 Giỏ hàng của bạn</h1>
-
-// // // // //       <div className="space-y-4">
-// // // // //         {gioHang.map((item) => {
-// // // // //           const sp = item.bien_the?.san_pham;
-// // // // //           const tong_gia =
-// // // // //             (sp?.gia_goc ?? 0) + (item.bien_the?.gia_them ?? 0);
-
-// // // // //           return (
-// // // // //             <div
-// // // // //               key={item.id}
-// // // // //               className="flex items-center justify-between border rounded-2xl p-4 shadow-sm hover:shadow-md transition">
-// // // // //               <div className="flex items-center gap-4">
-// // // // //                 <div>
-// // // // //                   <img
-// // // // //                     src={sp?.hinh || "/noing.png"}
-// // // // //                     alt="Ảnh sản phẩm"
-// // // // //                     className="w-[200px] h-[200px] object-cover rounded-xl"
-// // // // //                   />
-// // // // //                 </div>
-// // // // //                 <div>
-// // // // //                   <h2 className="font-medium">{sp?.ten}</h2>
-// // // // //                   <p className="text-gray-600 text-sm">
-// // // // //                     {item.bien_the?.ten || ""}
-// // // // //                   </p>
-
-// // // // //                   {item.json_tuy_chon && (
-// // // // //                     <p>
-// // // // //                       {" "}
-// // // // //                       {Object.entries(item.json_tuy_chon)
-// // // // //                         .map(([key, value]) => `${key}: ${value}`)
-// // // // //                         .join(", ")}
-// // // // //                     </p>)}
-// // // // //                   {item.json_mon_them && item.json_mon_them.length > 0 && (
-// // // // //                     <p>
-// // // // //                       Món thêm: {" "}
-// // // // //                       {item.json_mon_them.map((m) => `${m.ten}`).join(" , ")}
-// // // // //                     </p>
-// // // // //                   )}
-
-// // // // //                   {item.ghi_chu && item.ghi_chu.trim() !== "" && (<p>Ghi chú: {item.ghi_chu}</p>)}
-
-// // // // //                   <p className="text-black-600 font-semibold mt-1">
-// // // // //                     {sp?.gia_goc.toLocaleString("vi-VN")} ₫</p>
-// // // // //                   <p className="text-red-600 font-semibold mt-1">
-// // // // //                     {(tong_gia + (item.json_mon_them?.reduce((sum, m) => sum + (m.gia_them ?? 0), 0) ?? 0)).toLocaleString("vi-VN")} ₫</p>
-// // // // //                 </div>
-// // // // //               </div>
-
-// // // // //               <div className="flex items-center gap-3">
-// // // // //                 <button onClick={() =>
-// // // // //                   updateQuantity(item.id, (item.so_luong ?? 1) - 1)}
-// // // // //                   className="p-1 rounded border hover:bg-gray-100">
-// // // // //                   <Minus size={16} />
-// // // // //                 </button>
-// // // // //                 <span>{item.so_luong ?? 1}</span>
-// // // // //                 <button
-// // // // //                   onClick={() =>
-// // // // //                     updateQuantity(item.id, (item.so_luong ?? 1) + 1)}
-// // // // //                   className="p-1 rounded border hover:bg-gray-100">
-// // // // //                   <Plus size={16} />
-// // // // //                 </button>
-// // // // //                 <button
-// // // // //                   onClick={() => removeItem(item.id)}
-// // // // //                   className="text-red-500 hover:text-red-700 ml-3">
-// // // // //                   <Trash2 size={18} />
-// // // // //                 </button>
-// // // // //               </div>
-// // // // //               <p>
-// // // // //                 Chỉnh sửa
-// // // // //               </p>
-// // // // //             </div>
-// // // // //           );
-// // // // //         })}
-// // // // //       </div>
-
-// // // // //       <div className="mt-8 text-right border-t pt-4">
-// // // // //         <p className="text-lg font-semibold">
-// // // // //           Tổng cộng:{" "}
-// // // // //           <span className="text-red-600">
-// // // // //             {tongTien.toLocaleString("vi-VN")}₫
-// // // // //           </span>
-// // // // //         </p>
-// // // // //         <button className="mt-4 px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-// // // // //           Thanh toán
-// // // // //         </button>
-// // // // //       </div>
-// // // // //     </div>
-// // // // //   );
-// // // // // }
 
 
 
@@ -868,7 +686,7 @@ export default function TrangGioHang(): JSX.Element {
   const [popupData, setPopupData] = useState<PopupData | null>(null);
   const [macDinh, setMacDinh] = useState<MacDinhProps | null>(null);
 
-  // 🟢 Lấy danh sách giỏ hàng
+  //  Lấy danh sách giỏ hàng
   const fetchCart = async (): Promise<void> => {
     try {
       const token = localStorage.getItem("token");
@@ -900,14 +718,14 @@ export default function TrangGioHang(): JSX.Element {
     fetchCart();
   }, []);
 
-  // 🟢 Chọn / bỏ chọn sản phẩm
+  //  Chọn / bỏ chọn sản phẩm
   const toggleSelect = (id: number): void => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
-  // 🟢 Chọn tất cả
+  //  Chọn tất cả
   const handleSelectAll = (): void => {
     if (selectAll) {
       setSelectedItems([]);
@@ -918,14 +736,14 @@ export default function TrangGioHang(): JSX.Element {
     }
   };
 
-  // 🟢 Theo dõi chọn tất cả
+  //  Theo dõi chọn tất cả
   useEffect(() => {
     setSelectAll(
       selectedItems.length === gioHang.length && gioHang.length > 0
     );
   }, [selectedItems, gioHang]);
 
-  // 🟢 Tính tổng tiền sản phẩm đã chọn
+  //  Tính tổng tiền sản phẩm đã chọn
   const tongTien: number = useMemo(() => {
     return gioHang
       .filter((item) => selectedItems.includes(item.id))
@@ -939,7 +757,7 @@ export default function TrangGioHang(): JSX.Element {
       }, 0);
   }, [gioHang, selectedItems]);
 
-  // 🟢 Cập nhật số lượng
+  //  Cập nhật số lượng
   const updateQuantity = async (id: number, so_luong: number): Promise<void> => {
     if (so_luong <= 0) return;
     try {
@@ -963,7 +781,7 @@ export default function TrangGioHang(): JSX.Element {
     }
   };
 
-  // 🟢 Xóa sản phẩm
+  //  Xóa sản phẩm
   const removeItem = async (id: number): Promise<void> => {
     if (!confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
     try {
@@ -982,7 +800,7 @@ export default function TrangGioHang(): JSX.Element {
     }
   };
 
-  // 🟢 Chỉnh sửa món
+  //  Chỉnh sửa món
   const handleEdit = async (item: IGioHang): Promise<void> => {
     try {
       const sp = item.bien_the?.san_pham;
@@ -1009,203 +827,208 @@ export default function TrangGioHang(): JSX.Element {
     }
   };
 
-  // 🧮 Render
   if (loading)
     return <div className="p-6 text-gray-500 text-center mt-[var(--header-h)]"
-          style={{ "--header-h": "80px" } as React.CSSProperties}>
+      style={{ "--header-h": "80px" } as React.CSSProperties}>
 
-  Đang tải giỏ hàng...</div>;
+      Đang tải giỏ hàng...</div>;
 
-  return (
+ return (
+  
+  <div
+    className="max-w-[80%] mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6"
+    style={{ "--header-h": "60px" } as React.CSSProperties}
+  >
+    {/*  Bên trái - danh sách sản phẩm */}
+    <div className="lg:col-span-2 mt-[var(--header-h)]">
+      {/*  Chọn tất cả */}
+      <div className="flex items-center mb-3 gap-4 p-3 rounded-lg bg-white shadow-sm hover:shadow-md transition  top-[var(--header-h)] z-20">
+        <input
+          type="checkbox"
+          checked={selectAll}
+          onChange={handleSelectAll}
+          className="w-4 h-4 accent-[#e8594f]"
+        />
+        <span className="ml-2 text-gray-800 text-base font-medium">
+          Chọn tất cả
+        </span>
+      </div>
+
+      {/* Danh sách sản phẩm */}
+      <div className="space-y-2.5">
+        {gioHang.map((item) => {
+          const sp = item.bien_the?.san_pham;
+          const giaGoc = sp?.gia_goc ?? 0;
+          const giaThem = item.bien_the?.gia_them ?? 0;
+          const monThemSum =
+            item.json_mon_them?.reduce((s, m) => s + (m.gia_them ?? 0), 0) ?? 0;
+          const tong =
+            (giaGoc + giaThem + monThemSum) * (item.so_luong ?? 1);
+          const checked = selectedItems.includes(item.id);
+
+          return (
+            <div
+              key={item.id}
+              className="flex items-center gap-4 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition"
+            >
+              {/* Checkbox */}
+              <div className="flex-shrink-0 flex items-center justify-center w-6">
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggleSelect(item.id)}
+                  className="w-4 h-4 accent-[#e8594f]"
+                />
+              </div>
+
+              {/* Hình ảnh */}
+              <img
+                src={sp?.hinh || "/noing.png"}
+                alt={sp?.ten || "Sản phẩm"}
+                className="w-[90px] h-[90px] rounded-lg object-cover"
+              />
+
+              {/* Thông tin */}
+              <div className="flex-1">
+                <h2 className="font-semibold text-[15px]">{sp?.ten}</h2>
+                <p className="text-sm text-gray-600">{item.bien_the?.ten}</p>
+
+                {item.json_tuy_chon &&
+                  Object.keys(item.json_tuy_chon).length > 0 && (
+                    <p className="text-sm text-gray-600">
+                      {Object.entries(item.json_tuy_chon)
+                        .map(([k, v]) => `${k}: ${v}`)
+                        .join(", ")}
+                    </p>
+                  )}
+
+                {item.json_mon_them && item.json_mon_them.length > 0 && (
+                  <p className="text-sm text-gray-600">
+                    {item.json_mon_them.map((m) => m.ten).join(", ")}
+                  </p>
+                )}
+
+                {item.ghi_chu && (
+                  <p
+                    className="text-sm text-gray-500 truncate max-w-[420px]"
+                    title={item.ghi_chu}
+                  >
+                    Ghi chú: {item.ghi_chu}
+                  </p>
+                )}
+
+                <button
+                  onClick={() => handleEdit(item)}
+                  className="text-[#e8594f] text-sm font-medium mt-1 hover:underline"
+                >
+                  Chỉnh sửa món
+                </button>
+              </div>
+
+              {/* Số lượng + Xóa + Giá */}
+              <div className="flex flex-col items-end gap-2 justify-between h-full">
+                <button
+                  onClick={() => removeItem(item.id)}
+                  className="text-gray-400 hover:text-red-600"
+                >
+                  <Trash2 size={18} />
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() =>
+                      updateQuantity(item.id, (item.so_luong ?? 1) - 1)
+                    }
+                    className="px-3 text-gray-700 rounded"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span>{item.so_luong ?? 1}</span>
+                  <button
+                    onClick={() =>
+                      updateQuantity(item.id, (item.so_luong ?? 1) + 1)
+                    }
+                    className="px-3 text-gray-700 rounded"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+
+                <p className="text-red-600 font-semibold mt-2">
+                  {tong.toLocaleString("vi-VN")} đ
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    {/*  Bên phải - Thông tin đơn hàng (sticky) */}
     <div
-      className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 ">
-      {/* 🟢 Bên trái - danh sách sản phẩm */}
-      <div
-        className="lg:col-span-2 mt-[var(--header-h)]"
-        style={{ "--header-h": "60px" } as React.CSSProperties}>
-
-        {/* 🔘 Chọn tất cả */}
-        <div className="flex items-center mb-3 flex items-center gap-4 p-3 rounded-lg bg-white shadow-sm hover:shadow-md transition ">
-          <input
-            type="checkbox"
-            checked={selectAll}
-            onChange={handleSelectAll}
-            className="w-4 h-4 accent-[#e8594f]" />
-          <span className="ml-2 text-gray-800 text-base font-medium">
-            Chọn tất cả
+      className="bg-white p-5 rounded-2xl shadow-sm h-fit sticky top-[var(--header-h)]"
+      style={{
+        "--header-h": "60px",
+        marginTop: "var(--header-h)",
+      } as React.CSSProperties}
+    >
+      <h2 className="text-lg font-semibold mb-4">Thông tin đơn hàng</h2>
+      <div className="space-y-3 text-sm">
+        <div className="flex justify-between">
+          <span>
+            Tạm tính ({selectedItems.length}{" "}
+            {selectedItems.length > 1 ? "sản phẩm" : "sản phẩm"})
+          </span>
+          <span>{tongTien.toLocaleString("vi-VN")} đ</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Phí vận chuyển</span>
+          <span className="text-green-600 font-medium">Miễn phí</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Giảm giá</span>
+          <span>-</span>
+        </div>
+        <hr />
+        <div className="flex justify-between font-semibold text-base">
+          <span>Tổng cộng</span>
+          <span className="text-red-600">
+            {tongTien.toLocaleString("vi-VN")} đ
           </span>
         </div>
+        <p className="text-xs text-gray-500 text-right">
+          Đã bao gồm VAT (nếu có)
+        </p>
 
-        {/* Danh sách sản phẩm */}
-        <div className="space-y-2.5">
-          {gioHang.map((item) => {
-            const sp = item.bien_the?.san_pham;
-            const giaGoc = sp?.gia_goc ?? 0;
-            const giaThem = item.bien_the?.gia_them ?? 0;
-            const monThemSum =
-              item.json_mon_them?.reduce(
-                (s, m) => s + (m.gia_them ?? 0),
-                0
-              ) ?? 0;
-            const tong = (giaGoc + giaThem + monThemSum) * (item.so_luong ?? 1);
-            const checked = selectedItems.includes(item.id);
-
-            return (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition mb-3">
-                {/* 🔘 Checkbox căn giữa */}
-                <div className="flex-shrink-0 flex items-center justify-center w-6 ">
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => toggleSelect(item.id)}
-                    className="w-4 h-4 accent-[#e8594f]"
-                  />
-                </div>
-
-                {/* 🖼 Ảnh sản phẩm */}
-                <img
-                  src={sp?.hinh || "/noing.png"}
-                  alt={sp?.ten || "Sản phẩm"}
-                  className="w-[90px] h-[90px] rounded-lg object-cover"
-                />
-
-                {/* 📄 Thông tin sản phẩm */}
-                <div className="flex-1">
-                  <h2 className="font-semibold text-[15px]">{sp?.ten}</h2>
-                  <p className="text-sm text-gray-600">{item.bien_the?.ten}</p>
-
-                  {item.json_tuy_chon &&
-                    Object.keys(item.json_tuy_chon).length > 0 && (
-                      <p className="text-sm text-gray-600">
-                        {Object.entries(item.json_tuy_chon)
-                          .map(([k, v]) => `${k}: ${v}`)
-                          .join(", ")}
-                      </p>
-                    )}
-
-                  {item.json_mon_them && item.json_mon_them.length > 0 && (
-                    <p className="text-sm text-gray-600">
-                      {item.json_mon_them.map((m) => m.ten).join(", ")}
-                    </p>
-                  )}
-
-                  {item.ghi_chu && (
-                    <p
-                      className="text-sm text-gray-500 truncate max-w-[420px]"
-                      title={item.ghi_chu}
-                    >
-                      Ghi chú: {item.ghi_chu}
-                    </p>
-                  )}
-
-                  <button
-                    onClick={() => handleEdit(item)}
-                    className="text-[#e8594f] text-sm font-medium mt-1 hover:underline"
-                  >
-                    Chỉnh sửa món
-                  </button>
-                </div>
-
-                {/* ⚙️ Số lượng + Xóa + Giá */}
-                <div className="flex flex-col items-end gap-2 justify-between h-full">
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-gray-400 hover:text-red-600"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() =>
-                        updateQuantity(item.id, (item.so_luong ?? 1) - 1)
-                      }
-                      className="px-3 text-gray-700  rounded"
-                    >
-                      <Minus size={14} />
-                    </button>
-                    <span>{item.so_luong ?? 1}</span>
-                    <button
-                      onClick={() =>
-                        updateQuantity(item.id, (item.so_luong ?? 1) + 1)
-                      }
-                      className="px-3 text-gray-700  rounded"
-                    >
-                      <Plus size={14} />
-                    </button>
-                  </div>
-
-                  <p className="text-red-600 font-semibold mt-2">
-                    {tong.toLocaleString("vi-VN")} đ
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 🧾 Bên phải - Thông tin đơn hàng (sticky) */}
-      <div
-        className="bg-white p-5 rounded-2xl shadow-sm  h-fit sticky top-[var(--header-h)]"
-        style={{ "--header-h": "84px" } as React.CSSProperties}
-      >
-        <h2 className="text-lg font-semibold mb-4">Thông tin đơn hàng</h2>
-        <div className="space-y-3 text-sm">
-          <div className="flex justify-between">
-            <span>
-              Tạm tính ({selectedItems.length}{" "}
-              {selectedItems.length > 1 ? "sản phẩm" : "sản phẩm"})
-            </span>
-            <span>{tongTien.toLocaleString("vi-VN")} đ</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Phí vận chuyển</span>
-            <span className="text-green-600 font-medium">Miễn phí</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Giảm giá</span>
-            <span>-</span>
-          </div>
-          <hr />
-          <div className="flex justify-between font-semibold text-base">
-            <span>Tổng cộng</span>
-            <span className="text-red-600">
-              {tongTien.toLocaleString("vi-VN")} đ
-            </span>
-          </div>
-          <p className="text-xs text-gray-500 text-right">
-            Đã bao gồm VAT (nếu có)
-          </p>
-
-          <button
-            disabled={selectedItems.length === 0}
-            className={`w-full py-3 rounded-full mt-2 font-semibold transition ${selectedItems.length === 0
+        <button
+          disabled={selectedItems.length === 0}
+          className={`w-full py-3 rounded-full mt-2 font-semibold transition ${
+            selectedItems.length === 0
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-[#e8594f] text-white hover:bg-[#d94b42]"
-              }`}
-          >
-            ĐẶT HÀNG
-          </button>
-        </div>
+          }`}
+        >
+          ĐẶT HÀNG
+        </button>
       </div>
-
-      {/* Popup sửa món */}
-      {showPopup && popupData && macDinh && (
-        <PopupSuaGioHang
-          data={popupData}
-          mac_dinh={macDinh}
-          onClose={() => setShowPopup(false)}
-          onUpdated={async () => {
-            await fetchCart();
-            await reloadCart();
-            setShowPopup(false);
-          }}
-        />
-      )}
     </div>
-  );
+
+    {/* Popup sửa món */}
+    {showPopup && popupData && macDinh && (
+      <PopupSuaGioHang
+        data={popupData}
+        mac_dinh={macDinh}
+        onClose={() => setShowPopup(false)}
+        onUpdated={async () => {
+          await fetchCart();
+          await reloadCart();
+          setShowPopup(false);
+        }}
+      />
+    )}
+  </div>
+);
+
+
 
 }

@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface CartContextType {
   count: number;
-  setCount: React.Dispatch<React.SetStateAction<number>>; // ✅ thêm dòng này
+  setCount: React.Dispatch<React.SetStateAction<number>>;
   reloadCart: () => Promise<void>;
 }
 

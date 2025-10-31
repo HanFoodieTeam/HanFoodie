@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React, { useMemo, useState } from "react";
@@ -240,8 +238,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
               <div className="flex items-center border rounded-full overflow-hidden">
                 <button
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="px-3 py-1"
-                >
+                  className="px-3 py-1">
 
                 </button>
                 <div className="px-3 py-1 bg-white">{qty}</div>
@@ -266,15 +263,13 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                     return (
                       <label
                         key={b.id}
-                        className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
-                      >
+                        className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer" >
                         <div className="flex items-center gap-3">
                           <div
                             className={`w-5 h-5 rounded-full border flex items-center justify-center ${checked
                               ? "bg-[#e8594f] border-[#e8594f]"
                               : "bg-white border-gray-300"
-                              }`}
-                          >
+                              }`}>
                             {checked && (
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                                 <circle cx="12" cy="12" r="5" fill="white" />
@@ -311,15 +306,13 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                     return (
                       <label
                         key={tc.id}
-                        className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
-                      >
+                        className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer">
                         <div className="flex items-center gap-3">
                           <div
                             className={`w-5 h-5 rounded-full border flex items-center justify-center ${checked
                               ? "bg-[#e8594f] border-[#e8594f]"
                               : "bg-white border-gray-300"
-                              }`}
-                          >
+                              }`} >
                             {checked && (
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                                 <circle cx="12" cy="12" r="5" fill="white" />
@@ -356,29 +349,25 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                     return (
                       <label
                         key={m.id}
-                        className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
-                      >
+                        className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer">
                         <div className="flex items-center gap-3">
                           <div
                             className={`w-5 h-5 rounded-full border flex items-center justify-center ${checked
                               ? "bg-[#e8594f] border-[#e8594f]"
                               : "bg-white border-gray-300"
-                              }`}
-                          >
+                              }`}>
                             {checked && (
                               <svg
                                 width="12"
                                 height="12"
                                 viewBox="0 0 24 24"
-                                fill="none"
-                              >
+                                fill="none">
                                 <path
                                   d="M20 6L9 17l-5-5"
                                   stroke="white"
                                   strokeWidth="2"
                                   strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
+                                  strokeLinejoin="round" />
                               </svg>
                             )}
                           </div>
@@ -414,14 +403,12 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
 
           {/* Footer */}
           <div className="border-t p-4 bg-white sticky bottom-0 rounded-b-2xl">
-            <div className="flex items-center justify-between gap-4">
-              <>
+            <div className="flex items-center justify-between gap-4"> <>
                 {/*  Nút Thêm vào giỏ */}
                 <button
                   onClick={handleAddToCart}
                   disabled={isAdding}
-                  className="w-full bg-[#6A0A0A] text-white py-3 rounded-lg font-semibold hover:bg-[#800000] transition"
-                >
+                  className="w-full bg-[#6A0A0A] text-white py-3 rounded-lg font-semibold hover:bg-[#800000] transition">
                   {isAdding ? "Đang thêm..." : "🛒 Thêm vào giỏ"}
                 </button>
 
@@ -431,8 +418,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                     <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md relative">
                       <button
                         onClick={() => setShowLogin(false)}
-                        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-                      >
+                        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700" >
                         ✕
                       </button>
                       <LoginForm
@@ -446,8 +432,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
 
               <button
                 onClick={handleBuyNow}
-                className="flex-1 ml-3 bg-[#D33C3C] hover:bg-[#b53030] text-white py-3 rounded-full font-medium flex items-center justify-center gap-3"
-              >
+                className="flex-1 ml-3 bg-[#D33C3C] hover:bg-[#b53030] text-white py-3 rounded-full font-medium flex items-center justify-center gap-3">
                 Mua hàng
                 <span className="ml-2 bg-white/10 px-3 py-1 rounded-full text-sm">
                   -{totalAll.toLocaleString("vi-VN")}đ
