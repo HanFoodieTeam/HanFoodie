@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GioHangModel, BienTheModel, SanPhamModel } from "@/app/lib/models";
+import { BienTheModel, GioHangModel, SanPhamModel } from "@/app/lib/models";
 import { getUserFromToken } from "@/app/lib/auth";
 import { IGioHang } from "@/app/lib/cautrucdata";
 
@@ -25,12 +25,17 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
           ],
         },
       ],
+      order: [["id", "desc"]],
     });
 
     const formatted: IGioHang[] = gioHangList.map((item) => {
-      const plain = item.toJSON() as IGioHang;
+      const plain = item.toJSON() as IGioHang & {
+        json_mon_them?: string | object | null;
+        json_tuy_chon?: string | object | null;
+      };
 
-      // 🔥 Parse an toàn: chỉ parse khi là string
+
+      //  Parse an toàn: chỉ parse khi là string
       const parsed_mon_them =
         typeof plain.json_mon_them === "string" && plain.json_mon_them.trim() !== ""
           ? JSON.parse(plain.json_mon_them)
@@ -57,26 +62,42 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 export async function POST(req: NextRequest) {
   try {
+
     const user = getUserFromToken(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) {
+      return NextResponse.json(
+        { message: "Bạn cần đăng nhập để thêm vào giỏ hàng." },
+        { status: 401 }
+      );
+    }
 
-    const body = await req.json();
-    const { id_bien_the, so_luong = 1, json_mon_them = null, json_tuy_chon = null } = body;
+    //  Nhận dữ liệu body từ client
+    const body: IGioHang = await req.json();
+    const { id_bien_the, so_luong, json_mon_them, json_tuy_chon, ghi_chu } =
+      body;
 
-    const newItem = await GioHangModel.create({
+    if (!id_bien_the) {
+      return NextResponse.json(
+        { message: "Thiếu thông tin sản phẩm hoặc số lượng." },
+        { status: 400 }
+      );
+    }
+
+    // Lưu vào DB (chưa có thanh_tien)
+    const item = await GioHangModel.create({
       id_nguoi_dung: user.id,
       id_bien_the,
       so_luong,
-      json_mon_them:
-        typeof json_mon_them === "string" ? json_mon_them : JSON.stringify(json_mon_them),
-      json_tuy_chon:
-        typeof json_tuy_chon === "string" ? json_tuy_chon : JSON.stringify(json_tuy_chon),
+      json_mon_them: JSON.stringify(json_mon_them || []),
+      json_tuy_chon: JSON.stringify(json_tuy_chon || []),
+      ghi_chu: ghi_chu,
     });
 
-    return NextResponse.json(newItem);
-  } catch (err: unknown) {
+    return NextResponse.json({ message: "Đã thêm vào giỏ hàng!", data: item });
+  } catch (error) {
+    console.error(" Lỗi khi thêm vào giỏ:", error);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Lỗi không xác định" },
+      { message: "Lỗi server khi thêm vào giỏ hàng." },
       { status: 500 }
     );
   }

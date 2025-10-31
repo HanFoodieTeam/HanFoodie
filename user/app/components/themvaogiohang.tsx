@@ -11,7 +11,11 @@ import {
   ILoaiTuyChon,
   ISanPham,
   ITuyChon,
+  INguoiDung,
 } from "@/app/lib/cautrucdata";
+import LoginForm from "./dangnhap";
+import { useCart } from "../context/giohangcontext";
+
 
 interface ILoaiTuyChonMoRong extends ILoaiTuyChon {
   tuy_chon?: ITuyChonMoRong[];
@@ -24,7 +28,7 @@ interface ITuyChonMoRong extends ITuyChon {
 interface ThemVaoGioHangProps {
   data: {
     san_pham: ISanPham;
-    bien_thes?: IBienThe[];
+    bien_the?: IBienThe[];
     mon_them?: IMonThem[];
     tuy_chon?: ILoaiTuyChonMoRong[];
   };
@@ -32,12 +36,12 @@ interface ThemVaoGioHangProps {
 }
 
 export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
-  const { san_pham, bien_thes = [], mon_them = [], tuy_chon = [] } = data || {};
+  const { san_pham, bien_the = [], mon_them = [], tuy_chon = [] } = data || {};
 
   // States
   const [qty, setQty] = useState(1);
   const [selectedBienThe, setSelectedBienThe] = useState<number | null>(
-    bien_thes.length ? bien_thes[0].id ?? null : null
+    bien_the.length ? bien_the[0].id ?? null : null
   );
 
   const [selectedTuyChon, setSelectedTuyChon] = useState<
@@ -67,7 +71,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
     let total = 0;
 
     if (selectedBienThe !== null) {
-      const bt = bien_thes.find((b) => b.id === selectedBienThe);
+      const bt = bien_the.find((b) => b.id === selectedBienThe);
       if (bt?.gia_them) total += bt.gia_them;
     }
 
@@ -84,7 +88,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
     });
 
     return total;
-  }, [selectedBienThe, selectedTuyChon, selectedMonThem, bien_thes, mon_them, tuy_chon]);
+  }, [selectedBienThe, selectedTuyChon, selectedMonThem, bien_the, mon_them, tuy_chon]);
 
   const totalAll =
     (Number(san_pham?.gia_goc || san_pham?.gia_goc || 0) + subtotalPerItem) *
@@ -94,21 +98,86 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
     setSelectedTuyChon((prev) => ({ ...prev, [loaiId]: tcId }));
   };
 
+  const [showLogin, setShowLogin] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+
+  const { reloadCart } = useCart();
+
+
+  //  Hàm thêm vào giỏ hàng
   const handleAddToCart = async () => {
-    console.log("🛒 Thêm vào giỏ:", {
+    const userData = localStorage.getItem("nguoi_dung");
+
+    //  Nếu chưa đăng nhập → hiện form login
+    if (!userData) {
+      setShowLogin(true);
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    const idNguoiDung = user.id;
+
+    const payload = {
       id_san_pham: san_pham?.id,
       id_bien_the: selectedBienThe,
       so_luong: qty,
-      json_mon_them: selectedMonThem,
-      json_tuy_chon: selectedTuyChon,
-      ghi_chu: ghiChu,
-      thanh_tien: totalAll,
-    });
-    onClose();
+      json_mon_them: selectedMonThem
+        .map((id) => {
+          const m = mon_them.find((x) => x.id === id);
+          return m ? { id: m.id, ten: m.ten, gia_them: m.gia_them } : null;
+        })
+        .filter(Boolean),
+      json_tuy_chon: Object.fromEntries(
+        Object.entries(selectedTuyChon).map(([loaiId, tuyChonId]) => {
+          const loai = tuy_chon.find((l) => l.id === Number(loaiId));
+          const tc = loai?.tuy_chon?.find((t) => t.id === tuyChonId);
+          return [loai?.ten || `loai_${loaiId}`, tc?.ten || null];
+        })
+      ),
+      ghi_chu: ghiChu || "",
+      id_nguoi_dung: idNguoiDung,
+    };
+
+    try {
+      setIsAdding(true);
+
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("/api/gio_hang", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, //  gửi token lên server
+        },
+        body: JSON.stringify(payload),
+      });
+      await reloadCart();
+
+      if (!res.ok) {
+        //  await reloadCart();
+        const err = await res.json();
+        alert(err.thong_bao || "Thêm giỏ hàng thất bại!");
+        return;
+      }
+
+      alert(" Đã thêm vào giỏ hàng!");
+      onClose();
+    } catch (error) {
+      alert(" Không thể kết nối đến server!");
+      console.error(error);
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  //  Sau khi đăng nhập thành công
+  const handleLoginSuccess = () => {
+    setShowLogin(false);
+    handleAddToCart(); //  tự động thêm lại giỏ hàng
   };
 
   const handleBuyNow = async () => {
-    console.log("💳 Mua ngay:", {
+    console.log(" Mua ngay:", {
       san_pham: san_pham?.id,
       qty,
       tong_tien: totalAll,
@@ -173,7 +242,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
                   className="px-3 py-1"
                 >
-                  −
+
                 </button>
                 <div className="px-3 py-1 bg-white">{qty}</div>
                 <button onClick={() => setQty((q) => q + 1)} className="px-3 py-1">
@@ -186,13 +255,13 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
           {/* Nội dung chọn */}
           <div className="p-4 space-y-4">
             {/* Biến thể */}
-            {bien_thes.length > 0 && (
+            {bien_the.length > 0 && (
               <div>
                 <h4 className="text-base font-semibold mb-2 border-b pb-2">
                   Độ cay (Chọn 1)
                 </h4>
                 <div className="space-y-2">
-                  {bien_thes.map((b) => {
+                  {bien_the.map((b) => {
                     const checked = selectedBienThe === b.id;
                     return (
                       <label
@@ -201,11 +270,10 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                              checked
-                                ? "bg-[#e8594f] border-[#e8594f]"
-                                : "bg-white border-gray-300"
-                            }`}
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center ${checked
+                              ? "bg-[#e8594f] border-[#e8594f]"
+                              : "bg-white border-gray-300"
+                              }`}
                           >
                             {checked && (
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -247,11 +315,10 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                              checked
-                                ? "bg-[#e8594f] border-[#e8594f]"
-                                : "bg-white border-gray-300"
-                            }`}
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center ${checked
+                              ? "bg-[#e8594f] border-[#e8594f]"
+                              : "bg-white border-gray-300"
+                              }`}
                           >
                             {checked && (
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -293,11 +360,10 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                              checked
-                                ? "bg-[#e8594f] border-[#e8594f]"
-                                : "bg-white border-gray-300"
-                            }`}
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center ${checked
+                              ? "bg-[#e8594f] border-[#e8594f]"
+                              : "bg-white border-gray-300"
+                              }`}
                           >
                             {checked && (
                               <svg
@@ -349,12 +415,34 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
           {/* Footer */}
           <div className="border-t p-4 bg-white sticky bottom-0 rounded-b-2xl">
             <div className="flex items-center justify-between gap-4">
-              <button
-                onClick={handleAddToCart}
-                className="flex-1 bg-[#f3a59a] hover:bg-[#f19b8f] text-white py-3 rounded-full font-medium"
-              >
-                Thêm vào giỏ hàng
-              </button>
+              <>
+                {/*  Nút Thêm vào giỏ */}
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isAdding}
+                  className="w-full bg-[#6A0A0A] text-white py-3 rounded-lg font-semibold hover:bg-[#800000] transition"
+                >
+                  {isAdding ? "Đang thêm..." : "🛒 Thêm vào giỏ"}
+                </button>
+
+                {/*  Modal đăng nhập */}
+                {showLogin && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md relative">
+                      <button
+                        onClick={() => setShowLogin(false)}
+                        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                      >
+                        ✕
+                      </button>
+                      <LoginForm
+                        onClose={() => setShowLogin(false)}
+                        onLoginSuccess={handleLoginSuccess}
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
 
               <button
                 onClick={handleBuyNow}
@@ -372,4 +460,5 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
     </AnimatePresence>
   );
 }
+
 

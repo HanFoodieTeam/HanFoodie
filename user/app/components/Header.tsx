@@ -6,8 +6,12 @@ import { Search, Heart, ShoppingBag, User, Menu, X } from "lucide-react";
 import LoginForm from "./dangnhap";
 import RegisterForm from "./dang_ky";
 import { INguoiDung } from "../lib/cautrucdata";
+import { useCart } from "../context/giohangcontext";
 
 export default function Header() {
+
+  const { count } = useCart();
+
   const [openMenu, setOpenMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -45,7 +49,7 @@ export default function Header() {
   };
 
   const handleDangXuat = () => {
-   localStorage.removeItem("nguoi_dung");
+    localStorage.removeItem("nguoi_dung");
     localStorage.removeItem("token");
     setNguoiDung(null);
     setUserOpen(false);
@@ -84,12 +88,14 @@ export default function Header() {
               <Heart className="w-6 h-6" />
             </Link>
 
-            <Link href="/gio_hang" className="relative">
-              <ShoppingBag className="w-6 h-6" />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                3
-              </span>
-            </Link>
+              <Link href="/gio_hang" className="relative">
+        <ShoppingBag className="w-6 h-6" />
+        {count > 0 && (
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            {count}
+          </span>
+        )}
+      </Link>
 
             {/* USER DROPDOWN */}
             <div
@@ -123,7 +129,7 @@ export default function Header() {
                       <Link href="/ho_so" className="flex px-4 py-2 hover:bg-gray-200 rounded-lg">
                         Hồ sơ
                       </Link>
-                       <Link href="/doi_mat_khau" className="flex px-4 py-2 hover:bg-gray-200 rounded-lg">
+                      <Link href="/doi_mat_khau" className="flex px-4 py-2 hover:bg-gray-200 rounded-lg">
                         Đổi mật khẩu
                       </Link>
                       <button
@@ -212,11 +218,12 @@ export default function Header() {
                   <Link href="/ho_so" onClick={() => setOpenMenu(false)} className="block py-2" >
                     Hồ sơ
                   </Link>
-                   <Link href="/doi_mat_khau" onClick={() => setOpenMenu(false)} className="block py-2" >
+                  <Link href="/doi_mat_khau" onClick={() => setOpenMenu(false)} className="block py-2" >
                     Đổi mật khẩu
                   </Link>
-                  <button onClick={() => { handleDangXuat(); setOpenMenu(false);
-                    }}
+                  <button onClick={() => {
+                    handleDangXuat(); setOpenMenu(false);
+                  }}
                     className="w-full text-left py-2 text-red-500"
                   >
                     Đăng xuất
@@ -228,7 +235,7 @@ export default function Header() {
                     className="block w-full text-left py-2" >
                     Đăng ký
                   </button>
-                  <button onClick={() => { setShowLogin(true); setOpenMenu(false);  }}
+                  <button onClick={() => { setShowLogin(true); setOpenMenu(false); }}
                     className="block w-full text-left py-2" >
                     Đăng nhập
                   </button>
