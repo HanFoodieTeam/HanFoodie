@@ -9,7 +9,7 @@ export interface AuthPayload {
 
 export function getUserFromToken(req: NextRequest): AuthPayload | null {
   try {
-    // ✅ Header trong Next.js luôn lowercase
+  
     const authHeader = req.headers.get("authorization");
     if (!authHeader?.startsWith("Bearer ")) return null;
 

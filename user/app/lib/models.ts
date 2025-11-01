@@ -87,8 +87,9 @@ export const GioHangModel = db.define(
     json_tuy_chon: { type: DataTypes.TEXT("long"), allowNull: true, },
     id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false, },
     id_bien_the: { type: DataTypes.INTEGER, allowNull: true, },
-    ghi_chu: { type: DataTypes.STRING, allowNull: true,
-},
+    ghi_chu: {
+      type: DataTypes.STRING, allowNull: true,
+    },
   },
   {
     tableName: "gio_hang",
@@ -202,10 +203,15 @@ export const DiaChiModel = db.define(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false },
-    so_nha: { type: DataTypes.STRING(255), allowNull: false },
     ten_duong: { type: DataTypes.STRING(255), allowNull: false },
     phuong: { type: DataTypes.STRING(255), allowNull: false },
     tinh: { type: DataTypes.STRING(255), allowNull: false },
+    mac_dinh: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    }
+
   },
   { tableName: "dia_chi", timestamps: false }
 );

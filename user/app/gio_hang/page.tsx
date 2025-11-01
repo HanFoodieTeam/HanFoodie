@@ -657,6 +657,9 @@ import {
 } from "../lib/cautrucdata";
 import { useCart } from "../context/giohangcontext";
 import PopupSuaGioHang from "../components/popupsuagiohang";
+import { useRouter } from "next/navigation";
+
+
 
 interface PopupData {
   san_pham: ISanPham;
@@ -675,6 +678,8 @@ interface MacDinhProps {
 }
 
 export default function TrangGioHang(): JSX.Element {
+  const router = useRouter();
+
   const { reloadCart, setCount } = useCart();
 
   const [gioHang, setGioHang] = useState<IGioHang[]>([]);
@@ -685,6 +690,12 @@ export default function TrangGioHang(): JSX.Element {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [popupData, setPopupData] = useState<PopupData | null>(null);
   const [macDinh, setMacDinh] = useState<MacDinhProps | null>(null);
+
+  const handleDatHang = () => {
+  const selected = gioHang.filter((item) => selectedItems.includes(item.id));
+  localStorage.setItem("donHangTam", JSON.stringify(selected));
+  router.push("/dat_hang");
+};
 
   //  Lấy danh sách giỏ hàng
   const fetchCart = async (): Promise<void> => {
@@ -1001,18 +1012,21 @@ export default function TrangGioHang(): JSX.Element {
         </p>
 
         <button
-          disabled={selectedItems.length === 0}
-          className={`w-full py-3 rounded-full mt-2 font-semibold transition ${
-            selectedItems.length === 0
-              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-              : "bg-[#e8594f] text-white hover:bg-[#d94b42]"
-          }`}
-        >
-          ĐẶT HÀNG
-        </button>
+  onClick={handleDatHang}
+  disabled={selectedItems.length === 0}
+  className={`w-full py-3 rounded-full mt-2 font-semibold transition ${
+    selectedItems.length === 0
+      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+      : "bg-[#e8594f] text-white hover:bg-[#d94b42]"
+  }`}
+>
+  ĐẶT HÀNG
+</button>
+
       </div>
     </div>
 
+  
     {/* Popup sửa món */}
     {showPopup && popupData && macDinh && (
       <PopupSuaGioHang
@@ -1028,7 +1042,5 @@ export default function TrangGioHang(): JSX.Element {
     )}
   </div>
 );
-
-
 
 }

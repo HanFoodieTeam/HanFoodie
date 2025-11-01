@@ -77,10 +77,10 @@ export interface IDanhMucMonThem {
 export interface IDiaChi {
   id: number;
   id_nguoi_dung: number;
-  so_nha: string;
   ten_duong: string;
   phuong: string;
   tinh: string;
+  mac_dinh:boolean |null
 }
 
 export interface IDonHang {
