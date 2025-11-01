@@ -145,11 +145,10 @@ export default function DatHangPage() {
   return (
     <div
       className="min-h-screen bg-[#fdf9f7] p-6 mt-[var(--header-h)]"
-      style={{ "--header-h": "60px" } as React.CSSProperties}
-    >
-      <div className="max-w-[80%] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-5">
+      style={{ "--header-h": "60px" } as React.CSSProperties}>
+<div className="max-w-[80%] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-5 items-start min-h-[80vh]">
 
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-3">
           {/*  Địa chỉ giao hàng */}
           <div className="bg-white p-4 rounded-2xl shadow-sm">
             <div className="flex justify-between items-center mb-3">
@@ -164,19 +163,19 @@ export default function DatHangPage() {
             {loadingDiaChi ? (
               <p className="text-gray-500 text-sm">Đang tải địa chỉ...</p>
             ) : diaChi && nguoiDung ? (<>
-                <div className="flex items-center flex-wrap gap-x-2">
-                  <p className="font-medium text-base">{nguoiDung.ho_ten}</p>
-                  <span className="text-gray-600 text-sm">| {nguoiDung.sdt}</span>
-                </div>
+              <div className="flex items-center flex-wrap gap-x-2">
+                <p className="font-medium text-base">{diaChi.ho_ten}</p>
+                <span className="text-gray-600 text-sm">| {diaChi.sdt}</span>
+              </div>
 
-                <p className="text-sm mt-1 text-gray-700">
-                  {diaChi.mac_dinh && (
-                    <span className="inline-block mr-2 px-2 py-[2px] text-xs bg-[#e8594f] text-white rounded-md">
-                      Mặc định
-                    </span>
-                  )}
-                  {diaChi.ten_duong}, Phường {diaChi.phuong}, {diaChi.tinh}
-                </p> </>
+              <p className="text-sm mt-1 text-gray-700">
+                {diaChi.mac_dinh && (
+                  <span className="inline-block mr-2 px-2 py-[2px] text-xs bg-[#e8594f] text-white rounded-md">
+                    Mặc định
+                  </span>
+                )}
+                {diaChi.ten_duong}, Phường {diaChi.phuong}, {diaChi.tinh}
+              </p> </>
             ) : (
               <p className="text-gray-500 text-sm">
                 Bạn chưa có địa chỉ
@@ -187,7 +186,7 @@ export default function DatHangPage() {
 
 
           {/*  Danh sách sản phẩm */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             {gioHang.map((item) => {
               const sp = item.bien_the?.san_pham;
               const giaGoc = sp?.gia_goc ?? 0;
@@ -203,7 +202,7 @@ export default function DatHangPage() {
                   <img
                     src={sp?.hinh || "/noing.png"}
                     alt={sp?.ten || "Sản phẩm"}
-                    className="w-[90px] h-[90px] rounded-xl object-cover"/>
+                    className="w-[90px] h-[90px] rounded-xl object-cover" />
                   <div className="flex-1">
                     <h2 className="font-semibold text-[15px]">{sp?.ten}</h2>
                     <p className="text-sm text-gray-600">{item.bien_the?.ten}</p>
@@ -260,7 +259,9 @@ export default function DatHangPage() {
         </div>
 
         {/*  Cột phải: Thông tin thanh toán (chiếm 1 phần) */}
-        <div className="bg-white p-5 rounded-2xl shadow-sm h-fit sticky top-5">
+        {/* <div className="bg-white p-4 rounded-2xl shadow-sm h-fit sticky top-5"> */}
+        <div className="bg-white p-4 rounded-2xl shadow-sm h-fit sticky top-[85px]">
+
           <h2 className="text-lg font-semibold mb-4">
             Chọn phương thức thanh toán
           </h2>

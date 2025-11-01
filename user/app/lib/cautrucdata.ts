@@ -80,7 +80,9 @@ export interface IDiaChi {
   ten_duong: string;
   phuong: string;
   tinh: string;
-  mac_dinh:boolean |null
+  mac_dinh:boolean |null;
+  ho_ten: string;
+  sdt: string;
 }
 
 export interface IDonHang {
