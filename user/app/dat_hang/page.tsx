@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CreditCard, Wallet } from "lucide-react";
+import { CreditCard, Wallet, TicketPercent, Tag } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { IDiaChi } from "@/app/lib/cautrucdata";
+import { IDiaChi, IMaGiamGia } from "@/app/lib/cautrucdata";
 import PopupDiaChi from "../components/PopupDiaChi";
+import PopupMaGiamGia from "../components/Popupmagiamgia";
 
 interface IDonHangTam {
   id: number;
@@ -39,6 +41,9 @@ export default function DatHangPage() {
   const [loadingDiaChi, setLoadingDiaChi] = useState(true);
 
   const [showPopup, setShowPopup] = useState(false);
+  // mã giảm giá
+  const [showMaGiam, setShowMaGiam] = useState(false);
+  const [maGiamChon, setMaGiamChon] = useState<IMaGiamGia | null>(null);
 
 
   //  Lấy dữ liệu người dùng & giỏ hàng từ localStorage
@@ -146,7 +151,7 @@ export default function DatHangPage() {
     <div
       className="min-h-screen  p-4 "
       style={{ "--header-h": "55px" } as React.CSSProperties}>
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start min-h-[80vh]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start min-h-[80vh]">
 
         <div className="lg:col-span-2 space-y-3">
           {/*  Địa chỉ giao hàng */}
@@ -295,21 +300,39 @@ export default function DatHangPage() {
               <span>Tạm tính ({gioHang.length} sản phẩm)</span>
               <span>{tongTien.toLocaleString("vi-VN")} đ</span>
             </div>
+
             <div className="flex justify-between">
               <span>Phí vận chuyển</span>
               <span className="text-green-600 font-medium">Miễn phí</span>
             </div>
+
+            {/*  Mã giảm giá */}
+            <div
+              className="flex items-center justify-between border rounded-xl p-2 cursor-pointer hover:bg-[#fff5f4]"
+              onClick={() => setShowMaGiam(true)}
+            >
+              <div className="flex items-center gap-2 text-gray-700">
+                <Tag className="text-[#e8594f]" size={18} />
+                <span>{maGiamChon ? maGiamChon.ten : "Sử dụng mã giảm giá"}</span>
+              </div>
+              <span className="text-sm text-blue-600 font-medium hover:underline">
+                Xem
+              </span>
+            </div>
+
             <div className="flex justify-between">
               <span>Giảm giá</span>
               <span>-</span>
             </div>
             <hr />
+
             <div className="flex justify-between font-semibold text-base">
               <span>Tổng cộng</span>
               <span className="text-[#e8594f]">
                 {tongCong.toLocaleString("vi-VN")} đ
               </span>
             </div>
+
             <p className="text-xs text-gray-500 text-right">
               Đã bao gồm VAT (nếu có)
             </p>
@@ -321,8 +344,18 @@ export default function DatHangPage() {
               XÁC NHẬN ĐẶT HÀNG
             </button>
           </div>
+
         </div>
       </div>
+
+      <PopupMaGiamGia
+        open={showMaGiam}
+        onClose={() => setShowMaGiam(false)}
+        onSelect={(ma) => {
+          setMaGiamChon(ma);
+          console.log("Mã đã chọn:", ma);
+        }}
+      />
 
       {/* Popup chọn địa chỉ */}
       <PopupDiaChi

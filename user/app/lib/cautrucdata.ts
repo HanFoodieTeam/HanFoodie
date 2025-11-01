@@ -60,6 +60,7 @@ export interface IDanhMuc {
   an_hien: boolean;
   hinh?: string | null;
   thu_tu: number;
+  so_san_pham: number;
 }
 
 export interface IDanhMucLoaiTuyChon {
@@ -153,16 +154,17 @@ export interface IMaGiamGia {
   id: number;
   ten: string;
   gia_tri_giam: number;
-  loai_giam_gia?: boolean;
+  loai_giam_gia: 0 | 1; // 0: giảm theo tiền, 1: giảm theo %
   gia_tri_toi_thieu: number;
-  so_luong?: number;
-  bat_dau: string;
-  ket_thuc: string;
-  an_hien?: boolean;
+  so_luong: number;
+  bat_dau: Date;
+  ket_thuc: Date;
+  an_hien: 0 | 1;
   ma_so: string;
-  mo_ta?: string | null;
+  mo_ta?: string;
   gia_tri_giam_toi_da?: number | null;
 }
+
 
 export interface IMonThem {
   id: number;
