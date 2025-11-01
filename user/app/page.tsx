@@ -46,7 +46,8 @@ export default function TrangChuPage() {
     );
 
   return (
-    <main className="pt-[72px] bg-gray-50">
+    // bg-gray-50
+    <main className="">
       {/* BANNER CHÍNH */}
       <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
         <img
@@ -61,7 +62,7 @@ export default function TrangChuPage() {
       </section>
 
       {/* NỘI DUNG CHÍNH */}
-      <div className="max-w-[80%] mx-auto py-10 space-y-4">
+      <div className=" py-10 space-y-4 ">
         {/* DANH MỤC */}
         <DanhMucSection data={danhMuc} />
 

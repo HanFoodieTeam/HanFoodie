@@ -144,9 +144,9 @@ export default function DatHangPage() {
 
   return (
     <div
-      className="min-h-screen bg-[#fdf9f7] p-6 mt-[var(--header-h)]"
-      style={{ "--header-h": "60px" } as React.CSSProperties}>
-<div className="max-w-[80%] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-5 items-start min-h-[80vh]">
+      className="min-h-screen  p-4 "
+      style={{ "--header-h": "55px" } as React.CSSProperties}>
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start min-h-[80vh]">
 
         <div className="lg:col-span-2 space-y-3">
           {/*  Địa chỉ giao hàng */}
@@ -259,8 +259,7 @@ export default function DatHangPage() {
         </div>
 
         {/*  Cột phải: Thông tin thanh toán (chiếm 1 phần) */}
-        {/* <div className="bg-white p-4 rounded-2xl shadow-sm h-fit sticky top-5"> */}
-        <div className="bg-white p-4 rounded-2xl shadow-sm h-fit sticky top-[85px]">
+        <div className="bg-white p-4 rounded-2xl shadow-sm h-fit sticky top-[90px]">
 
           <h2 className="text-lg font-semibold mb-4">
             Chọn phương thức thanh toán
