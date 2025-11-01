@@ -12,7 +12,7 @@ export default function DanhMucSection({ data }: { data: IDanhMuc[] }) {
   const scrollRight = () => scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
 
   return (
-    <section className="relative -mt-6 "> {/* Kéo gần banner */}
+    <section className="relative -mt-6 bg-gray-50"> {/* Kéo gần banner */}
       
       {/* Nút trái */}
       <button
