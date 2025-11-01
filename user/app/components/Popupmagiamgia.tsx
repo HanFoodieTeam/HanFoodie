@@ -90,7 +90,7 @@ export default function PopupMaGiamGia({ open, onClose, onSelect }: Props) {
                       {item.ten}
                     </p>
                     <p className="text-sm text-gray-600 mt-1">
-                      {item.loai_giam_gia === 1
+                      {item.loai_giam_gia === true
                         ? `Giảm ${item.gia_tri_giam}%`
                         : `Giảm ${item.gia_tri_giam.toLocaleString("vi-VN")}đ`}
                       {item.gia_tri_giam_toi_da

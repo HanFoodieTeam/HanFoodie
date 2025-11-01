@@ -10,6 +10,7 @@ export async function GET() {
         "ten",
         "slug",
         "hinh",
+        "an_hien",
         [
           // ⚠️ alias phải trùng với hasMany: "san_pham"
           Sequelize.fn("COUNT", Sequelize.col("san_pham.id")),
@@ -19,13 +20,13 @@ export async function GET() {
       include: [
         {
           model: SanPhamModel,
-          as: "san_pham", // ✅ trùng alias
+          as: "san_pham", 
           attributes: [],
           required: false,
-          where: { an_hien: 1 }, // chỉ đếm sản phẩm đang hiển thị
+          where: { an_hien: true }, 
         },
       ],
-      where: { an_hien: 1 }, // chỉ lấy danh mục đang hiển thị
+      where: { an_hien: true }, 
       group: ["DanhMuc.id"],
       order: [["id", "DESC"]],
     });

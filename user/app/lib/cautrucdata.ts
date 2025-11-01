@@ -154,12 +154,12 @@ export interface IMaGiamGia {
   id: number;
   ten: string;
   gia_tri_giam: number;
-  loai_giam_gia: 0 | 1; // 0: giảm theo tiền, 1: giảm theo %
+  loai_giam_gia: boolean; // 0: giảm theo tiền, 1: giảm theo %
   gia_tri_toi_thieu: number;
   so_luong: number;
   bat_dau: Date;
   ket_thuc: Date;
-  an_hien: 0 | 1;
+  an_hien: boolean;
   ma_so: string;
   mo_ta?: string;
   gia_tri_giam_toi_da?: number | null;

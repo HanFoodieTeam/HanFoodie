@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
     const sp_arr = await SanPhamModel.findAll({
+        where:{ an_hien: true},
         order: [['luot_xem', 'desc']], limit :5,
        
     });

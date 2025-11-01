@@ -10,7 +10,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     const maGiamRaw = await MaGiamGiaModel.findAll({
       where: {
-        an_hien: 1, // chỉ lấy mã đang hiển thị
+        an_hien: true, // chỉ lấy mã đang hiển thị
         bat_dau: { [Op.lte]: today }, // đã bắt đầu
         ket_thuc: { [Op.gte]: today }, // chưa kết thúc
         so_luong: { [Op.gt]: 0 }, // còn số lượng

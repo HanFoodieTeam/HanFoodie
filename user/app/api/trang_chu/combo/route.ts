@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const sp_arr = await SanPhamModel.findAll({
-      where: { id_danh_muc: 11},
+      where: { id_danh_muc: 11, an_hien: true},
       order: [["luot_xem", "desc"]],
       limit: 6, 
     });
