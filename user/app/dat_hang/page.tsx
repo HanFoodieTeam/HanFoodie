@@ -311,12 +311,16 @@ export default function DatHangPage() {
               className="flex items-center justify-between border rounded-xl p-2 cursor-pointer hover:bg-[#fff5f4]"
               onClick={() => setShowMaGiam(true)}
             >
-              <div className="flex items-center gap-2 text-gray-700">
+              <div className="flex items-center gap-2 text-gray-700 ">
                 <Tag className="text-[#e8594f]" size={18} />
-                <span>{maGiamChon ? maGiamChon.ten : "Sử dụng mã giảm giá"}</span>
+                <span
+                  className="truncate max-w-[160px] block"
+                  title={maGiamChon ? maGiamChon.ten : "Sử dụng mã giảm giá"}>
+                  {maGiamChon ? maGiamChon.ten : "Sử dụng mã giảm giá"}
+                </span>
               </div>
               <span className="text-sm text-blue-600 font-medium hover:underline">
-                Xem
+                Sử dụng
               </span>
             </div>
 
