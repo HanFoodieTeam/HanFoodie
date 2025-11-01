@@ -61,12 +61,11 @@ export default function LoginForm({ onClose, onLoginSuccess }: LoginFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#6A0A0A] text-white py-2 rounded-lg hover:bg-[#800000] transition"
-      >
+        className="w-full bg-[#6A0A0A] text-white py-2 rounded-lg hover:bg-[#800000] transition">
         {loading ? "Đang xử lý..." : "Đăng nhập"}
       </button>
 
-      {thongBao && <p className="text-center text-sm text-gray-600">{thongBao}</p>}
+      {/* {thongBao && <p className="text-center text-sm text-gray-600">{thongBao}</p>} */}
     </form>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./components/Header";
+import { CartProvider } from "./context/giohangcontext";
 
 
 export const metadata: Metadata = {
@@ -14,10 +15,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+     <html lang="vi">
       <body>
-        <Header></Header>
-        {children}
+        {/* 🟢 Bao toàn bộ app bằng CartProvider */}
+        <CartProvider>
+          <Header />  {/* Header chỉ render 1 lần duy nhất */}
+          <main>{children}</main>
+        </CartProvider>
       </body>
     </html>
   );

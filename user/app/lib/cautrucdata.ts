@@ -1,7 +1,7 @@
 // interfaces.ts
 
 export interface IBaiViet {
-id:number;
+  id: number;
   tieu_de: string;
   noi_dung: string;
   hinh?: string | null;
@@ -13,7 +13,7 @@ id:number;
 }
 
 export interface IBanner {
-id:number;
+  id: number;
   hinh: string;
   mo_ta?: string | null;
   link?: string | null;
@@ -21,18 +21,18 @@ id:number;
 }
 
 export interface IBienThe {
-id:number;
+  id: number;
   ten: string;
   trang_thai: boolean;
   gia_them?: number | null;
   id_san_pham: number;
 
-     san_pham?: ISanPham;
+  san_pham?: ISanPham;
 
 }
 
 export interface IChiTietDonHang {
-id:number;
+  id: number;
   don_gia: number;
   so_luong: number;
   json_tuy_chon?: string | null;
@@ -43,7 +43,7 @@ id:number;
 }
 
 export interface IDanhGia {
-id:number;
+  id: number;
   noi_dung?: string | null;
   thoi_gian: string;
   sao: number;
@@ -54,7 +54,7 @@ id:number;
 }
 
 export interface IDanhMuc {
-id:number;
+  id: number;
   ten: string;
   slug?: string;
   an_hien: boolean;
@@ -63,28 +63,28 @@ id:number;
 }
 
 export interface IDanhMucLoaiTuyChon {
-id:number;
+  id: number;
   id_loai_tuy_chon?: number | null;
   id_danh_muc?: number | null;
 }
 
 export interface IDanhMucMonThem {
-id:number;
+  id: number;
   id_mon_them?: number | null;
   id_danh_muc?: number | null;
 }
 
 export interface IDiaChi {
-id:number;
+  id: number;
   id_nguoi_dung: number;
-  so_nha: string;
   ten_duong: string;
   phuong: string;
   tinh: string;
+  mac_dinh:boolean |null
 }
 
 export interface IDonHang {
-id:number;
+  id: number;
   ghi_chu?: string | null;
   dia_chi: string;
   id_ma_giam_gia: number;
@@ -100,18 +100,6 @@ id:number;
   so_tien_thanh_toan: number;
 }
 
-// export interface IGioHang {
-// id:number;
-//   so_luong?: number;
-//   json_mon_them?: string | null;
-//   json_tuy_chon?: string | null;
-//   id_nguoi_dung: number;
-//   id_bien_the?: number | null;
-
-//    bien_the?: IBienThe;
-// }
-
-
 export interface IGioHang {
   id: number;
   so_luong: number;
@@ -119,6 +107,8 @@ export interface IGioHang {
   json_tuy_chon?: Record<string, string> | null; // key: loại tùy chọn, value: giá trị
   id_nguoi_dung: number;
   id_bien_the?: number | null;
+  ghi_chu?: string | null;
+
 
   bien_the?: {
     id: number;
@@ -135,7 +125,7 @@ export interface IGioHang {
 
 
 export interface IHinh {
-id:number;
+  id: number;
   hinh?: string | null;
   ngay_dang?: string | null;
   thu_tu?: number | null;
@@ -143,7 +133,7 @@ id:number;
 }
 
 export interface ILoaiBaiViet {
-id:number;
+  id: number;
   ten_loai: string;
   an_hien: boolean;
   slug?: string | null;
@@ -151,14 +141,14 @@ id:number;
 }
 
 export interface ILoaiTuyChon {
-id:number;
+  id: number;
   ten: string;
   thu_tu?: number | null;
   an_hien?: boolean;
 }
 
 export interface IMaGiamGia {
-id:number;
+  id: number;
   ten: string;
   gia_tri_giam: number;
   loai_giam_gia?: boolean;
@@ -173,7 +163,7 @@ id:number;
 }
 
 export interface IMonThem {
-id:number;
+  id: number;
   ten: string;
   gia_them: number;
   loai_mon: number;
@@ -181,7 +171,7 @@ id:number;
 }
 
 export interface INguoiDung {
-id:number;
+  id?: number;
   ho_ten: string;
   sdt?: number | null;
   email: string;
@@ -194,8 +184,10 @@ id:number;
   ngay_tao?: Date | null;
 }
 
+
+
 export interface ISanPham {
-id:number;
+  id: number;
   ten: string;
   gia_goc: number;
   slug?: string | null;
@@ -211,14 +203,14 @@ id:number;
 }
 
 export interface ITuyChon {
-id:number;
+  id: number;
   ten: string;
   an_hien: boolean;
   id_loai_tuy_chon: number;
 }
 
 export interface IYeuThich {
-id:number;
+  id: number;
   id_nguoi_dung: number;
   id_san_pham: number;
 }

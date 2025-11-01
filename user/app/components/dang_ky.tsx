@@ -36,18 +36,19 @@ export default function RegisterForm({
     if (!res.ok) {
       setThongBao(data.thong_bao);
     } else {
-      
-      setThongBao(" Đăng ký thành công!");
+      setThongBao("Đăng ký thành công!");
       setDangThanhCong(true);
 
-      const nguoiDungMoi: INguoiDung = { ho_ten, email, sdt, mat_khau };
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      const nguoiDungMoi: INguoiDung = data.nguoi_dung;
       onRegisterSuccess(nguoiDungMoi);
 
-      //  Chờ 1 giây rồi mới đóng form
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+      setTimeout(() => onClose(), 2000);
     }
+
   };
 
   return (
@@ -60,8 +61,7 @@ export default function RegisterForm({
         value={ho_ten}
         onChange={(e) => setHoTen(e.target.value)}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong}
-      />
+        disabled={dangThanhCong} />
 
       <input
         type="email"
@@ -69,8 +69,7 @@ export default function RegisterForm({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong}
-      />
+        disabled={dangThanhCong} />
 
       <input
         type="number"
@@ -78,8 +77,7 @@ export default function RegisterForm({
         value={sdt ?? ""}
         onChange={(e) => setSdt(Number(e.target.value))}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong}
-      />
+        disabled={dangThanhCong} />
 
       <input
         type="password"
@@ -87,8 +85,7 @@ export default function RegisterForm({
         value={mat_khau}
         onChange={(e) => setMatKhau(e.target.value)}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong}
-      />
+        disabled={dangThanhCong} />
 
       <input
         type="password"
@@ -96,28 +93,24 @@ export default function RegisterForm({
         value={go_lai_mat_khau}
         onChange={(e) => setGoLaiMatKhau(e.target.value)}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong}
-      />
+        disabled={dangThanhCong} />
 
-      {thongBao && (
+      {/* {thongBao && (
         <p
           className={`text-center text-sm ${
             dangThanhCong ? "text-green-600 font-medium" : "text-red-500"
-          }`}
-        >
+          }`}>
           {thongBao}
         </p>
-      )}
+      )} */}
 
       <button
         type="submit"
         disabled={dangThanhCong}
-        className={`w-full p-2 rounded text-white transition-all ${
-          dangThanhCong
+        className={`w-full p-2 rounded text-white transition-all ${dangThanhCong
             ? "bg-green-600 cursor-not-allowed"
             : "bg-[#6A0A0A] hover:opacity-90"
-        }`}
-      >
+          }`}>
         {dangThanhCong ? " Đăng ký thành công" : "Đăng ký"}
       </button>
     </form>
