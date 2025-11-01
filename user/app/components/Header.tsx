@@ -69,7 +69,7 @@ export default function Header() {
           {/* NAV DESKTOP */}
           <nav className="hidden md:flex space-x-8 text-lg">
             <Link href="/">Trang chủ</Link>
-            <Link href="/san-pham">Sản phẩm</Link>
+            <Link href="/san_pham">Sản phẩm</Link>
             <Link href="/tin-tuc">Tin tức</Link>
             <Link href="/lien-he">Liên hệ</Link>
           </nav>
