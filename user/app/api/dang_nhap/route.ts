@@ -38,7 +38,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const trangThai = Number(nguoiDung.getDataValue("trang_thai") ?? 1);
     if (trangThai === 0) {
       return NextResponse.json(
-        { thong_bao: "Tài khoản bị khóa" },
+        { thong_bao: "Tài khoản của bạn bị khóa" },
         { status: 403 }
       );
     }
