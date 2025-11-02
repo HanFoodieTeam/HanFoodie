@@ -9,8 +9,10 @@ export async function GET() {
         {
           model: SanPhamModel,
           as: "san_pham",
+          where:{an_hien:true},
         },
       ],
+      where:{ an_hien: true},
       order: [["id", "ASC"]],
     });
 

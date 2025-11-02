@@ -168,38 +168,76 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
     }
   };
 
+  //mua hàng
+  const handleBuyNow = async (): Promise<void> => {
+    const userData = localStorage.getItem("nguoi_dung");
+
+    if (!userData) {
+      setShowLogin(true);
+      return;
+    }
+
+    const user = JSON.parse(userData);
+
+    const bienTheChon = bien_the.find((b) => b.id === selectedBienThe);
+
+    const item = {
+      id: Date.now(),
+      so_luong: qty,
+      bien_the: {
+        ...bienTheChon,
+        san_pham: {
+          ten: san_pham.ten,
+          hinh: san_pham.hinh || "/noing.png",
+          gia_goc: san_pham.gia_goc ?? 0,
+        },
+      },
+      json_mon_them: selectedMonThem
+        .map((id) => {
+          const m = mon_them.find((x) => x.id === id);
+          return m
+            ? {
+              ten: m.ten,
+              gia_them: m.gia_them ?? 0,
+            }
+            : null;
+        })
+        .filter(Boolean),
+      json_tuy_chon: Object.fromEntries(
+        Object.entries(selectedTuyChon).map(([loaiId, tuyChonId]) => {
+          const loai = tuy_chon.find((l) => l.id === Number(loaiId));
+          const tc = loai?.tuy_chon?.find((t) => t.id === tuyChonId);
+          return [loai?.ten || `loai_${loaiId}`, tc?.ten || ""];
+        })
+      ),
+    };
+
+    localStorage.setItem("donHangTam", JSON.stringify([item]));
+    window.location.href = "/dat_hang";
+  };
+
+
   //  Sau khi đăng nhập thành công
   const handleLoginSuccess = () => {
     setShowLogin(false);
     handleAddToCart(); //  tự động thêm lại giỏ hàng
   };
 
-  const handleBuyNow = async () => {
-    console.log(" Mua ngay:", {
-      san_pham: san_pham?.id,
-      qty,
-      tong_tien: totalAll,
-    });
-    onClose();
-  };
+
 
   return (
     <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/40 p-4"
+      <motion.div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/40 p-4"
         onClick={onClose}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        <motion.div
-          className="relative bg-white rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl"
+        exit={{ opacity: 0 }}>
+        <motion.div className="relative bg-white rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl"
           onClick={(e) => e.stopPropagation()}
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          transition={{ duration: 0.25 }}
-        >
+          transition={{ duration: 0.25 }}>
           {/* Header */}
           <div className="flex items-center gap-3 p-4 border-b">
             <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
@@ -209,8 +247,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                   alt={san_pham.ten}
                   width={80}
                   height={80}
-                  className="object-cover"
-                />
+                  className="object-cover" />
               ) : (
                 <div className="bg-gray-100 w-full h-full" />
               )}
@@ -285,8 +322,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                           type="radio"
                           className="hidden"
                           checked={checked}
-                          onChange={() => setSelectedBienThe(b.id ?? null)}
-                        />
+                          onChange={() => setSelectedBienThe(b.id ?? null)} />
                       </label>
                     );
                   })}
@@ -330,8 +366,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                           type="radio"
                           className="hidden"
                           checked={checked}
-                          onChange={() => handleSelectTuyChon(loai.id!, tc.id!)}
-                        />
+                          onChange={() => handleSelectTuyChon(loai.id!, tc.id!)} />
                       </label>
                     );
                   })}
@@ -357,17 +392,8 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                               : "bg-white border-gray-300"
                               }`}>
                             {checked && (
-                              <svg
-                                width="12"
-                                height="12"
-                                viewBox="0 0 24 24"
-                                fill="none">
-                                <path
-                                  d="M20 6L9 17l-5-5"
-                                  stroke="white"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round" />
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             )}
                           </div>
@@ -380,8 +406,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                           type="checkbox"
                           className="hidden"
                           checked={checked}
-                          onChange={() => toggleMonThem(m.id!)}
-                        />
+                          onChange={() => toggleMonThem(m.id!)} />
                       </label>
                     );
                   })}
@@ -396,39 +421,37 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                 value={ghiChu}
                 onChange={(e) => setGhiChu(e.target.value)}
                 placeholder="Ghi chú cho cửa hàng..."
-                className="w-full border rounded-md p-2 h-20 resize-none"
-              />
+                className="w-full border rounded-md p-2 h-20 resize-none"/>
             </div>
           </div>
 
           {/* Footer */}
           <div className="border-t p-4 bg-white sticky bottom-0 rounded-b-2xl">
             <div className="flex items-center justify-between gap-4"> <>
-                {/*  Nút Thêm vào giỏ */}
-                <button
-                  onClick={handleAddToCart}
-                  disabled={isAdding}
-                  className="w-full bg-[#6A0A0A] text-white py-3 rounded-lg font-semibold hover:bg-[#800000] transition">
-                  {isAdding ? "Đang thêm..." : "🛒 Thêm vào giỏ"}
-                </button>
+              {/*  Nút Thêm vào giỏ */}
+              <button
+                onClick={handleAddToCart}
+                disabled={isAdding}
+                className="w-full bg-[#6A0A0A] text-white py-3 rounded-lg font-semibold hover:bg-[#800000] transition">
+                {isAdding ? "Đang thêm..." : "🛒 Thêm vào giỏ"}
+              </button>
 
-                {/*  Modal đăng nhập */}
-                {showLogin && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md relative">
-                      <button
-                        onClick={() => setShowLogin(false)}
-                        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700" >
-                        ✕
-                      </button>
-                      <LoginForm
-                        onClose={() => setShowLogin(false)}
-                        onLoginSuccess={handleLoginSuccess}
-                      />
-                    </div>
+              {/*  Modal đăng nhập */}
+              {showLogin && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                  <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md relative">
+                    <button
+                      onClick={() => setShowLogin(false)}
+                      className="absolute top-3 right-3 text-gray-500 hover:text-gray-700" >
+                      ✕
+                    </button>
+                    <LoginForm
+                      onClose={() => setShowLogin(false)}
+                      onLoginSuccess={handleLoginSuccess}
+                    />
                   </div>
-                )}
-              </>
+                </div>
+              )}</>
 
               <button
                 onClick={handleBuyNow}

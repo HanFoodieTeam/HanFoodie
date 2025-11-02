@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { INguoiDung } from "../lib/cautrucdata";
+import LoginForm from "./dangnhap"; // ✅ import form đăng nhập
 
 interface RegisterFormProps {
   onClose: () => void;
@@ -12,6 +13,8 @@ export default function RegisterForm({
   onClose,
   onRegisterSuccess,
 }: RegisterFormProps) {
+  const [showLogin, setShowLogin] = useState(false); // ✅ bật form đăng nhập
+
   const [ho_ten, setHoTen] = useState("");
   const [email, setEmail] = useState("");
   const [sdt, setSdt] = useState<number | undefined>();
@@ -48,8 +51,17 @@ export default function RegisterForm({
 
       setTimeout(() => onClose(), 2000);
     }
-
   };
+
+  // ✅ Nếu bấm “Đăng nhập” thì hiển thị lại LoginForm
+  if (showLogin) {
+    return (
+      <LoginForm
+        onClose={onClose}
+        onLoginSuccess={onRegisterSuccess}
+      />
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
@@ -61,7 +73,8 @@ export default function RegisterForm({
         value={ho_ten}
         onChange={(e) => setHoTen(e.target.value)}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong} />
+        disabled={dangThanhCong}
+      />
 
       <input
         type="email"
@@ -69,7 +82,8 @@ export default function RegisterForm({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong} />
+        disabled={dangThanhCong}
+      />
 
       <input
         type="number"
@@ -77,7 +91,8 @@ export default function RegisterForm({
         value={sdt ?? ""}
         onChange={(e) => setSdt(Number(e.target.value))}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong} />
+        disabled={dangThanhCong}
+      />
 
       <input
         type="password"
@@ -85,7 +100,8 @@ export default function RegisterForm({
         value={mat_khau}
         onChange={(e) => setMatKhau(e.target.value)}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong} />
+        disabled={dangThanhCong}
+      />
 
       <input
         type="password"
@@ -93,26 +109,32 @@ export default function RegisterForm({
         value={go_lai_mat_khau}
         onChange={(e) => setGoLaiMatKhau(e.target.value)}
         className="border w-full p-2 rounded"
-        disabled={dangThanhCong} />
-
-      {/* {thongBao && (
-        <p
-          className={`text-center text-sm ${
-            dangThanhCong ? "text-green-600 font-medium" : "text-red-500"
-          }`}>
-          {thongBao}
-        </p>
-      )} */}
+        disabled={dangThanhCong}
+      />
 
       <button
         type="submit"
         disabled={dangThanhCong}
-        className={`w-full p-2 rounded text-white transition-all ${dangThanhCong
+        className={`w-full p-2 rounded text-white transition-all ${
+          dangThanhCong
             ? "bg-green-600 cursor-not-allowed"
             : "bg-[#6A0A0A] hover:opacity-90"
-          }`}>
-        {dangThanhCong ? " Đăng ký thành công" : "Đăng ký"}
+        }`}
+      >
+        {dangThanhCong ? "Đăng ký thành công" : "Đăng ký"}
       </button>
+
+      {/* 🔹 Thêm nút “Đăng nhập” */}
+      <p className="text-center text-sm text-gray-600">
+        Đã có tài khoản?{" "}
+        <button
+          type="button"
+          onClick={() => setShowLogin(true)} // ✅ mở form đăng nhập
+          className="text-[#6A0A0A] hover:underline font-medium"
+        >
+          Đăng nhập
+        </button>
+      </p>
     </form>
   );
 }

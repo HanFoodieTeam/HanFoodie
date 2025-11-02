@@ -1,10 +1,39 @@
-import { DanhMucModel } from "@/app/lib/models";
 import { NextResponse } from "next/server";
+import { DanhMucModel, SanPhamModel } from "@/app/lib/models";
+import { Sequelize } from "sequelize";
 
 export async function GET() {
-    const sp_arr = await DanhMucModel.findAll({
-        order: [['id', 'desc']],
-       
+  try {
+    const danh_mucs = await DanhMucModel.findAll({
+      attributes: [
+        "id",
+        "ten",
+        "slug",
+        "hinh",
+        "an_hien",
+        [
+          // ⚠️ alias phải trùng với hasMany: "san_pham"
+          Sequelize.fn("COUNT", Sequelize.col("san_pham.id")),
+          "so_san_pham"
+        ],
+      ],
+      include: [
+        {
+          model: SanPhamModel,
+          as: "san_pham", 
+          attributes: [],
+          required: false,
+          where: { an_hien: true }, 
+        },
+      ],
+      where: { an_hien: true }, 
+      group: ["DanhMuc.id"],
+      order: [["id", "DESC"]],
     });
-    return NextResponse.json(sp_arr);
+
+    return NextResponse.json(danh_mucs);
+  } catch (error) {
+    console.error("❌ Lỗi khi lấy danh mục:", error);
+    return NextResponse.json({ message: "Lỗi máy chủ", error: String(error) }, { status: 500 });
+  }
 }
