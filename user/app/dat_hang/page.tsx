@@ -328,8 +328,7 @@ export default function DatHangPage() {
             {/*  Mã giảm giá */}
             <div
               className="flex items-center justify-between border rounded-xl p-2 cursor-pointer hover:bg-[#fff5f4]"
-              onClick={() => setShowMaGiam(true)}
->
+              onClick={() => setShowMaGiam(true)}>
               <div className="flex items-center gap-2 text-gray-700 ">
                 <Tag className="text-[#e8594f]" size={18} />
                 <span
@@ -351,9 +350,7 @@ export default function DatHangPage() {
                   : "-"}
               </span>
             </div>
-
             <hr />
-
             <div className="flex justify-between font-semibold text-base">
               <span>Tổng cộng</span>
               <span className="text-[#e8594f]">
@@ -366,9 +363,8 @@ export default function DatHangPage() {
             </p>
 
             <button
-              onClick={handleXacNhan}
-              className="w-full py-3 rounded-full mt-2 font-semibold bg-[#e8594f] text-white hover:bg-[#d94b42] transition"
-            >
+              // onClick={handleXacNhan}
+              className="w-full py-3 rounded-full mt-2 font-semibold bg-[#e8594f] text-white hover:bg-[#d94b42] transition">
               XÁC NHẬN ĐẶT HÀNG
             </button>
           </div>
