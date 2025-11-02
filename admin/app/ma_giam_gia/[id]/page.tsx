@@ -19,7 +19,7 @@ export default function SuaMaGiamGia() {
     so_luong: 1,
     bat_dau: new Date().toISOString().split("T")[0],
     ket_thuc: "",
-    dieu_kien: "",
+    mo_ta:"",
     an_hien: true,
   });
 
@@ -312,10 +312,10 @@ export default function SuaMaGiamGia() {
 
         {/* Điều kiện */}
         <div>
-          <p className="text-lg">Điều kiện (mô tả)</p>
+          <p className="text-lg"> Mô tả</p>
           <textarea
             name="dieu_kien"
-            value={form.dieu_kien ?? ""}
+            value={form.mo_ta ?? ""}
             onChange={handleChange}
             rows={3}
             className="border border-gray-300 p-2 w-full rounded"
