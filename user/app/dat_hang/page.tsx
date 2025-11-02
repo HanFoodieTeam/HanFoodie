@@ -93,9 +93,36 @@ export default function DatHangPage() {
     return sum + (giaGoc + giaThem + monThem) * item.so_luong;
   }, 0);
 
+  //  Theo dõi nếu tổng tiền nhỏ hơn giá trị tối thiểu của mã đã chọn → hủy mã
+  useEffect(() => {
+    if (maGiamChon && tongTien < maGiamChon.gia_tri_toi_thieu) {
+      alert(
+        `Đơn hàng không còn đủ điều kiện áp dụng mã "${maGiamChon.ten}" (tối thiểu ${maGiamChon.gia_tri_toi_thieu.toLocaleString("vi-VN")}đ). Mã giảm giá đã được gỡ bỏ.`
+      );
+      setMaGiamChon(null);
+    }
+  }, [tongTien, maGiamChon]);
+
+
+  //  Tính phí ship và giảm giá
   const phiShip = 0;
-  const giamGia = 0;
+
+  let giamGia = 0;
+  if (maGiamChon) {
+    if (maGiamChon.loai_giam_gia) {
+      //  Giảm theo phần trăm
+      const giamTheoPhanTram = (tongTien * maGiamChon.gia_tri_giam) / 100;
+      giamGia = maGiamChon.gia_tri_giam_toi_da
+        ? Math.min(giamTheoPhanTram, maGiamChon.gia_tri_giam_toi_da)
+        : giamTheoPhanTram;
+    } else {
+      //  Giảm theo số tiền cố định
+      giamGia = maGiamChon.gia_tri_giam;
+    }
+  }
+  //  Tổng cộng cuối cùng
   const tongCong = tongTien + phiShip - giamGia;
+
 
 
   //  Cập nhật số lượng
@@ -188,8 +215,6 @@ export default function DatHangPage() {
             )}
           </div>
 
-
-
           {/*  Danh sách sản phẩm */}
           <div className="space-y-2">
             {gioHang.map((item) => {
@@ -229,17 +254,13 @@ export default function DatHangPage() {
 
                     <div className="flex items-center gap-3 mt-2">
                       <button
-                        onClick={() =>
-                          handleQuantityChange(item.id, item.so_luong - 1)
-                        }
+                        onClick={() => handleQuantityChange(item.id, item.so_luong - 1)}
                         className="px-3 py-1 border rounded-md">
                         -
                       </button>
                       <span>{item.so_luong}</span>
                       <button
-                        onClick={() =>
-                          handleQuantityChange(item.id, item.so_luong + 1)
-                        }
+                        onClick={() => handleQuantityChange(item.id, item.so_luong + 1)}
                         className="px-3 py-1 border rounded-md">
                         +
                       </button>
@@ -276,8 +297,7 @@ export default function DatHangPage() {
             className={`flex items-center gap-3 border rounded-xl p-3 mb-2 cursor-pointer transition ${phuongThuc === "cod"
               ? "border-[#e8594f] bg-[#fff5f4]"
               : "border-gray-200"
-              }`}
-          >
+              }`}>
             <CreditCard className="text-[#e8594f]" size={18} />
             <span>Thanh toán khi nhận hàng</span>
           </div>
@@ -288,8 +308,7 @@ export default function DatHangPage() {
             className={`flex items-center gap-3 border rounded-xl p-3 cursor-pointer transition ${phuongThuc === "momo"
               ? "border-[#e8594f] bg-[#fff5f4]"
               : "border-gray-200"
-              }`}
-          >
+              }`}>
             <Wallet className="text-[#e8594f]" size={18} />
             <span>Ví MoMo</span>
           </div>
@@ -309,8 +328,7 @@ export default function DatHangPage() {
             {/*  Mã giảm giá */}
             <div
               className="flex items-center justify-between border rounded-xl p-2 cursor-pointer hover:bg-[#fff5f4]"
-              onClick={() => setShowMaGiam(true)}
-            >
+              onClick={() => setShowMaGiam(true)}>
               <div className="flex items-center gap-2 text-gray-700 ">
                 <Tag className="text-[#e8594f]" size={18} />
                 <span
@@ -326,10 +344,13 @@ export default function DatHangPage() {
 
             <div className="flex justify-between">
               <span>Giảm giá</span>
-              <span>-</span>
+              <span className="text-green-600 font-medium">
+                {maGiamChon
+                  ? `- ${giamGia.toLocaleString("vi-VN")} đ`
+                  : "-"}
+              </span>
             </div>
             <hr />
-
             <div className="flex justify-between font-semibold text-base">
               <span>Tổng cộng</span>
               <span className="text-[#e8594f]">
@@ -342,9 +363,8 @@ export default function DatHangPage() {
             </p>
 
             <button
-              onClick={handleXacNhan}
-              className="w-full py-3 rounded-full mt-2 font-semibold bg-[#e8594f] text-white hover:bg-[#d94b42] transition"
-            >
+              // onClick={handleXacNhan}
+              className="w-full py-3 rounded-full mt-2 font-semibold bg-[#e8594f] text-white hover:bg-[#d94b42] transition">
               XÁC NHẬN ĐẶT HÀNG
             </button>
           </div>
@@ -359,6 +379,7 @@ export default function DatHangPage() {
           setMaGiamChon(ma);
           console.log("Mã đã chọn:", ma);
         }}
+        tongTien={tongTien}
       />
 
       {/* Popup chọn địa chỉ */}
