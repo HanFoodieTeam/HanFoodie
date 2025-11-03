@@ -64,7 +64,7 @@ export default function Header() {
         style={{ "--header-h": "72px" } as React.CSSProperties}
         className="fixed top-0 left-0 w-full bg-[#6A0A0A] text-white shadow-md z-50 h-[72px]"
       >
-        <div className="max-w-[80%] mx-auto flex justify-between items-center h-full">
+        <div className="container mx-auto flex justify-between items-center h-full px-4 max-w-[80%]">
           {/* LOGO */}
           <Link href="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="HanFoodie Logo" className="h-16 w-auto" />
@@ -88,14 +88,14 @@ export default function Header() {
               <Heart className="w-6 h-6" />
             </Link>
 
-              <Link href="/gio_hang" className="relative">
-        <ShoppingBag className="w-6 h-6" />
-        {count > 0 && (
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-            {count}
-          </span>
-        )}
-      </Link>
+            <Link href="/gio_hang" className="relative">
+              <ShoppingBag className="w-6 h-6" />
+              {count > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {count}
+                </span>
+              )}
+            </Link>
 
             {/* USER DROPDOWN */}
             <div

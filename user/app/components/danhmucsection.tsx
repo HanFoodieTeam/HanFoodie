@@ -6,14 +6,16 @@ import { useRef } from "react";
 import { IDanhMuc } from "../lib/cautrucdata";
 
 export default function DanhMucSection({ data }: { data: IDanhMuc[] }) {
+
+  
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
   const scrollRight = () => scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
 
   return (
-    <section className="relative -mt-6 "> {/* Kéo gần banner */}
-      
+    <section className="relative -mt-6 bg-gray-50"> {/* Kéo gần banner */}
+
       {/* Nút trái */}
       <button
         onClick={scrollLeft}
@@ -64,6 +66,7 @@ export default function DanhMucSection({ data }: { data: IDanhMuc[] }) {
               <p className="text-sm text-gray-500">
                 {/* {dm.so_san_pham || 10} sản phẩm */}
               </p>
+
             </div>
           </Link>
         ))}

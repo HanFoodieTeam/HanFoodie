@@ -206,11 +206,9 @@ export const DiaChiModel = db.define(
     ten_duong: { type: DataTypes.STRING(255), allowNull: false },
     phuong: { type: DataTypes.STRING(255), allowNull: false },
     tinh: { type: DataTypes.STRING(255), allowNull: false },
-    mac_dinh: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    }
+    mac_dinh: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false, },
+    ho_ten: { type: DataTypes.STRING(50), allowNull: false, },
+    sdt: { type: DataTypes.STRING(20), allowNull: false, },
 
   },
   { tableName: "dia_chi", timestamps: false }
