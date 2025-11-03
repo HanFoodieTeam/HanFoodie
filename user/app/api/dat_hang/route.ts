@@ -102,16 +102,21 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             prefix = "SP";
         }
 
-       
-        const now = new Date(Date.now() + 7 * 60 * 60 * 1000);
-        const day = String(now.getDate()).padStart(2, "0");
-        const month = String(now.getMonth() + 1).padStart(2, "0");
-        const year = String(now.getFullYear()).slice(-2);
-        const hour = String(now.getHours()).padStart(2, "0");
-        const minute = String(now.getMinutes()).padStart(2, "0");
-        const second = String(now.getSeconds()).padStart(2, "0");
+
+
+        const vnTime = new Date(
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+        );
+
+        const day = String(vnTime.getDate()).padStart(2, "0");
+        const month = String(vnTime.getMonth() + 1).padStart(2, "0");
+        const year = String(vnTime.getFullYear()).slice(-2);
+        const hour = String(vnTime.getHours()).padStart(2, "0");
+        const minute = String(vnTime.getMinutes()).padStart(2, "0");
+        const second = String(vnTime.getSeconds()).padStart(2, "0");
 
         const ma_don = `${idSanPham}${prefix}${day}${month}${hour}${minute}${second}${id_nguoi_dung}`;
+
 
         //  Lưu đơn hàng
         const donHang = await DonHangModel.create(
