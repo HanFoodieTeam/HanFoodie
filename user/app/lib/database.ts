@@ -17,3 +17,4 @@ export const db = new Sequelize({
     typeCast: true,
   },
 });
+
