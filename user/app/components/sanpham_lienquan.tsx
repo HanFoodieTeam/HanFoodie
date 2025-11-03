@@ -314,7 +314,7 @@ export default function SanPhamLienQuanSection({
                 </span>
                 <div className="flex items-center text-yellow-500 text-xs">
                   <Star className="w-3.5 h-3.5 fill-yellow-400 mr-0.5" />
-                  {sp.so_sao_tb?.toFixed(1) || 4.5}
+                  {/* {sp.so_sao_tb?.toFixed(1) || 4.5} */}
                 </div>
               </div>
             </div>
