@@ -245,7 +245,7 @@ export default function TrangGioHang() {
                       type="checkbox"
                       checked={checked}
                       onChange={() => toggleSelect(item.id)}
-                      className="w-4 h-4 accent-[#e8594f]"/>
+                      className="w-4 h-4 accent-[#e8594f]" />
                     <img
                       src={sp?.hinh || "/noing.png"}
                       alt={sp?.ten || "Sản phẩm"}
@@ -362,11 +362,10 @@ export default function TrangGioHang() {
             <button
               onClick={handleDatHang}
               disabled={selectedItems.length === 0}
-              className={`w-full py-3 rounded-full mt-2 font-semibold transition ${
-                selectedItems.length === 0
+              className={`w-full py-3 rounded-full mt-2 font-semibold transition ${selectedItems.length === 0
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                   : "bg-[#e8594f] text-white hover:bg-[#d94b42]"
-              }`}
+                }`}
             >
               ĐẶT HÀNG
             </button>

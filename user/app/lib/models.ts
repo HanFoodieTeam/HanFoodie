@@ -1,5 +1,5 @@
 
-import { DataTypes } from "sequelize";
+import { DataTypes, Optional } from "sequelize";
 import { db } from "./database";
 
 export const DanhMucModel = db.define(
@@ -48,7 +48,7 @@ export const SanPhamModel = db.define(
 
 
 import { Model, InferAttributes, InferCreationAttributes } from "sequelize";
-import { INguoiDung } from "./cautrucdata";
+import { IDonHang, INguoiDung } from "./cautrucdata";
 export interface NguoiDungInstance
   extends Model<InferAttributes<NguoiDungInstance>, InferCreationAttributes<NguoiDungInstance>>,
   INguoiDung { }
@@ -149,6 +149,7 @@ export const ChiTietDonHangModel = db.define(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     don_gia: { type: DataTypes.INTEGER, allowNull: false },
+
     so_luong: { type: DataTypes.INTEGER, allowNull: false },
     json_tuy_chon: { type: DataTypes.TEXT("long"), allowNull: true },
     json_mon_them: { type: DataTypes.TEXT("long"), allowNull: true },
@@ -215,25 +216,132 @@ export const DiaChiModel = db.define(
 );
 
 
-export const DonHangModel = db.define(
-  "don_hang",
+// export const DonHangModel = db.define(
+//   "don_hang",
+//   {
+//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+//     ghi_chu: { type: DataTypes.STRING(255), allowNull: true },
+//     dia_chi: { type: DataTypes.STRING(255), allowNull: false },
+//     id_ma_giam_gia: { type: DataTypes.INTEGER, allowNull: true },
+//     id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false },
+//     ho_ten_nguoi_nhan: { type: DataTypes.STRING(255), allowNull: false },
+//     dia_chi_nguoi_nhan: { type: DataTypes.STRING(255), allowNull: false },
+//     sdt_nguoi_nhan: { type: DataTypes.INTEGER, allowNull: false },
+//     ngay_tao: { type: DataTypes.DATEONLY, allowNull: false },
+//     trang_thai: { type: DataTypes.STRING(255), allowNull: true },
+//     ma_don: { type: DataTypes.STRING(255), allowNull: false },
+//     ngay_cap_nhat: { type: DataTypes.DATEONLY, allowNull: false },
+//     phuong_thuc_thanh_toan: { type: DataTypes.INTEGER, allowNull: false },
+//     so_tien_thanh_toan: { type: DataTypes.INTEGER, allowNull: false },
+//   },
+//   { tableName: "don_hang", timestamps: false }
+// );
+
+
+
+
+
+
+// Các trường có thể null hoặc tự động sinh
+type DonHangCreationAttributes = Optional<
+  IDonHang,
+  "id" | "ghi_chu" | "id_ma_giam_gia" | "ngay_tao" | "ngay_cap_nhat"
+>;
+
+export class DonHangModel
+  extends Model<IDonHang, DonHangCreationAttributes>
+  implements IDonHang {
+  declare id: number;
+  declare ghi_chu: string | null;
+  declare id_ma_giam_gia: number | null;
+  declare id_nguoi_dung: number;
+  declare ho_ten_nguoi_nhan: string;
+  declare dia_chi_nguoi_nhan: string;
+  declare sdt_nguoi_nhan: number;
+  declare ngay_tao: Date;
+  declare trang_thai: "cho_xac_nhan" | "da_xac_nhan" | "dang_giao" | "da_giao" | "da_huy";
+  declare ma_don: string;
+  declare ngay_cap_nhat: Date;
+  declare phuong_thuc_thanh_toan: boolean;
+  declare so_tien_thanh_toan: number;
+  declare tong_tien_hang: number;
+  declare so_tien_giam: number;
+}
+
+DonHangModel.init(
   {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    ghi_chu: { type: DataTypes.STRING(255), allowNull: true },
-    dia_chi: { type: DataTypes.STRING(255), allowNull: false },
-    id_ma_giam_gia: { type: DataTypes.INTEGER, allowNull: true },
-    id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false },
-    ho_ten_nguoi_nhan: { type: DataTypes.STRING(255), allowNull: false },
-    dia_chi_nguoi_nhan: { type: DataTypes.STRING(255), allowNull: false },
-    sdt_nguoi_nhan: { type: DataTypes.INTEGER, allowNull: false },
-    ngay_tao: { type: DataTypes.DATEONLY, allowNull: false },
-    trang_thai: { type: DataTypes.STRING(255), allowNull: true },
-    ma_don: { type: DataTypes.STRING(255), allowNull: false },
-    ngay_cap_nhat: { type: DataTypes.DATEONLY, allowNull: false },
-    phuong_thuc_thanh_toan: { type: DataTypes.INTEGER, allowNull: false },
-    so_tien_thanh_toan: { type: DataTypes.INTEGER, allowNull: false },
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    ghi_chu: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+
+    id_ma_giam_gia: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    id_nguoi_dung: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    ho_ten_nguoi_nhan: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    dia_chi_nguoi_nhan: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    sdt_nguoi_nhan: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+
+    trang_thai: {
+      type: DataTypes.ENUM(
+        "cho_xac_nhan",
+        "da_xac_nhan",
+        "dang_giao",
+        "da_giao",
+        "da_huy"
+      ),
+      allowNull: false,
+      defaultValue: "cho_xac_nhan",
+    },
+    ma_don: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    ngay_tao: { type: DataTypes.DATE, allowNull: false },
+    ngay_cap_nhat: { type: DataTypes.DATE, allowNull: false },
+
+    phuong_thuc_thanh_toan: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      comment: "1 là khi nhận hàng, 0 là thanh toán online",
+    },
+    tong_tien_hang: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    so_tien_giam: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    so_tien_thanh_toan: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
-  { tableName: "don_hang", timestamps: false }
+  {
+    sequelize: db, // ✅ dùng sequelize chứ không phải db
+    tableName: "don_hang",
+    timestamps: false,
+  }
 );
 
 

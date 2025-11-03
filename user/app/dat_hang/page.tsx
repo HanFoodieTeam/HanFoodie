@@ -13,6 +13,7 @@ interface IDonHangTam {
   id: number;
   so_luong: number;
   bien_the?: {
+    id: number;
     ten: string;
     gia_them?: number;
     san_pham?: {
@@ -148,29 +149,57 @@ export default function DatHangPage() {
     const token = localStorage.getItem("token");
     if (!token) return alert("Bạn cần đăng nhập trước khi đặt hàng");
 
-    const body = {
-      phuong_thuc: phuongThuc,
-      tong_tien: tongCong,
-      chi_tiet: gioHang.map((sp) => ({
-        id_gio_hang: sp.id,
-        so_luong: sp.so_luong,
-      })),
-    };
+    if (!diaChi?.ho_ten || !diaChi.sdt || !diaChi.phuong || !diaChi.ten_duong || !diaChi.tinh) return alert("Vui lòng chọn địa chỉ giao hàng");
 
-    const res = await fetch("/api/don_hang", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    });
+    if (gioHang.length === 0) return alert("Giỏ hàng của bạn trống");
 
-    if (res.ok) {
-      localStorage.removeItem("donHangTam");
-      router.push("/dat-hang/thanh-cong");
-    } else {
-      alert("Đặt hàng thất bại, vui lòng thử lại!");
+    try {
+      const body = {
+        id_nguoi_dung: JSON.parse(localStorage.getItem("nguoi_dung") || "{}")?.id,
+        ho_ten_nguoi_nhan: diaChi.ho_ten,
+        dia_chi_nguoi_nhan: `${diaChi.ten_duong}, ${diaChi.phuong}, ${diaChi.tinh}`,
+        sdt_nguoi_nhan: Number(diaChi.sdt),
+        ghi_chu: "",
+        phuong_thuc_thanh_toan: phuongThuc === "cod", // true = khi nhận hàng
+        id_ma_giam_gia: maGiamChon?.id || null,
+        danh_sach_san_pham: gioHang.map((sp) => ({
+          id_bien_the: sp.bien_the ? sp.bien_the.id : undefined,
+
+          don_gia:
+            (sp.bien_the?.san_pham?.gia_goc ?? 0) +
+            (sp.bien_the?.gia_them ?? 0) +
+            (sp.json_mon_them?.reduce((s, m) => s + (m.gia_them ?? 0), 0) ?? 0),
+          so_luong: sp.so_luong,
+          json_tuy_chon: sp.json_tuy_chon
+            ? JSON.stringify(sp.json_tuy_chon)
+            : null,
+          json_mon_them: sp.json_mon_them
+            ? JSON.stringify(sp.json_mon_them)
+            : null,
+        })),
+      };
+
+      const res = await fetch("/api/dat_hang", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        alert("Đặt hàng thành công!");
+        localStorage.removeItem("donHangTam");
+        router.push("/");
+      } else {
+        alert(data.message || "Đặt hàng thất bại, vui lòng thử lại!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi đặt hàng:", error);
+      alert("Có lỗi xảy ra, vui lòng thử lại sau!");
     }
   };
 
@@ -363,7 +392,7 @@ export default function DatHangPage() {
             </p>
 
             <button
-              // onClick={handleXacNhan}
+              onClick={handleXacNhan}
               className="w-full py-3 rounded-full mt-2 font-semibold bg-[#e8594f] text-white hover:bg-[#d94b42] transition">
               XÁC NHẬN ĐẶT HÀNG
             </button>
@@ -377,7 +406,7 @@ export default function DatHangPage() {
         onClose={() => setShowMaGiam(false)}
         onSelect={(ma) => {
           setMaGiamChon(ma);
-          console.log("Mã đã chọn:", ma);
+          console.log("Mã đã chọn:", ma, ma.id);
         }}
         tongTien={tongTien}
       />
