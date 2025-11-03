@@ -5,6 +5,11 @@
 // import Link from "next/link";
 // import { Heart, Star } from "lucide-react";
 // import { ISanPham } from "../lib/cautrucdata";
+// import SanPhamHotSection from "../components/sanphamsection";
+
+// interface DanhMucResponse {
+//   san_pham: ISanPham[];
+// }
 
 // export default function YeuThichPage() {
 //   const [favorites, setFavorites] = useState<ISanPham[]>([]);
@@ -12,7 +17,7 @@
 //   const [toast, setToast] = useState<string | null>(null);
 //   const [spHot, setSpHot] = useState<ISanPham[]>([]);
 
-//   // 🩷 Lấy dữ liệu yêu thích từ localStorage + API
+//   // 📦 Lấy dữ liệu yêu thích từ localStorage + API
 //   useEffect(() => {
 //     const stored = localStorage.getItem("favorites");
 //     const ids: number[] = stored ? JSON.parse(stored) : [];
@@ -20,10 +25,15 @@
 
 //     const fetchData = async () => {
 //       const res = await fetch("/api/san_pham", { cache: "no-store" });
-//       const data = await res.json();
+//       const data: DanhMucResponse[] = await res.json();
 
-//       const allProducts = data.flatMap((dm: any) => dm.san_pham);
-//       const filtered = allProducts.filter((sp: ISanPham) => ids.includes(sp.id));
+//       // Gộp tất cả sản phẩm từ các danh mục
+//       const allProducts: ISanPham[] = data.flatMap(
+//         (dm: DanhMucResponse) => dm.san_pham
+//       );
+
+//       // Lọc ra những sản phẩm có id nằm trong danh sách yêu thích
+//       const filtered = allProducts.filter((sp) => ids.includes(sp.id));
 //       setFavorites(filtered);
 //     };
 
@@ -34,13 +44,13 @@
 //   useEffect(() => {
 //     const fetchHot = async () => {
 //       const res = await fetch("/api/trang_chu/sp_hot");
-//       const data = await res.json();
+//       const data: ISanPham[] = await res.json();
 //       setSpHot(data);
 //     };
 //     fetchHot();
 //   }, []);
 
-//   // ❤️ Gỡ sản phẩm khỏi yêu thích
+//   // 💖 Gỡ hoặc thêm sản phẩm khỏi danh sách yêu thích
 //   const toggleFavorite = (id: number) => {
 //     const updatedIds = favoriteIds.includes(id)
 //       ? favoriteIds.filter((f) => f !== id)
@@ -60,7 +70,7 @@
 
 //   return (
 //     <main className="bg-gray-50 min-h-screen pt-[60px]">
-//       {/* 🔔 Thông báo nhỏ */}
+//       {/* 🧾 Thông báo nhỏ */}
 //       {toast && (
 //         <div className="fixed bottom-5 right-5 bg-[#6A0A0A] text-white px-4 py-2 rounded-xl shadow-md animate-fadeIn z-50">
 //           {toast}
@@ -68,7 +78,7 @@
 //       )}
 
 //       <div className="max-w-[80%] mx-auto py-10 space-y-10">
-//         {/* ❤️ Danh sách yêu thích */}
+//         {/* 💘 Danh sách yêu thích */}
 //         <section>
 //           <h1 className="text-3xl font-semibold text-[#6A0A0A] mb-8">
 //             Danh sách yêu thích
@@ -132,7 +142,7 @@
 //                       </span>
 //                       <div className="flex items-center text-yellow-500 text-sm">
 //                         <Star className="w-4 h-4 fill-yellow-400" />{" "}
-//                         {sp.so_sao_tb || 4.5}
+//                         {4.5 /* bạn có thể thay bằng sp.so_sao_tb nếu có field */}
 //                       </div>
 //                     </div>
 //                   </div>
@@ -143,52 +153,7 @@
 //         </section>
 
 //         {/* 🔥 Sản phẩm nổi bật */}
-//         {spHot.length > 0 && (
-//           <section>
-//             <h2 className="text-2xl font-bold text-[#6A0A0A] mb-5">
-//               Sản phẩm gợi í
-//             </h2>
-
-//             <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
-//               {spHot.slice(0, 10).map((sp) => (
-//                 <Link
-//                   href={`/chi_tiet/${sp.id}`}
-//                   key={sp.id}
-//                   className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden group"
-//                 >
-//                   <div className="relative">
-//                     <Image
-//                       src={sp.hinh || "/images/no-image.jpg"}
-//                       alt={sp.ten}
-//                       width={300}
-//                       height={200}
-//                       className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-//                     />
-//                   </div>
-
-//                   <div className="p-4">
-//                     <h3 className="font-medium text-gray-800 hover:text-[#6A0A0A] line-clamp-1">
-//                       {sp.ten}
-//                     </h3>
-//                     <p className="text-gray-500 text-sm mt-1 truncate">
-//                       {sp.mo_ta}
-//                     </p>
-//                   </div>
-
-//                   <div className="flex items-center justify-between px-4 pb-4">
-//                     <span className="text-[#6A0A0A] font-semibold text-lg">
-//                       {sp.gia_goc?.toLocaleString("vi-VN")}₫
-//                     </span>
-//                     <div className="flex items-center text-yellow-500 text-sm">
-//                       <Star className="w-4 h-4 fill-yellow-400" />{" "}
-//                       {sp.so_sao_tb || 4.7}
-//                     </div>
-//                   </div>
-//                 </Link>
-//               ))}
-//             </div>
-//           </section>
-//         )}
+//         {spHot.length > 0 && <SanPhamHotSection data={spHot} />}
 //       </div>
 //     </main>
 //   );
@@ -200,7 +165,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import { ISanPham } from "../lib/cautrucdata";
-import SanPhamHotSection from "../components/sanphamsection"; //  DÙNG LẠI COMPONENT NÀY
+import SanPhamHotSection from "../components/sanphamsection";
+
+interface DanhMucResponse {
+  san_pham: ISanPham[];
+}
 
 export default function YeuThichPage() {
   const [favorites, setFavorites] = useState<ISanPham[]>([]);
@@ -208,7 +177,7 @@ export default function YeuThichPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [spHot, setSpHot] = useState<ISanPham[]>([]);
 
-  //  Lấy dữ liệu yêu thích từ localStorage + API
+  // 📦 Lấy dữ liệu yêu thích từ localStorage + API
   useEffect(() => {
     const stored = localStorage.getItem("favorites");
     const ids: number[] = stored ? JSON.parse(stored) : [];
@@ -216,27 +185,30 @@ export default function YeuThichPage() {
 
     const fetchData = async () => {
       const res = await fetch("/api/san_pham", { cache: "no-store" });
-      const data = await res.json();
+      const data: DanhMucResponse[] = await res.json();
 
-      const allProducts = data.flatMap((dm: any) => dm.san_pham);
-      const filtered = allProducts.filter((sp: ISanPham) => ids.includes(sp.id));
+      const allProducts: ISanPham[] = data.flatMap(
+        (dm: DanhMucResponse) => dm.san_pham
+      );
+
+      const filtered = allProducts.filter((sp) => ids.includes(sp.id));
       setFavorites(filtered);
     };
 
     fetchData();
   }, []);
 
-  //  Lấy sản phẩm nổi bật
+  // 🔥 Lấy sản phẩm nổi bật
   useEffect(() => {
     const fetchHot = async () => {
       const res = await fetch("/api/trang_chu/sp_hot");
-      const data = await res.json();
+      const data: ISanPham[] = await res.json();
       setSpHot(data);
     };
     fetchHot();
   }, []);
 
-  //  Gỡ sản phẩm khỏi yêu thích
+  // 💖 Gỡ hoặc thêm sản phẩm khỏi danh sách yêu thích
   const toggleFavorite = (id: number) => {
     const updatedIds = favoriteIds.includes(id)
       ? favoriteIds.filter((f) => f !== id)
@@ -255,27 +227,28 @@ export default function YeuThichPage() {
   };
 
   return (
-    <main className="bg-gray-50 min-h-screen pt-[60px]">
-      {/*  Thông báo nhỏ */}
+    <main className="bg-gray-50 min-h-screen pt-[80px]">
+      {/* 🧾 Thông báo nhỏ */}
       {toast && (
         <div className="fixed bottom-5 right-5 bg-[#6A0A0A] text-white px-4 py-2 rounded-xl shadow-md animate-fadeIn z-50">
           {toast}
         </div>
       )}
 
+      {/* ✅ Giới hạn chiều rộng 80% giống header */}
       <div className="max-w-[80%] mx-auto py-10 space-y-10">
-        {/*  Danh sách yêu thích */}
+        {/* 💘 Danh sách yêu thích */}
         <section>
-          <h1 className="text-3xl font-semibold text-[#6A0A0A] mb-8">
+          <h1 className="text-3xl font-semibold text-[#6A0A0A] mb-8 text-center md:text-left">
             Danh sách yêu thích
           </h1>
 
           {favorites.length === 0 ? (
-            <p className="text-gray-500">
+            <p className="text-gray-500 text-center">
               Chưa có sản phẩm nào trong danh sách yêu thích.
             </p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
               {favorites.map((sp) => {
                 const isFavorite = favoriteIds.includes(sp.id);
                 return (
@@ -328,7 +301,7 @@ export default function YeuThichPage() {
                       </span>
                       <div className="flex items-center text-yellow-500 text-sm">
                         <Star className="w-4 h-4 fill-yellow-400" />{" "}
-                        {sp.so_sao_tb || 4.5}
+                       {/* {sp.so_sao_tb ?? 4.5} */}
                       </div>
                     </div>
                   </div>
@@ -338,8 +311,12 @@ export default function YeuThichPage() {
           )}
         </section>
 
-        {/*  Sản phẩm nổi bật */}
-        {spHot.length > 0 && <SanPhamHotSection data={spHot} />}
+        {/* 🔥 Sản phẩm nổi bật */}
+        {spHot.length > 0 && (
+          <section>
+            <SanPhamHotSection data={spHot} />
+          </section>
+        )}
       </div>
     </main>
   );

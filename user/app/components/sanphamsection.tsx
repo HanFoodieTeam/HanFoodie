@@ -144,7 +144,7 @@ export default function SanPhamHotSection({ data }: Props) {
                 </span>
                 <div className="flex items-center text-yellow-500 text-sm">
                   <Star className="w-4 h-4 fill-yellow-400" />{" "}
-                  {sp.so_sao_tb?.toFixed(1) || 4.5}
+                  {/* {sp.so_sao_tb?.toFixed(1) || 4.5} */}
                 </div>
               </div>
             </div>
