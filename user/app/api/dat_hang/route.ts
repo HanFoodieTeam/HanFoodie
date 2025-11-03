@@ -90,7 +90,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 const tenSanPham = bienThe?.getDataValue("san_pham")?.ten || "SP";
                 idSanPham = bienThe?.getDataValue("san_pham")?.id || 0;
 
-                // Bỏ dấu tiếng Việt + viết hoa + lấy 5 ký tự đầu
                 const tenKhongDau = tenSanPham
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
@@ -103,7 +102,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             prefix = "SP";
         }
 
-        const now = new Date();
+       
+        const now = new Date(Date.now() + 7 * 60 * 60 * 1000);
         const day = String(now.getDate()).padStart(2, "0");
         const month = String(now.getMonth() + 1).padStart(2, "0");
         const year = String(now.getFullYear()).slice(-2);
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             );
         }
         // xóa sản phâm ở giỏ hàng theo id giỏ hagf
-       
+
         const idGioHangDaDat = danh_sach_san_pham
             .map((sp) => sp.id_gio_hang)
             .filter((id): id is number => !!id);
