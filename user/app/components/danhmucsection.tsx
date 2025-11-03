@@ -64,7 +64,7 @@ export default function DanhMucSection({ data }: { data: IDanhMuc[] }) {
                 {dm.ten}
               </p>
               <p className="text-sm text-gray-500">
-                {/* {dm.so_san_pham || 10} sản phẩm */}
+                {dm.so_san_pham || 10} sản phẩm
               </p>
 
             </div>

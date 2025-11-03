@@ -80,7 +80,7 @@ export default function PopupDiaChi({ open, onClose, onSelect }: PopupDiaChiProp
         ) : (
           <div className="space-y-3 max-h-[400px] overflow-y-auto ">
             {dsDiaChi.map((dc) => {
-              // 🧩 Fallback họ tên và sdt
+             
               const hoTenHienThi =
                 dc.ho_ten?.trim() || nguoiDung?.ho_ten || "Chưa có họ tên";
 
