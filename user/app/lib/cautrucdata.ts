@@ -40,6 +40,8 @@ export interface IChiTietDonHang {
   id_don_hang: number;
   id_bien_the?: number | null;
   thanh_tien: number;
+
+  ten_san_pham?: string;
 }
 
 export interface IDanhGia {
@@ -81,27 +83,54 @@ export interface IDiaChi {
   ten_duong: string;
   phuong: string;
   tinh: string;
-  mac_dinh:boolean |null;
+  mac_dinh: boolean | null;
   ho_ten: string;
   sdt: string;
 }
 
+// export interface IDonHang {
+//   id: number;
+//   ghi_chu?: string | null;
+//   dia_chi: string;
+//   id_ma_giam_gia: number;
+//   id_nguoi_dung: number;
+//   ho_ten_nguoi_nhan: string;
+//   dia_chi_nguoi_nhan: string;
+//   sdt_nguoi_nhan: number;
+//   ngay_tao: string;
+//   trang_thai?: string | null;
+//   ma_don: string;
+//   ngay_cap_nhat: string;
+//   phuong_thuc_thanh_toan: boolean;
+//   so_tien_thanh_toan: number;
+// }
+
+export type TrangThaiDonHang =
+  | "cho_xac_nhan"
+  | "da_xac_nhan"
+  | "dang_giao"
+  | "da_giao"
+  | "da_huy";
+
 export interface IDonHang {
   id: number;
   ghi_chu?: string | null;
-  dia_chi: string;
-  id_ma_giam_gia: number;
+  id_ma_giam_gia?: number | null;
   id_nguoi_dung: number;
   ho_ten_nguoi_nhan: string;
   dia_chi_nguoi_nhan: string;
   sdt_nguoi_nhan: number;
-  ngay_tao: string;
-  trang_thai?: string | null;
+  trang_thai: TrangThaiDonHang;
   ma_don: string;
-  ngay_cap_nhat: string;
-  phuong_thuc_thanh_toan: number;
+  ngay_tao: Date | string;
+  ngay_cap_nhat: Date | string;
+  phuong_thuc_thanh_toan: boolean; // false: online, true: thanh toán khi nhận hàng
   so_tien_thanh_toan: number;
+  tong_tien_hang: number;
+  so_tien_giam: number;
+
 }
+
 
 export interface IGioHang {
   id: number;

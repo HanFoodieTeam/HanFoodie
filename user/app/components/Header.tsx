@@ -49,8 +49,11 @@ export default function Header() {
   };
 
   const handleDangXuat = () => {
-    localStorage.removeItem("nguoi_dung");
-    localStorage.removeItem("token");
+     //  Xóa toàn bộ dữ liệu localStorage
+  localStorage.clear();
+  sessionStorage.clear();
+    // localStorage.removeItem("nguoi_dung");
+    // localStorage.removeItem("token");
     setNguoiDung(null);
     setUserOpen(false);
 
