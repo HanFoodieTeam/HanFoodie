@@ -44,16 +44,14 @@ export default function PopupMaGiamGia({ open, onClose, onSelect, tongTien }: Pr
         onClick={onClose}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
+        exit={{ opacity: 0 }}>
         <motion.div
           onClick={(e) => e.stopPropagation()}
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="bg-white rounded-2xl shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto"
-        >
+          className="bg-white rounded-2xl shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between border-b p-4 sticky top-0 bg-white z-10">
             <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">

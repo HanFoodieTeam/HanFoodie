@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel } from "@/app/lib/models";
+import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel, BienTheModel, SanPhamModel } from "@/app/lib/models";
 import { db } from "@/app/lib/database";
 import { Transaction } from "sequelize";
 import { getUserFromToken } from "@/app/lib/auth";
@@ -9,7 +9,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const t: Transaction = await db.transaction();
 
     try {
-        // ✅ Lấy người dùng từ token
+
         const user = getUserFromToken(req);
         if (!user) {
             return NextResponse.json({ success: false, message: "Không xác thực được người dùng" }, { status: 401 });
@@ -34,7 +34,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             ghi_chu?: string | null;
             phuong_thuc_thanh_toan: boolean;
             id_ma_giam_gia?: number | null;
-            danh_sach_san_pham: Omit<IChiTietDonHang, "id" | "id_don_hang" | "thanh_tien">[];
+            danh_sach_san_pham: (Omit<IChiTietDonHang, "id" | "id_don_hang" | "thanh_tien"> & {
+                id_gio_hang?: number;
+            })[];
         } = body;
 
         if (!danh_sach_san_pham?.length) {
@@ -72,7 +74,44 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         }
 
         const so_tien_thanh_toan = Math.max(tong_tien_hang - so_tien_giam, 0);
-        const ma_don = "HD" + Date.now().toString().slice(-8);
+
+
+        // Sinh mã đơn tự độnglấy từ tên sản phẩm thật trong DB
+        let prefix = "SP";
+        let idSanPham = 0;
+
+        try {
+            const idBienThe = danh_sach_san_pham[0]?.id_bien_the;
+            if (idBienThe) {
+                const bienThe = await BienTheModel.findByPk(idBienThe, {
+                    include: [{ model: SanPhamModel, as: "san_pham" }],
+                });
+
+                const tenSanPham = bienThe?.getDataValue("san_pham")?.ten || "SP";
+                idSanPham = bienThe?.getDataValue("san_pham")?.id || 0;
+
+                // Bỏ dấu tiếng Việt + viết hoa + lấy 5 ký tự đầu
+                const tenKhongDau = tenSanPham
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/đ/g, "d")
+                    .replace(/Đ/g, "D");
+
+                prefix = tenKhongDau.replace(/\s+/g, "").slice(0, 2).toUpperCase();
+            }
+        } catch {
+            prefix = "SP";
+        }
+
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, "0");
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const year = String(now.getFullYear()).slice(-2);
+        const hour = String(now.getHours()).padStart(2, "0");
+        const minute = String(now.getMinutes()).padStart(2, "0");
+        const second = String(now.getSeconds()).padStart(2, "0");
+
+        const ma_don = `${idSanPham}${prefix}${day}${month}${hour}${minute}${second}${id_nguoi_dung}`;
 
         //  Lưu đơn hàng
         const donHang = await DonHangModel.create(
@@ -112,8 +151,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 { transaction: t }
             );
         }
-        // xóa sản phâm ở giỏ hàng
-        await GioHangModel.destroy({ where: { id_nguoi_dung }, transaction: t });
+        // xóa sản phâm ở giỏ hàng theo id giỏ hagf
+       
+        const idGioHangDaDat = danh_sach_san_pham
+            .map((sp) => sp.id_gio_hang)
+            .filter((id): id is number => !!id);
+
+        if (idGioHangDaDat.length > 0) {
+            await GioHangModel.destroy({
+                where: { id: idGioHangDaDat },
+                transaction: t,
+            });
+        }
         await t.commit();
 
         return NextResponse.json({

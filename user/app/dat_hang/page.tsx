@@ -11,6 +11,7 @@ import PopupMaGiamGia from "../components/Popupmagiamgia";
 
 interface IDonHangTam {
   id: number;
+  id_gio_hang: number;
   so_luong: number;
   bien_the?: {
     id: number;
@@ -35,6 +36,10 @@ interface INguoiDungLocal {
 export default function DatHangPage() {
   const router = useRouter();
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [popupSuccess, setPopupSuccess] = useState<{ open: boolean; maDon?: string }>({ open: false });
+
+
   const [gioHang, setGioHang] = useState<IDonHangTam[]>([]);
   const [phuongThuc, setPhuongThuc] = useState<"cod" | "momo">("cod");
   const [diaChi, setDiaChi] = useState<IDiaChi | null>(null);
@@ -42,7 +47,7 @@ export default function DatHangPage() {
   const [loadingDiaChi, setLoadingDiaChi] = useState(true);
 
   const [showPopup, setShowPopup] = useState(false);
-  // mã giảm giá
+
   const [showMaGiam, setShowMaGiam] = useState(false);
   const [maGiamChon, setMaGiamChon] = useState<IMaGiamGia | null>(null);
 
@@ -144,14 +149,30 @@ export default function DatHangPage() {
     localStorage.setItem("donHangTam", JSON.stringify(updated));
   };
 
+
   //  Xác nhận đặt hàng
   const handleXacNhan = async () => {
+    if (isLoading) return; //  Ngăn nhấn nhiều lần
+    setIsLoading(true);
+
     const token = localStorage.getItem("token");
-    if (!token) return alert("Bạn cần đăng nhập trước khi đặt hàng");
+    if (!token) {
+      alert("Bạn cần đăng nhập trước khi đặt hàng");
+      setIsLoading(false);
+      return;
+    }
 
-    if (!diaChi?.ho_ten || !diaChi.sdt || !diaChi.phuong || !diaChi.ten_duong || !diaChi.tinh) return alert("Vui lòng chọn địa chỉ giao hàng");
+    if (!diaChi?.ho_ten || !diaChi.sdt || !diaChi.phuong || !diaChi.ten_duong || !diaChi.tinh) {
+      alert("Vui lòng chọn địa chỉ giao hàng");
+      setIsLoading(false);
+      return;
+    }
 
-    if (gioHang.length === 0) return alert("Giỏ hàng của bạn trống");
+    if (gioHang.length === 0) {
+      alert("Giỏ hàng của bạn trống");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const body = {
@@ -160,23 +181,22 @@ export default function DatHangPage() {
         dia_chi_nguoi_nhan: `${diaChi.ten_duong}, ${diaChi.phuong}, ${diaChi.tinh}`,
         sdt_nguoi_nhan: Number(diaChi.sdt),
         ghi_chu: "",
-        phuong_thuc_thanh_toan: phuongThuc === "cod", // true = khi nhận hàng
+        phuong_thuc_thanh_toan: phuongThuc === "cod",
         id_ma_giam_gia: maGiamChon?.id || null,
-        danh_sach_san_pham: gioHang.map((sp) => ({
-          id_bien_the: sp.bien_the ? sp.bien_the.id : undefined,
 
+      
+        danh_sach_san_pham: gioHang.map((sp) => ({
+          id_gio_hang: sp.id_gio_hang || sp.id, 
+          id_bien_the: sp.bien_the?.id,
           don_gia:
             (sp.bien_the?.san_pham?.gia_goc ?? 0) +
             (sp.bien_the?.gia_them ?? 0) +
             (sp.json_mon_them?.reduce((s, m) => s + (m.gia_them ?? 0), 0) ?? 0),
           so_luong: sp.so_luong,
-          json_tuy_chon: sp.json_tuy_chon
-            ? JSON.stringify(sp.json_tuy_chon)
-            : null,
-          json_mon_them: sp.json_mon_them
-            ? JSON.stringify(sp.json_mon_them)
-            : null,
-        })),
+          json_tuy_chon: sp.json_tuy_chon ? JSON.stringify(sp.json_tuy_chon) : null,
+          json_mon_them: sp.json_mon_them ? JSON.stringify(sp.json_mon_them) : null,
+        }))
+
       };
 
       const res = await fetch("/api/dat_hang", {
@@ -191,17 +211,19 @@ export default function DatHangPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        alert("Đặt hàng thành công!");
         localStorage.removeItem("donHangTam");
-        router.push("/");
+        setPopupSuccess({ open: true, maDon: data.data?.ma_don });
       } else {
         alert(data.message || "Đặt hàng thất bại, vui lòng thử lại!");
       }
     } catch (error) {
       console.error("Lỗi khi đặt hàng:", error);
       alert("Có lỗi xảy ra, vui lòng thử lại sau!");
+    } finally {
+      setIsLoading(false);
     }
   };
+
 
   return (
     <div
@@ -210,7 +232,6 @@ export default function DatHangPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start min-h-[80vh]">
 
         <div className="lg:col-span-2 space-y-3">
-          {/*  Địa chỉ giao hàng */}
           <div className="bg-white p-4 rounded-2xl shadow-sm">
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold text-lg">Địa chỉ giao hàng</h2>
@@ -256,7 +277,7 @@ export default function DatHangPage() {
 
               return (
                 <div
-                  key={item.id}
+                  key={`${item.id_gio_hang ?? item.id ?? item.bien_the?.id ?? Math.random()}`}
                   className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition">
                   <img
                     src={sp?.hinh || "/noing.png"}
@@ -393,14 +414,45 @@ export default function DatHangPage() {
 
             <button
               onClick={handleXacNhan}
-              className="w-full py-3 rounded-full mt-2 font-semibold bg-[#e8594f] text-white hover:bg-[#d94b42] transition">
-              XÁC NHẬN ĐẶT HÀNG
+              disabled={isLoading}
+              className={`w-full py-3 rounded-full mt-2 font-semibold transition ${isLoading
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-[#e8594f] text-white hover:bg-[#d94b42]"
+                }`}>
+              {isLoading ? "Đang xử lý..." : "XÁC NHẬN ĐẶT HÀNG"}
             </button>
           </div>
-
         </div>
       </div>
 
+      {/* Popup hiển */}
+      {popupSuccess.open && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-lg p-6 text-center max-w-sm w-full">
+            <h2 className="text-xl font-semibold text-green-600 mb-2">🎉 Đặt hàng thành công!</h2>
+            <p className="text-gray-700 mb-4">
+              Mã đơn hàng của bạn là:
+              <br />
+              <span className="font-bold text-[#e8594f]">{popupSuccess.maDon}</span>
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => router.push("/")}
+                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium">
+                Trang chủ
+              </button>
+              <button
+                onClick={() => router.push(`/donhang/${popupSuccess.maDon}`)}
+                className="px-4 py-2 rounded-lg bg-[#e8594f] text-white hover:bg-[#d94b42] font-medium">
+                Xem chi tiết
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* mã giảm giá  */}
       <PopupMaGiamGia
         open={showMaGiam}
         onClose={() => setShowMaGiam(false)}
@@ -408,15 +460,13 @@ export default function DatHangPage() {
           setMaGiamChon(ma);
           console.log("Mã đã chọn:", ma, ma.id);
         }}
-        tongTien={tongTien}
-      />
+        tongTien={tongTien} />
 
       {/* Popup chọn địa chỉ */}
       <PopupDiaChi
         open={showPopup}
         onClose={() => setShowPopup(false)}
-        onSelect={(dc) => setDiaChi(dc)}
-      />
+        onSelect={(dc) => setDiaChi(dc)} />
     </div>
   );
 

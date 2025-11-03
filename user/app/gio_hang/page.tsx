@@ -181,20 +181,29 @@ export default function TrangGioHang() {
     }
   };
 
-  //  Đặt hàng
-  const handleDatHang = () => {
-    const selected = gioHang.filter((item) => selectedItems.includes(item.id));
-    localStorage.setItem("donHangTam", JSON.stringify(selected));
-    router.push("/dat_hang");
-  };
+ 
+//  Đặt hàng
+const handleDatHang = () => {
+  const selected = gioHang
+    .filter((item) => selectedItems.includes(item.id))
+    .map((item) => ({
+      id_gio_hang: item.id, 
+      so_luong: item.so_luong,
+      bien_the: item.bien_the,
+      json_mon_them: item.json_mon_them,
+      json_tuy_chon: item.json_tuy_chon,
+    }));
+
+  localStorage.setItem("donHangTam", JSON.stringify(selected));
+  router.push("/dat_hang");
+};
 
   //  Loading
   if (loading)
     return (
       <div
         className="pt-[80px] text-center py-16 text-gray-500"
-        style={{ "--header-h": "72px" } as React.CSSProperties}
-      >
+        style={{ "--header-h": "72px" } as React.CSSProperties}>
         Đang tải giỏ hàng...
       </div>
     );
@@ -203,19 +212,15 @@ export default function TrangGioHang() {
   return (
     <div
       className="min-h-screen  py-3"
-      style={{ "--header-h": "72px" } as React.CSSProperties}
-    >
+      style={{ "--header-h": "72px" } as React.CSSProperties}>
       <div className=" grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
-        {/*  Cột trái - danh sách sản phẩm */}
         <div className="lg:col-span-2 min-h-[80vh] space-y-4">
-          {/* Chọn tất cả */}
           <div className="flex items-center gap-4 p-3 rounded-lg bg-white shadow-sm hover:shadow-md transition  z-20">
             <input
               type="checkbox"
               checked={selectAll}
               onChange={handleSelectAll}
-              className="w-4 h-4 accent-[#e8594f]"
-            />
+              className="w-4 h-4 accent-[#e8594f]"/>
             <span className="text-gray-800 text-base font-medium">
               Chọn tất cả
             </span>
@@ -249,8 +254,7 @@ export default function TrangGioHang() {
                     <img
                       src={sp?.hinh || "/noing.png"}
                       alt={sp?.ten || "Sản phẩm"}
-                      className="w-[90px] h-[90px] rounded-lg object-cover"
-                    />
+                      className="w-[90px] h-[90px] rounded-lg object-cover"/>
                     <div className="flex-1">
                       <h2 className="font-semibold text-[15px]">{sp?.ten}</h2>
                       <p className="text-sm text-gray-600">
@@ -282,8 +286,7 @@ export default function TrangGioHang() {
 
                       <button
                         onClick={() => handleEdit(item)}
-                        className="text-[#e8594f] text-sm font-medium mt-1 hover:underline"
-                      >
+                        className="text-[#e8594f] text-sm font-medium mt-1 hover:underline">
                         Chỉnh sửa món
                       </button>
                     </div>
@@ -365,8 +368,7 @@ export default function TrangGioHang() {
               className={`w-full py-3 rounded-full mt-2 font-semibold transition ${selectedItems.length === 0
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                   : "bg-[#e8594f] text-white hover:bg-[#d94b42]"
-                }`}
-            >
+                }`}>
               ĐẶT HÀNG
             </button>
           </div>

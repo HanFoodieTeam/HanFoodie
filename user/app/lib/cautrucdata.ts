@@ -35,12 +35,13 @@ export interface IChiTietDonHang {
   id: number;
   don_gia: number;
   so_luong: number;
-
   json_tuy_chon?: string | null;
   json_mon_them?: string | null;
   id_don_hang: number;
   id_bien_the?: number | null;
   thanh_tien: number;
+
+  ten_san_pham?: string;
 }
 
 export interface IDanhGia {

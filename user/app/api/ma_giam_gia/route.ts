@@ -3,14 +3,13 @@ import { MaGiamGiaModel } from "@/app/lib/models";
 import { Op } from "sequelize";
 import { IMaGiamGia } from "@/app/lib/cautrucdata";
 
-// ✅ Lấy danh sách mã giảm giá còn hiệu lực và đang hiển thị
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const today = new Date();
 
     const maGiamRaw = await MaGiamGiaModel.findAll({
       where: {
-        an_hien: true, // chỉ lấy mã đang hiển thị
+        an_hien: true,
         bat_dau: { [Op.lte]: today }, // đã bắt đầu
         ket_thuc: { [Op.gte]: today }, // chưa kết thúc
         so_luong: { [Op.gt]: 0 }, // còn số lượng
