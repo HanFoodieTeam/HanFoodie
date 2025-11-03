@@ -65,9 +65,7 @@ export default function SanPhamPage() {
     <main className="bg-gray-50 min-h-screen">
       {/* 🔹 Thanh danh mục cố định */}
       <div className="sticky top-18.5 z-40 bg-white ">
-        <div className="max-w-[80%] mx-auto  bg-white">
           <DanhMucSection data={dsDanhMuc} />
-        </div>
       </div>
 
 
@@ -80,7 +78,7 @@ export default function SanPhamPage() {
 
 
       {/* 🔹 Danh sách sản phẩm */}
-      <div className="max-w-[80%] mx-auto py-10 space-y-12">
+      <div className=" py-10 space-y-12">
         {dsDanhMuc.map((dm) => (
           <section key={dm.id}>
             <h2 className="text-2xl font-bold mb-4 text-[#6A0A0A]">{dm.ten}</h2>
