@@ -205,6 +205,7 @@ export interface IMonThem {
 
 export interface INguoiDung {
   id?: number;
+  hinh?:string;
   ho_ten: string;
   sdt?: number | null;
   email: string;

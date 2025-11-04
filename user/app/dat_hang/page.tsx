@@ -184,9 +184,9 @@ export default function DatHangPage() {
         phuong_thuc_thanh_toan: phuongThuc === "cod",
         id_ma_giam_gia: maGiamChon?.id || null,
 
-      
+
         danh_sach_san_pham: gioHang.map((sp) => ({
-          id_gio_hang: sp.id_gio_hang || sp.id, 
+          id_gio_hang: sp.id_gio_hang || sp.id,
           id_bien_the: sp.bien_the?.id,
           don_gia:
             (sp.bien_the?.san_pham?.gia_goc ?? 0) +
@@ -303,23 +303,23 @@ export default function DatHangPage() {
                     ) : null}
 
                     <div className="flex items-center gap-3 mt-2">
-                      <button
+                      {/* <button
                         onClick={() => handleQuantityChange(item.id, item.so_luong - 1)}
                         className="px-3 py-1 border rounded-md">
                         -
-                      </button>
-                      <span>{item.so_luong}</span>
-                      <button
+                      </button> */}
+                      <span className="text-sm text-gray-600"> Số lượng: {item.so_luong}</span>
+                      {/* <button
                         onClick={() => handleQuantityChange(item.id, item.so_luong + 1)}
                         className="px-3 py-1 border rounded-md">
                         +
-                      </button>
+                      </button> */}
 
-                      <button
+                      {/* <button
                         onClick={() => handleRemoveItem(item.id)}
                         className="text-red-500 text-sm hover:underline">
                         Xóa
-                      </button>
+                      </button> */}
                     </div>
                   </div>
 
@@ -441,6 +441,11 @@ export default function DatHangPage() {
                 className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium">
                 Trang chủ
               </button>
+              {/* <button
+                onClick={() => router.push("/")}
+                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium">
+                Lịch sử đơn hàng
+              </button> */}
               <button
                 onClick={() => router.push(`/donhang/${popupSuccess.maDon}`)}
                 className="px-4 py-2 rounded-lg bg-[#e8594f] text-white hover:bg-[#d94b42] font-medium">
