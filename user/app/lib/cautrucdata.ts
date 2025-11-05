@@ -139,7 +139,6 @@ export interface IGioHang {
   json_tuy_chon?: Record<string, string> | null; // key: loại tùy chọn, value: giá trị
   id_nguoi_dung: number;
   id_bien_the?: number | null;
-  ghi_chu?: string | null;
 
 
   bien_the?: {
@@ -233,6 +232,8 @@ export interface ISanPham {
   phong_cach?: string | null;
   trang_thai?: string | null;
   id_danh_muc: number;
+
+   so_sao_tb?: number|null;
 
 }
 

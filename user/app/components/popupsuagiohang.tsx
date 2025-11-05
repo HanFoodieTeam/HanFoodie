@@ -49,7 +49,6 @@ export default function PopupSuaGioHang({
   const { san_pham, bien_the = [], mon_them = [], tuy_chon = [] } = data;
 
   const [qty, setQty] = useState<number>(mac_dinh.so_luong || 1);
-  const [ghiChu, setGhiChu] = useState<string>(mac_dinh.ghi_chu || "");
   const [selectedBienThe, setSelectedBienThe] = useState<number | null>(
     mac_dinh.id_bien_the ?? null
   );
@@ -144,7 +143,6 @@ export default function PopupSuaGioHang({
             return [loai?.ten || `loai_${loaiId}`, tc?.ten || ""];
           })
         ),
-        ghi_chu: ghiChu || "",
       };
 
       const res = await fetch(`/api/gio_hang/${mac_dinh.id}`, {
@@ -177,43 +175,52 @@ export default function PopupSuaGioHang({
     <AnimatePresence>
       <motion.div
         className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/40 p-4"
-        onClick={onClose}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}>
+        onClick={onClose} initial={{ opacity: 0 }}  animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
         <motion.div
           className="relative bg-white rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl"
           onClick={(e) => e.stopPropagation()}
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          transition={{ duration: 0.25 }}>
+          initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ duration: 0.25 }}>
           {/* Header */}
-          <div className="flex items-center gap-3 p-4 border-b">
+          <div className="flex items-start gap-3 p-4 border-b">
+            {/* Ảnh sản phẩm */}
             <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
               <Image
-                src={san_pham.hinh || "/noing.png"}
-                alt={san_pham.ten}
-                width={80}
-                height={80}
-                className="object-cover"
-              />
+                src={san_pham.hinh || "/noimg.png"} alt={san_pham.ten} width={80} height={80} className="object-cover"/>
             </div>
+
+            {/* Tên & mô tả */}
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-[#6A0A0A]">
                 {san_pham.ten}
               </h3>
-              <p className="text-sm text-gray-600 mt-1">{san_pham.mo_ta}</p>
+              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                {san_pham.mo_ta}
+              </p>
             </div>
-            <div className="flex flex-col items-center gap-2">
+
+            {/* Cột phải: Giá ở trên – Số lượng ở dưới */}
+            <div className="flex flex-col items-end justify-between min-w-[90px]">
+              {/* Giá */}
+              <div className="text-right mb-2">
+                <div className="text-sm text-gray-500">Giá</div>
+                <div className="text-lg font-bold text-red-500">
+                  {Number(san_pham.gia_goc || 0).toLocaleString("vi-VN")}đ
+                </div>
+              </div>
+
+              {/* Số lượng */}
               <div className="flex items-center border rounded-full overflow-hidden">
                 <button
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="px-3 py-1">
+                  className="px-3 py-1 text-gray-700">
                   -
                 </button>
-                <div className="px-3 py-1 bg-white">{qty}</div>
-                <button onClick={() => setQty((q) => q + 1)} className="px-3 py-1">
+                <div className="px-3 py-1 bg-white text-gray-800 font-medium">
+                  {qty}
+                </div>
+                <button
+                  onClick={() => setQty((q) => q + 1)}
+                  className="px-3 py-1 text-gray-700">
                   +
                 </button>
               </div>
@@ -223,51 +230,88 @@ export default function PopupSuaGioHang({
           {/* Nội dung chọn */}
           <div className="p-4 space-y-4">
             {/* Biến thể */}
-            {bien_the.length > 0 && (
-              <div>
-                <h4 className="font-semibold mb-2 border-b pb-2">Biến thể</h4>
-                <div className="space-y-2">
-                  {bien_the.map((b) => (
-                    <label
-                      key={b.id}
-                      className="flex items-center justify-between p-2 rounded-md hover:bg-gray-50 cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="bien_the"
-                          checked={selectedBienThe === b.id}
-                          onChange={() => handleSelectBienThe(b.id)}/>
-                        <span className="text-sm">{b.ten}</span>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {b.gia_them ? `+${b.gia_them.toLocaleString("vi-VN")}đ` : "0đ"}
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
+            {bien_the.map((b) => {
+              const checked = selectedBienThe === b.id;
+              return (
+                <label key={b.id} className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
+                  onClick={() => setSelectedBienThe(b.id)} >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-5 h-5 rounded-full border flex items-center justify-center ${checked
+                          ? "bg-[#e8594f] border-[#e8594f]"
+                          : "bg-white border-gray-300"
+                        }`} >
+                      {checked && (
+                        <svg  width="12" height="12" viewBox="0 0 24 24"  fill="none">
+                          <circle cx="12" cy="12" r="5" fill="white" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="text-sm">{b.ten}</span>
+                  </div>
+
+                  <div className="text-sm text-gray-600">
+                    {b.gia_them
+                      ? `+${b.gia_them.toLocaleString("vi-VN")}đ`
+                      : "0đ"}
+                  </div>
+
+                  {/* input thật để form không lỗi, nhưng ẩn đi */}
+                  <input type="radio" name="bien_the" checked={checked} onChange={() => setSelectedBienThe(b.id)}
+                    className="absolute opacity-0 pointer-events-none"
+                  />
+                </label>
+              );
+            })}
+
 
             {/* Tùy chọn */}
             {tuy_chon.map((loai) => (
               <div key={loai.id}>
-                <h4 className="font-semibold mb-2 border-b pb-2">{loai.ten}</h4>
+                <h4 className="text-base font-semibold mb-2 border-b pb-2">
+                  {loai.ten} (Chọn 1)
+                </h4>
                 <div className="space-y-2">
-                  {loai.tuy_chon?.map((tc) => (
-                    <label
-                      key={tc.id}
-                      className="flex items-center justify-between p-2 rounded-md hover:bg-gray-50 cursor-pointer" >
-                      <div className="flex items-center gap-3">
+                  {loai.tuy_chon?.map((tc) => {
+                    const checked = selectedTuyChon[loai.id!] === tc.id;
+                    return (
+                      <label key={tc.id}
+                        className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleSelectTuyChon(loai.id!, tc.id!)}  >
+                        <div className="flex items-center gap-3">
+                          {/* Ô tròn custom */}
+                          <div
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all duration-150 ${checked
+                                ? "bg-[#e8594f] border-[#e8594f]"
+                                : "bg-white border-gray-300"
+                              }`} >
+                            {checked && (
+                              <svg width="12" height="12"  viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="5" fill="white" />
+                              </svg>
+                            )}
+                          </div>
+
+                          <span className="text-sm">{tc.ten}</span>
+                        </div>
+
+                        <div className="text-sm text-gray-600">
+                          {tc.gia_them
+                            ? `+${tc.gia_them.toLocaleString("vi-VN")}đ`
+                            : "0đ"}
+                        </div>
+
+                        {/* Radio thật (ẩn nhưng vẫn tương tác) */}
                         <input
                           type="radio"
                           name={`tuychon-${loai.id}`}
-                          checked={selectedTuyChon[loai.id!] === tc.id}
+                          checked={checked}
                           onChange={() => handleSelectTuyChon(loai.id!, tc.id!)}
+                          className="absolute opacity-0 pointer-events-none"
                         />
-                        <span className="text-sm">{tc.ten}</span>
-                      </div>
-                    </label>
-                  ))}
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -275,57 +319,69 @@ export default function PopupSuaGioHang({
             {/* Món thêm */}
             {mon_them.length > 0 && (
               <div>
-                <h4 className="font-semibold mb-2 border-b pb-2">Món thêm</h4>
+                <h4 className="text-base font-semibold mb-2 border-b pb-2">
+                  Món thêm
+                </h4>
                 <div className="space-y-2">
-                  {mon_them.map((m) => (
-                    <label
-                      key={m.id}
-                      className="flex items-center justify-between p-2 rounded-md hover:bg-gray-50 cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedMonThem.includes(m.id!)}
-                          onChange={() => toggleMonThem(m.id!)}/>
-                        <span className="text-sm">{m.ten}</span>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        +{m.gia_them.toLocaleString("vi-VN")}đ
-                      </div>
-                    </label>
-                  ))}
+                  {mon_them.map((m) => {
+                    const checked = selectedMonThem.includes(m.id!);
+                    return (
+                      <label key={m.id}
+                        className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer" >
+                        <div className="flex items-center gap-3">
+                          {/* Ô vuông */}
+                          <div
+                            className={`w-5 h-5 border flex items-center justify-center rounded-[4px] transition-all duration-150 ${checked
+                                ? "bg-[#e8594f] border-[#e8594f]"
+                                : "bg-white border-gray-300"
+                              }`}>
+                            {checked && (
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" >
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            )}
+                          </div>
+                          <span className="text-sm">{m.ten}</span>
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          +{m.gia_them.toLocaleString("vi-VN")}đ
+                        </div>
+                        <input type="checkbox"
+                          className="hidden" checked={checked}
+                          onChange={() => toggleMonThem(m.id!)} />
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
             )}
-
-            {/* Ghi chú */}
-            <div>
-              <h4 className="font-semibold mb-2">Ghi chú</h4>
-              <textarea
-                value={ghiChu}
-                onChange={(e) => setGhiChu(e.target.value)}
-                className="w-full border rounded-md p-2 h-20 resize-none"
-              />
-            </div>
           </div>
 
           {/* Footer */}
-          <div className="border-t p-4 bg-white text-right rounded-b-2xl">
-            <p className="text-lg font-semibold mb-2">
-              Tổng:{" "}
-              <span className="text-red-600">
-                {totalAll.toLocaleString("vi-VN")}đ
-              </span>
-            </p>
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="px-5 py-2 bg-[#e8594f] text-white rounded-full hover:bg-[#d94b42] transition"
-            >
-              {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
-            </button>
+          <div className="border-t p-4 bg-white sticky bottom-0 rounded-b-2xl">
+            <div className="flex items-center justify-between">
+              {/* Tổng tiền */}
+              <div className="text-lg font-semibold text-[#6A0A0A]">
+                Tổng:{" "}
+                <span className="text-red-600">
+                  {totalAll.toLocaleString("vi-VN")}đ
+                </span>
+              </div>
+
+              {/* Nút cập nhật nhỏ gọn */}
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="px-5 py-2 bg-[#6A0A0A] text-white rounded-full font-semibold hover:bg-[#800000] active:scale-95 transition-transform"
+              >
+                {isSaving ? "Đang lưu..." : "Cập nhật"}
+              </button>
+            </div>
           </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
   );
+
+
 }

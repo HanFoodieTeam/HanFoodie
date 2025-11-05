@@ -16,6 +16,9 @@ export default function HoSoPage() {
   const [thongBao, setThongBao] = useState('');
   const router = useRouter();
 
+  const [ghiChu, setGhiChu] = useState<string>("");
+
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 

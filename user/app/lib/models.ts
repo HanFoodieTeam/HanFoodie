@@ -88,9 +88,7 @@ export const GioHangModel = db.define(
     json_tuy_chon: { type: DataTypes.TEXT("long"), allowNull: true, },
     id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false, },
     id_bien_the: { type: DataTypes.INTEGER, allowNull: true, },
-    ghi_chu: {
-      type: DataTypes.STRING, allowNull: true,
-    },
+  
   },
   {
     tableName: "gio_hang",
