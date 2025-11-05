@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 
     //  Nhận dữ liệu body từ client
     const body: IGioHang = await req.json();
-    const { id_bien_the, so_luong, json_mon_them, json_tuy_chon, ghi_chu } =
+    const { id_bien_the, so_luong, json_mon_them, json_tuy_chon } =
       body;
 
     if (!id_bien_the) {
@@ -90,7 +90,6 @@ export async function POST(req: NextRequest) {
       so_luong,
       json_mon_them: JSON.stringify(json_mon_them || []),
       json_tuy_chon: JSON.stringify(json_tuy_chon || []),
-      ghi_chu: ghi_chu,
     });
 
     return NextResponse.json({ message: "Đã thêm vào giỏ hàng!", data: item });
