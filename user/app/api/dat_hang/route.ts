@@ -90,7 +90,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 const tenSanPham = bienThe?.getDataValue("san_pham")?.ten || "SP";
                 idSanPham = bienThe?.getDataValue("san_pham")?.id || 0;
 
-                // Bỏ dấu tiếng Việt + viết hoa + lấy 5 ký tự đầu
                 const tenKhongDau = tenSanPham
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
@@ -103,15 +102,21 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             prefix = "SP";
         }
 
-        const now = new Date();
-        const day = String(now.getDate()).padStart(2, "0");
-        const month = String(now.getMonth() + 1).padStart(2, "0");
-        const year = String(now.getFullYear()).slice(-2);
-        const hour = String(now.getHours()).padStart(2, "0");
-        const minute = String(now.getMinutes()).padStart(2, "0");
-        const second = String(now.getSeconds()).padStart(2, "0");
+
+
+        const vnTime = new Date(
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+        );
+
+        const day = String(vnTime.getDate()).padStart(2, "0");
+        const month = String(vnTime.getMonth() + 1).padStart(2, "0");
+        const year = String(vnTime.getFullYear()).slice(-2);
+        const hour = String(vnTime.getHours()).padStart(2, "0");
+        const minute = String(vnTime.getMinutes()).padStart(2, "0");
+        const second = String(vnTime.getSeconds()).padStart(2, "0");
 
         const ma_don = `${idSanPham}${prefix}${day}${month}${hour}${minute}${second}${id_nguoi_dung}`;
+
 
         //  Lưu đơn hàng
         const donHang = await DonHangModel.create(
@@ -152,7 +157,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             );
         }
         // xóa sản phâm ở giỏ hàng theo id giỏ hagf
-       
+
         const idGioHangDaDat = danh_sach_san_pham
             .map((sp) => sp.id_gio_hang)
             .filter((id): id is number => !!id);
@@ -181,3 +186,4 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         return NextResponse.json({ success: false, message: "Đặt hàng thất bại", error });
     }
 }
+    

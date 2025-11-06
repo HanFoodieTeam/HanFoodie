@@ -57,6 +57,7 @@ export const NguoiDungModel = db.define<NguoiDungInstance>(
   "nguoi_dung",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        hinh: { type: DataTypes.STRING(255), allowNull: true },
     ho_ten: { type: DataTypes.STRING(255), allowNull: false },
     sdt: { type: DataTypes.INTEGER, allowNull: true },
     email: { type: DataTypes.STRING(255), allowNull: false },
@@ -87,9 +88,7 @@ export const GioHangModel = db.define(
     json_tuy_chon: { type: DataTypes.TEXT("long"), allowNull: true, },
     id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false, },
     id_bien_the: { type: DataTypes.INTEGER, allowNull: true, },
-    ghi_chu: {
-      type: DataTypes.STRING, allowNull: true,
-    },
+  
   },
   {
     tableName: "gio_hang",
