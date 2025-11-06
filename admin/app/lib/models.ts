@@ -513,6 +513,8 @@ GioHangModel.belongsTo(NguoiDungModel, { foreignKey: "id_nguoi_dung", as: "nguoi
 NguoiDungModel.hasMany(DonHangModel, { foreignKey: "id_nguoi_dung", as: "don_hang" });
 DonHangModel.belongsTo(NguoiDungModel, { foreignKey: "id_nguoi_dung", as: "nguoi_dung" });
 
+
+
 // DonHang <-> ChiTietDonHang
 DonHangModel.hasMany(ChiTietDonHangModel, { foreignKey: "id_don_hang", as: "chi_tiet_don_hang" });
 ChiTietDonHangModel.belongsTo(DonHangModel, { foreignKey: "id_don_hang", as: "don_hang" });
@@ -572,4 +574,7 @@ DonHangModel.belongsTo(MaGiamGiaModel, { foreignKey: "id_ma_giam_gia", as: "ma_g
 // DiaChi <-> NguoiDung
 NguoiDungModel.hasMany(DiaChiModel, { foreignKey: "id_nguoi_dung", as: "dia_chi" });
 DiaChiModel.belongsTo(NguoiDungModel, { foreignKey: "id_nguoi_dung", as: "nguoi_dung" });
+
+
+
 

@@ -81,6 +81,24 @@ export interface IBienThe {
 
 }
 
+// export interface IChiTietDonHang {
+//   id: number;
+//   don_gia: number;
+//   so_luong: number;
+//   san_pham: {
+//     ten: string;
+//     hinh_anh: string;
+//   };
+//   json_tuy_chon?: string | null;
+//   json_mon_them?: string | null;
+//   id_don_hang: number;
+//   id_bien_the?: number | null;
+//   thanh_tien: number;
+
+//   ten_san_pham?: string;
+// }
+
+
 export interface IChiTietDonHang {
   id: number;
   don_gia: number;
@@ -91,7 +109,17 @@ export interface IChiTietDonHang {
   id_bien_the?: number | null;
   thanh_tien: number;
 
-  ten_san_pham?: string;
+  // 🔹 Mối quan hệ với Biến Thể
+  bien_the?: {
+    id: number;
+    ten: string;
+    gia_them?: number | null;
+    san_pham?: {
+      id: number;
+      ten: string;
+      hinh?: string | null;
+    };
+  };
 }
 
 
@@ -170,7 +198,11 @@ export interface IDonHang {
   tong_tien_hang: number;
   so_tien_giam: number;
 
+    chi_tiet_don_hang?: IChiTietDonHang[];
+
 }
+
+
 
 
 export interface IGioHang {
