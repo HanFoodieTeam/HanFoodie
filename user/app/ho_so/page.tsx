@@ -176,12 +176,13 @@
 import { useState, ChangeEvent } from 'react';
 import UserLayout from '@/app/components/UserLayout';
 import toast from 'react-hot-toast';
-import { useUser } from '@/app/hooks/useUser';
+import { useUser, updateUser } from '@/app/hooks/useUser';
 
 export default function HoSoPage() {
   const user = useUser();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   if (!user)
     return <p className="p-8 text-center text-gray-600">Đang tải thông tin...</p>;
@@ -196,7 +197,7 @@ export default function HoSoPage() {
     }
   }
 
-  // 🟡 Cập nhật hồ sơ
+  // 🟢 Cập nhật hồ sơ (lưu vào DB + update cache)
   async function handleCapNhat() {
     const token = localStorage.getItem('token');
     if (!token || !user) return;
@@ -207,16 +208,35 @@ export default function HoSoPage() {
     formData.append('ngay_sinh', user.ngay_sinh || '');
     if (file) formData.append('hinh', file);
 
+    setLoading(true);
     try {
       const res = await fetch('/api/ho_so', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
+
       const data = await res.json();
-      res.ok ? toast.success('Cập nhật thành công!') : toast.error(data.thong_bao);
+      if (!res.ok) {
+        toast.error(data.thong_bao || 'Lỗi cập nhật hồ sơ');
+        return;
+      }
+
+      toast.success('Cập nhật thành công!');
+
+      // 🟢 Fetch lại dữ liệu người dùng để lấy avatar mới
+      const reload = await fetch('/api/ho_so', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const reloadData = await reload.json();
+      if (reload.ok && reloadData.nguoi_dung) {
+        updateUser(reloadData.nguoi_dung);
+        setPreview(reloadData.nguoi_dung.hinh || null);
+      }
     } catch {
       toast.error('Lỗi kết nối máy chủ');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -232,7 +252,7 @@ export default function HoSoPage() {
             <input
               type="text"
               value={user.ho_ten}
-              className="w-full border p-2 rounded-lg"
+              className="w-full border p-2 rounded-lg bg-gray-50"
               readOnly
             />
           </div>
@@ -252,7 +272,7 @@ export default function HoSoPage() {
             <input
               type="text"
               value={user.sdt ?? ''}
-              className="w-full border p-2 rounded-lg"
+              className="w-full border p-2 rounded-lg bg-gray-50"
               readOnly
             />
           </div>
@@ -262,16 +282,17 @@ export default function HoSoPage() {
             <input
               type="date"
               value={user.ngay_sinh ?? ''}
-              className="w-1/2 border p-2 rounded-lg"
+              className="w-1/2 border p-2 rounded-lg bg-gray-50"
               readOnly
             />
           </div>
 
           <button
             onClick={handleCapNhat}
-            className="bg-[#D33C3C] text-white px-5 py-2 rounded-lg"
+            disabled={loading}
+            className="bg-[#D33C3C] text-white px-5 py-2 rounded-lg hover:bg-[#b53030] transition"
           >
-            Lưu thay đổi
+            {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
           </button>
         </div>
 
@@ -283,10 +304,19 @@ export default function HoSoPage() {
               className="w-full h-full object-cover"
             />
           </div>
-          <label htmlFor="file-upload" className="cursor-pointer text-[#D33C3C] hover:underline">
+          <label
+            htmlFor="file-upload"
+            className="cursor-pointer text-[#D33C3C] hover:underline"
+          >
             📷 Chọn ảnh
           </label>
-          <input id="file-upload" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input
+            id="file-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
         </div>
       </div>
     </UserLayout>
