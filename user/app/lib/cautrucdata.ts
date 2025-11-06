@@ -128,8 +128,26 @@ export interface IDonHang {
   so_tien_thanh_toan: number;
   tong_tien_hang: number;
   so_tien_giam: number;
-
 }
+// export interface IDonHang {
+//   id: number;
+//   ghi_chu?: string | null; // varchar(255)
+//   id_ma_giam_gia?: number | null; // int
+//   id_nguoi_dung: number; // int
+//   ho_ten_nguoi_nhan: string; // varchar(255)
+//   dia_chi_nguoi_nhan: string; // varchar(255)
+//   sdt_nguoi_nhan: number; // int(11)
+//   ngay_tao: string; // datetime
+//   trang_thai: TrangThaiDonHang; // enum
+//   ma_don: string; // varchar(255)
+//   ngay_cap_nhat: string; // datetime
+//   phuong_thuc_thanh_toan: number; // tinyint(1) ✅ kiểu số (1: COD, 0: Online)
+//   tong_tien_hang: number; // int
+//   so_tien_giam: number; // int
+//   so_tien_thanh_toan: number; // int
+// }
+
+
 
 
 export interface IGioHang {
@@ -205,6 +223,7 @@ export interface IMonThem {
 
 export interface INguoiDung {
   id?: number;
+  hinh?:string;
   ho_ten: string;
   sdt?: number | null;
   email: string;
