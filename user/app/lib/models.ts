@@ -54,6 +54,7 @@ export interface NguoiDungInstance
   INguoiDung { }
 
 export const NguoiDungModel = db.define<NguoiDungInstance>(
+  
   "nguoi_dung",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -61,6 +62,7 @@ export const NguoiDungModel = db.define<NguoiDungInstance>(
     ho_ten: { type: DataTypes.STRING(255), allowNull: false },
     sdt: { type: DataTypes.INTEGER, allowNull: true },
     email: { type: DataTypes.STRING(255), allowNull: false },
+    hinh: { type: DataTypes.STRING(255), allowNull: true }, // ✅ thêm dòng này
     tep_khach: { type: DataTypes.STRING(255), allowNull: true },
     mat_khau: { type: DataTypes.STRING(255), allowNull: false },
     trang_thai: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 0 },
@@ -70,7 +72,7 @@ export const NguoiDungModel = db.define<NguoiDungInstance>(
     ngay_tao: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW // tự gán thời gian hiện tại nếu không truyền
+      defaultValue: DataTypes.NOW
     }
   },
   {
@@ -78,6 +80,7 @@ export const NguoiDungModel = db.define<NguoiDungInstance>(
     timestamps: false,
   }
 );
+
 
 export const GioHangModel = db.define(
   "gio_hang",

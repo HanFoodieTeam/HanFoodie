@@ -1,117 +1,264 @@
+// 'use client';
 
+// import { useEffect, useState } from 'react';
+// import { useRouter } from 'next/navigation';
+// import UserLayout from '@/app/components/UserLayout';
+// import { IDonHang, TrangThaiDonHang } from '@/app/lib/cautrucdata';
+
+// interface IUser {
+//   id: number;
+//   ho_ten: string;
+//   email: string;
+//   hinh?: string | null;
+// }
+
+// const TRANG_THAI: { key: 'tat_ca' | TrangThaiDonHang; label: string }[] = [
+//   { key: 'tat_ca', label: 'Tất cả' },
+//   { key: 'cho_xac_nhan', label: 'Chờ xác nhận' },
+//   { key: 'da_xac_nhan', label: 'Đã xác nhận' },
+//   { key: 'dang_giao', label: 'Đang giao' },
+//   { key: 'da_giao', label: 'Đã giao' },
+//   { key: 'da_huy', label: 'Đã hủy' },
+// ];
+
+// export default function DonHangPage() {
+//   const [user, setUser] = useState<IUser | null>(null);
+//   const [donHang, setDonHang] = useState<IDonHang[]>([]);
+//   const [tab, setTab] = useState<'tat_ca' | TrangThaiDonHang>('tat_ca');
+//   const [loading, setLoading] = useState(false);
+//   const router = useRouter();
+
+//   // 🟢 Lấy thông tin người dùng từ token
+//   useEffect(() => {
+//     const token = localStorage.getItem('token');
+//     if (!token) {
+//       router.push('/dang-nhap');
+//       return;
+//     }
+
+//     async function fetchUser() {
+//       try {
+//         const res = await fetch('/api/ho_so', {
+//           headers: { Authorization: `Bearer ${token}` },
+//         });
+//         const data = await res.json();
+//         if (res.ok && data.nguoi_dung) {
+//           setUser(data.nguoi_dung);
+//         } else {
+//           console.warn('❌ Không lấy được thông tin user', data);
+//           router.push('/dang-nhap');
+//         }
+//       } catch (err) {
+//         console.error('🔥 Lỗi lấy hồ sơ:', err);
+//       }
+//     }
+
+//     fetchUser();
+//   }, [router]);
+
+//   // 🟢 Lấy danh sách đơn hàng theo trạng thái
+//   useEffect(() => {
+//     if (!user) return;
+//     const token = localStorage.getItem('token');
+//     if (!token) return;
+
+//     async function fetchDonHang() {
+//       setLoading(true);
+//       const query = tab === 'tat_ca' ? '' : `?trang_thai=${tab}`;
+//       try {
+//         const res = await fetch(`/api/don_hang${query}`, {
+//           headers: { Authorization: `Bearer ${token}` },
+//         });
+
+//         const data: IDonHang[] = await res.json();
+//         if (res.ok) {
+//           setDonHang(data);
+//         } else {
+//           setDonHang([]);
+//         }
+//       } catch (err) {
+//         console.error('🔥 Lỗi khi tải đơn hàng:', err);
+//         setDonHang([]);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+
+//     fetchDonHang();
+//   }, [tab, user]);
+
+//   if (!user)
+//     return (
+//       <p className="p-8 text-center text-gray-600">
+//         Đang tải thông tin người dùng...
+//       </p>
+//     );
+
+//   return (
+//     <UserLayout user={user}>
+//       <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
+//         <h2 className="text-2xl font-bold text-[#6A0A0A] mb-4">
+//           Đơn Hàng Của Tôi
+//         </h2>
+
+//         {/* Tabs trạng thái */}
+//         <div className="flex space-x-6 border-b pb-2 mb-6">
+//           {TRANG_THAI.map((t) => (
+//             <button
+//               key={t.key}
+//               onClick={() => setTab(t.key)}
+//               className={`pb-2 font-medium border-b-2 transition ${
+//                 tab === t.key
+//                   ? 'text-[#D33C3C] border-[#D33C3C]'
+//                   : 'text-gray-500 border-transparent hover:text-[#D33C3C]'
+//               }`}
+//             >
+//               {t.label}
+//             </button>
+//           ))}
+//         </div>
+
+//         {/* Nội dung hiển thị */}
+//         {loading ? (
+//           <p className="text-center text-gray-500">Đang tải đơn hàng...</p>
+//         ) : donHang.length === 0 ? (
+//           <p className="text-gray-600 italic">Không có đơn hàng nào.</p>
+//         ) : (
+//           <div className="space-y-4">
+//             {donHang.map((dh) => (
+//               <div
+//                 key={dh.id}
+//                 className="border rounded-lg bg-white shadow-sm p-5 flex justify-between items-start hover:shadow-md transition"
+//               >
+//                 <div>
+//                   <p className="font-semibold text-[#6A0A0A]">
+//                     Mã đơn: {dh.ma_don}
+//                   </p>
+//                   <p className="text-gray-600">
+//                     Ngày đặt:{' '}
+//                     {new Date(dh.ngay_tao).toLocaleDateString('vi-VN')}
+//                   </p>
+//                   <p className="text-gray-700">
+//                     Tổng tiền: {dh.so_tien_thanh_toan.toLocaleString()}₫
+//                   </p>
+//                   <p className="text-gray-500 text-sm">
+//                     Phương thức:{' '}
+//                     {dh.phuong_thuc_thanh_toan
+//                         ? 'Thanh toán khi nhận hàng'
+//                         : 'Thanh toán online'}
+//                     </p>
+
+//                 </div>
+
+//                 <span
+//                   className={`px-3 py-1 text-sm rounded-lg font-medium ${
+//                     dh.trang_thai === 'cho_xac_nhan'
+//                       ? 'bg-gray-100 text-gray-700'
+//                       : dh.trang_thai === 'da_xac_nhan'
+//                       ? 'bg-blue-100 text-blue-700'
+//                       : dh.trang_thai === 'dang_giao'
+//                       ? 'bg-yellow-100 text-yellow-700'
+//                       : dh.trang_thai === 'da_giao'
+//                       ? 'bg-green-100 text-green-700'
+//                       : dh.trang_thai === 'da_huy'
+//                       ? 'bg-red-100 text-red-700'
+//                       : 'bg-gray-50 text-gray-600'
+//                   }`}
+//                 >
+//                   {TRANG_THAI.find((t) => t.key === dh.trang_thai)?.label ??
+//                     'Không xác định'}
+//                 </span>
+//               </div>
+//             ))}
+//           </div>
+//         )}
+//       </div>
+//     </UserLayout>
+//   );
+// }
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import UserLayout from '@/app/components/UserLayout';
+import { IDonHang, TrangThaiDonHang } from '@/app/lib/cautrucdata';
+import { useUser } from '@/app/hooks/useUser';
 
-interface UserInfo {
-  ho_ten: string;
-  email: string;
-  sdt: string;
-  ngay_sinh: string;
-}
+const TRANG_THAI: { key: 'tat_ca' | TrangThaiDonHang; label: string }[] = [
+  { key: 'tat_ca', label: 'Tất cả' },
+  { key: 'cho_xac_nhan', label: 'Chờ xác nhận' },
+  { key: 'da_xac_nhan', label: 'Đã xác nhận' },
+  { key: 'dang_giao', label: 'Đang giao' },
+  { key: 'da_giao', label: 'Đã giao' },
+  { key: 'da_huy', label: 'Đã hủy' },
+];
 
-export default function HoSoPage() {
-  const [user, setUser] = useState<UserInfo | null>(null);
-  const [thongBao, setThongBao] = useState('');
-  const router = useRouter();
+export default function DonHangPage() {
+  const user = useUser();
+  const [donHang, setDonHang] = useState<IDonHang[]>([]);
+  const [tab, setTab] = useState<'tat_ca' | TrangThaiDonHang>('tat_ca');
+  const [loading, setLoading] = useState(false);
 
   const [ghiChu, setGhiChu] = useState<string>("");
 
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Bạn cần đăng nhập để xem hồ sơ');
-      router.push('/dang-nhap');
-      return;
-    }
-
-    setUser({
-      ho_ten: localStorage.getItem('ho_ten') || '',
-      email: localStorage.getItem('email') || '',
-      sdt: localStorage.getItem('sdt') || '',
-      ngay_sinh: '',
-    });
-  }, [router]);
-
-  async function handleCapNhat() {
     if (!user) return;
-
     const token = localStorage.getItem('token');
-    const res = await fetch('/api/cap_nhat_ho_so', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(user),
-    });
+    if (!token) return;
 
-    const data = await res.json();
-    setThongBao(data.thong_bao);
-
-    if (res.ok) {
-      localStorage.setItem('ho_ten', user.ho_ten);
-      localStorage.setItem('sdt', user.sdt);
+    async function fetchDonHang() {
+      setLoading(true);
+      const query = tab === 'tat_ca' ? '' : `?trang_thai=${tab}`;
+      const res = await fetch(`/api/don_hang${query}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setDonHang(res.ok ? data : []);
+      setLoading(false);
     }
-  }
 
-  function handleChange(field: keyof UserInfo, value: string) {
-    setUser((prev) => (prev ? { ...prev, [field]: value } : prev));
-  }
+    fetchDonHang();
+  }, [tab, user]);
 
-  if (!user) return <p>Đang tải hồ sơ...</p>;
+  if (!user)
+    return <p className="p-8 text-center text-gray-600">Đang tải...</p>;
 
   return (
-    <div className="flex w-full min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-[25%] md:w-[20%] bg-white shadow-md border-r">
-        <div className="flex flex-col items-center mt-6">
-          <div className="w-24 h-24 bg-emerald-400 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-            {user.ho_ten ? user.ho_ten.charAt(0).toUpperCase() : 'U'}
+    <UserLayout user={user}>
+      <h2 className="text-2xl font-bold text-[#6A0A0A] mb-4">Đơn Hàng Của Tôi</h2>
+
+      <div className="flex space-x-6 border-b pb-2 mb-6">
+        {TRANG_THAI.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`pb-2 font-medium border-b-2 transition ${
+              tab === t.key
+                ? 'text-[#D33C3C] border-[#D33C3C]'
+                : 'text-gray-500 border-transparent hover:text-[#D33C3C]'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <p className="text-center text-gray-500">Đang tải đơn hàng...</p>
+      ) : donHang.length === 0 ? (
+        <p className="text-gray-600 italic">Không có đơn hàng nào.</p>
+      ) : (
+        donHang.map((dh) => (
+          <div key={dh.id} className="border p-4 rounded-lg bg-white shadow-sm mb-3">
+            <p className="font-semibold text-[#6A0A0A]">Mã đơn: {dh.ma_don}</p>
+            <p>Ngày đặt: {new Date(dh.ngay_tao).toLocaleDateString('vi-VN')}</p>
+            <p>Tổng tiền: {dh.so_tien_thanh_toan.toLocaleString()}₫</p>
+            <p className="text-sm text-gray-600">
+              {dh.phuong_thuc_thanh_toan ? 'Thanh toán khi nhận hàng' : 'Online'}
+            </p>
           </div>
-          <p className="mt-3 font-semibold text-gray-700">{user.ho_ten}</p>
-        </div>
-
-        <div className="mt-8 px-4">
-          <ul className="space-y-3 text-gray-700">
-            <li className="font-semibold border-b pb-2">Tài Khoản Của Tôi</li>
-            <li className="cursor-pointer text-emerald-500 font-medium"
-                onClick={() => router.push('/ho_so')}>
-              Hồ Sơ
-            </li>
-            <li className="cursor-pointer hover:text-emerald-500">
-              Ngân Hàng
-            </li>
-            <li className="cursor-pointer hover:text-emerald-500"
-              onClick={() => router.push('/dia_chi/tat_ca/[id]')}>
-              Địa Chỉ
-            </li>
-            <li
-              className="cursor-pointer hover:text-emerald-500"
-              onClick={() => router.push('/doi_mat_khau')}
-            >
-              Đổi Mật Khẩu
-            </li>
-            <li
-              className="cursor-pointer hover:text-emerald-500 mt-4"
-              onClick={() => router.push('/don_hang')}
-            >
-              Đơn Hàng
-            </li>
-          </ul>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-8">
-        <h2 className="text-2xl font-bold text-gray-800">Thông tin đơn hàng</h2>
-
-        {/* Nội dung đơn hàng sẽ được hiển thị ở đây */}
-      </main>
-    </div>
+        ))
+      )}
+    </UserLayout>
   );
 }
