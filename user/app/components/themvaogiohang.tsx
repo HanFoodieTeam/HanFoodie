@@ -55,7 +55,6 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
   );
 
   const [selectedMonThem, setSelectedMonThem] = useState<number[]>([]);
-  const [ghiChu, setGhiChu] = useState("");
 
   // Toggle món thêm (checkbox)
   const toggleMonThem = (id: number) => {
@@ -132,7 +131,6 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
           return [loai?.ten || `loai_${loaiId}`, tc?.ten || null];
         })
       ),
-      ghi_chu: ghiChu || "",
       id_nguoi_dung: idNguoiDung,
     };
 
@@ -216,7 +214,6 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
     window.location.href = "/dat_hang";
   };
 
-
   //  Sau khi đăng nhập thành công
   const handleLoginSuccess = () => {
     setShowLogin(false);
@@ -239,52 +236,49 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.25 }}>
           {/* Header */}
-          <div className="flex items-center gap-3 p-4 border-b">
+          <div className="flex items-start gap-3 p-4 border-b">
+            {/* Ảnh sản phẩm */}
             <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
               {san_pham?.hinh ? (
-                <Image
-                  src={san_pham.hinh}
-                  alt={san_pham.ten}
-                  width={80}
-                  height={80}
-                  className="object-cover" />
+                <Image src={san_pham.hinh} alt={san_pham.ten} width={80} height={80} className="object-cover" />
               ) : (
                 <div className="bg-gray-100 w-full h-full" />
               )}
             </div>
 
+            {/* Thông tin sản phẩm */}
             <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-[#6A0A0A]">
-                  {san_pham?.ten}
-                </h3>
-                <div className="text-right">
-                  <div className="text-sm text-gray-500">Giá</div>
-                  <div className="text-lg font-bold text-red-500">
-                    {Number(san_pham?.gia_goc || 0).toLocaleString("vi-VN")}đ
-                  </div>
-                </div>
-              </div>
+              <h3 className="text-lg font-semibold text-[#6A0A0A]">
+                {san_pham?.ten}
+              </h3>
               <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                 {san_pham?.mo_ta}
               </p>
             </div>
 
-            {/* Qty controls */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center border rounded-full overflow-hidden">
-                <button
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="px-3 py-1">
+            {/* Cột bên phải: Giá + Số lượng */}
+            <div className="flex flex-col items-end justify-between min-w-[90px]">
+              {/* Giá */}
+              <div className="text-right mb-2">
+                <div className="text-sm text-gray-500">Giá</div>
+                <div className="text-lg font-bold text-red-500">
+                  {Number(san_pham?.gia_goc || 0).toLocaleString("vi-VN")}đ
+                </div>
+              </div>
 
+              {/* Số lượng */}
+              <div className="flex items-center border rounded-full overflow-hidden">
+                <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-1 text-gray-700">
+                  -
                 </button>
-                <div className="px-3 py-1 bg-white">{qty}</div>
-                <button onClick={() => setQty((q) => q + 1)} className="px-3 py-1">
+                <div className="px-3 py-1 bg-white text-gray-800 font-medium">{qty}</div>
+                <button onClick={() => setQty((q) => q + 1)} className="px-3 py-1 text-gray-700">
                   +
                 </button>
               </div>
             </div>
           </div>
+
 
           {/* Nội dung chọn */}
           <div className="p-4 space-y-4">
@@ -318,8 +312,7 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                         <div className="text-sm text-gray-600">
                           {b.gia_them ? `+${b.gia_them.toLocaleString("vi-VN")}đ` : "0đ"}
                         </div>
-                        <input
-                          type="radio"
+                        <input type="radio"
                           className="hidden"
                           checked={checked}
                           onChange={() => setSelectedBienThe(b.id ?? null)} />
@@ -386,83 +379,76 @@ export default function ThemVaoGioHang({ data, onClose }: ThemVaoGioHangProps) {
                         key={m.id}
                         className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer">
                         <div className="flex items-center gap-3">
+                          {/* Ô VUÔNG thay vì tròn */}
                           <div
-                            className={`w-5 h-5 rounded-full border flex items-center justify-center ${checked
+                            className={`w-5 h-5 border flex items-center justify-center rounded-[4px] transition-all duration-150 ${checked
                               ? "bg-[#e8594f] border-[#e8594f]"
                               : "bg-white border-gray-300"
                               }`}>
                             {checked && (
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                                <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              <svg width="14" height="14"
+                                viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" >
+                                <polyline points="20 6 9 17 4 12" />
                               </svg>
                             )}
                           </div>
+
                           <span className="text-sm">{m.ten}</span>
                         </div>
+
                         <div className="text-sm text-gray-600">
                           +{m.gia_them.toLocaleString("vi-VN")}đ
                         </div>
-                        <input
-                          type="checkbox"
-                          className="hidden"
-                          checked={checked}
-                          onChange={() => toggleMonThem(m.id!)} />
+
+                        <input type="checkbox" className="hidden" checked={checked} onChange={() => toggleMonThem(m.id!)} />
                       </label>
                     );
                   })}
                 </div>
               </div>
             )}
-
-            {/* Ghi chú */}
-            <div>
-              <h4 className="text-base font-semibold mb-2">Ghi chú</h4>
-              <textarea
-                value={ghiChu}
-                onChange={(e) => setGhiChu(e.target.value)}
-                placeholder="Ghi chú cho cửa hàng..."
-                className="w-full border rounded-md p-2 h-20 resize-none"/>
-            </div>
           </div>
 
           {/* Footer */}
           <div className="border-t p-4 bg-white sticky bottom-0 rounded-b-2xl">
-            <div className="flex items-center justify-between gap-4"> <>
-              {/*  Nút Thêm vào giỏ */}
+            <div className="flex items-center justify-between gap-3">
+              {/* Nút Thêm vào giỏ */}
               <button
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                className="w-full bg-[#6A0A0A] text-white py-3 rounded-lg font-semibold hover:bg-[#800000] transition">
-                {isAdding ? "Đang thêm..." : "🛒 Thêm vào giỏ"}
+                className="flex-1 bg-[#6A0A0A] text-white py-3 rounded-full font-semibold hover:bg-[#800000] transition text-center">
+                {isAdding ? "Đang thêm..." : " Thêm vào giỏ"}
               </button>
 
-              {/*  Modal đăng nhập */}
-              {showLogin && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                  <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md relative">
-                    <button
-                      onClick={() => setShowLogin(false)}
-                      className="absolute top-3 right-3 text-gray-500 hover:text-gray-700" >
-                      ✕
-                    </button>
-                    <LoginForm
-                      onClose={() => setShowLogin(false)}
-                      onLoginSuccess={handleLoginSuccess}
-                    />
-                  </div>
-                </div>
-              )}</>
-
+              {/* Nút Mua hàng */}
               <button
                 onClick={handleBuyNow}
-                className="flex-1 ml-3 bg-[#D33C3C] hover:bg-[#b53030] text-white py-3 rounded-full font-medium flex items-center justify-center gap-3">
-                Mua hàng
-                <span className="ml-2 bg-white/10 px-3 py-1 rounded-full text-sm">
-                  -{totalAll.toLocaleString("vi-VN")}đ
+                className="flex-1 bg-[#D33C3C] hover:bg-[#b53030] text-white py-3 rounded-full font-semibold flex items-center justify-center gap-2 transition text-center">
+                <span>Mua hàng</span>
+                <span className="bg-white/10 px-3 py-1 rounded-full text-sm">
+                  {totalAll.toLocaleString("vi-VN")}đ
                 </span>
               </button>
             </div>
+
+            {/* Modal đăng nhập giữ nguyên */}
+            {showLogin && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md relative">
+                  <button
+                    onClick={() => setShowLogin(false)}
+                    className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                    ✕
+                  </button>
+                  <LoginForm
+                    onClose={() => setShowLogin(false)}
+                    onLoginSuccess={handleLoginSuccess}
+                  />
+                </div>
+              </div>
+            )}
           </div>
+
         </motion.div>
       </motion.div>
     </AnimatePresence>

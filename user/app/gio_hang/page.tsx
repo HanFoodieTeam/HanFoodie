@@ -170,7 +170,6 @@ export default function TrangGioHang() {
         id: item.id,
         id_bien_the: item.id_bien_the ?? null,
         so_luong: item.so_luong ?? 1,
-        ghi_chu: item.ghi_chu ?? "",
         json_mon_them: item.json_mon_them ?? [],
         json_tuy_chon: item.json_tuy_chon ?? {},
       });
@@ -276,13 +275,7 @@ const handleDatHang = () => {
                         </p>
                       ) : null}
 
-                      {item.ghi_chu && (
-                        <p
-                          className="text-sm text-gray-500 truncate max-w-[420px]"
-                          title={item.ghi_chu}>
-                          Ghi chú: {item.ghi_chu}
-                        </p>
-                      )}
+
 
                       <button
                         onClick={() => handleEdit(item)}
@@ -361,6 +354,7 @@ const handleDatHang = () => {
             <p className="text-xs text-gray-500 text-right">
               Đã bao gồm VAT (nếu có)
             </p>
+            
 
             <button
               onClick={handleDatHang}

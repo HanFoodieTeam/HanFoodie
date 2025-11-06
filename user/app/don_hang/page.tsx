@@ -198,6 +198,9 @@ export default function DonHangPage() {
   const [tab, setTab] = useState<'tat_ca' | TrangThaiDonHang>('tat_ca');
   const [loading, setLoading] = useState(false);
 
+  const [ghiChu, setGhiChu] = useState<string>("");
+
+
   useEffect(() => {
     if (!user) return;
     const token = localStorage.getItem('token');

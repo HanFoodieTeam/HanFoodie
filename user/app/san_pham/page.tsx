@@ -65,7 +65,7 @@ export default function SanPhamPage() {
     <main className="bg-gray-50 min-h-screen">
       {/* 🔹 Thanh danh mục cố định */}
       <div className="sticky top-18.5 z-40 bg-white ">
-          <DanhMucSection data={dsDanhMuc} />
+        <DanhMucSection data={dsDanhMuc} />
       </div>
 
 
@@ -106,11 +106,10 @@ export default function SanPhamPage() {
                       >
                         <Heart
                           size={22}
-                          className={`transition-colors ${
-                            isFavorite
+                          className={`transition-colors ${isFavorite
                               ? "fill-red-500 text-red-500"
                               : "text-gray-200 hover:text-red-400"
-                          }`}
+                            }`}
                         />
                       </button>
                     </div>
@@ -132,10 +131,15 @@ export default function SanPhamPage() {
                       <span className="text-[#6A0A0A] font-semibold text-lg">
                         {sp.gia_goc.toLocaleString("vi-VN")}₫
                       </span>
-                      <div className="flex items-center text-yellow-500 text-sm">
-                        <Star className="w-4 h-4 fill-yellow-400" />{" "}
-                        {/* {sp.so_sao_tb || 4.5} */}
-                      </div>
+                      {/*  Chỉ hiển thị nếu có sao trung bình */}
+                      {sp.so_sao_tb && Number(sp.so_sao_tb) > 0 && (
+                        <div className="flex items-center text-yellow-500 text-sm">
+                          <Star className="w-4 h-4 fill-yellow-400 mr-1" />
+                          <span className="text-gray-700">
+                            {Number(sp.so_sao_tb).toFixed(1)}    </span>
+                        </div>
+                      )}
+
                     </div>
                   </div>
                 );
