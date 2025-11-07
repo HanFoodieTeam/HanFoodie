@@ -89,7 +89,7 @@ export default function DonHangList() {
   const handleTrangThaiClick = async (don: IDonHang) => {
     const next = nextTrangThai[don.trang_thai];
     if (!next) {
-      alert("✅ Đơn hàng này đã hoàn tất, không thể thay đổi thêm!");
+      alert("✅ Đơn hàng này đã hoàn tất!");
       return;
     }
     if (!confirm(`Bạn có chắc muốn chuyển đơn ${don.ma_don} sang "${trangThaiLabels[next]}" không?`))
