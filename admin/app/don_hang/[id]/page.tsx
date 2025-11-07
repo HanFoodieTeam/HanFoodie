@@ -83,6 +83,7 @@ export default function DonHangDetail() {
   const badgeColor = trangThaiColors[donHang.trang_thai];
 
   return (
+    
   <div className="p-2 mx-auto bg-white rounded-xl shadow-lg">
     <button
       onClick={() => router.back()}
