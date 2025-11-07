@@ -10,5 +10,12 @@ export const db = new Sequelize({
   database: process.env.DB_NAME,
   logging: false, // Tắt log SQL
   dialectModule: mysql2,
-});
 
+
+  //  Thêm phần này để cố định múi giờ Việt Nam
+  timezone: "+07:00",
+  dialectOptions: {
+    dateStrings: true, // tránh Sequelize convert sang UTC
+    typeCast: true,    // giữ nguyên kiểu dữ liệu DATETIME
+  },
+});

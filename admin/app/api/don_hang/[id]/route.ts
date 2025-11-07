@@ -21,12 +21,11 @@ const ALLOWED: Record<TrangThaiDonHang, TrangThaiDonHang | null> = {
   da_huy: null,
 };
 
-type RouteParams = { params: Promise<{ id: string }> }; // 🔹 quan trọng!
+type RouteParams = { params: Promise<{ id: string }> };
 
-/** ===================== GET /api/don_hang/:id ===================== */
 export async function GET(_req: Request, context: RouteParams) {
   try {
-    const { id } = await context.params; // ✅ await params
+    const { id } = await context.params; 
     const parsedId = parseId(id);
     if (!parsedId) {
       return NextResponse.json({ error: "ID không hợp lệ" }, { status: 400 });
@@ -77,10 +76,9 @@ export async function GET(_req: Request, context: RouteParams) {
   }
 }
 
-/** ===================== PATCH /api/don_hang/:id ===================== */
 export async function PATCH(req: Request, context: RouteParams) {
   try {
-    const { id } = await context.params; // ✅ await params
+    const { id } = await context.params; 
     const parsedId = parseId(id);
     if (!parsedId) {
       return NextResponse.json({ error: "ID không hợp lệ" }, { status: 400 });
