@@ -1041,8 +1041,7 @@ function DonHangPageContent() {
             <select
               value={range}
               onChange={(e) => updateQuery({ range: e.target.value, page: "1" })}
-              className="border rounded-lg px-3 py-1.5 text-sm"
-            >
+              className="border rounded-lg px-3 py-1.5 text-sm">
               <option value="today">Hôm nay</option>
               <option value="3days">3 ngày gần đây</option>
               <option value="week">1 tuần</option>
@@ -1059,15 +1058,13 @@ function DonHangPageContent() {
                 }
               }}
               placeholder="🔍 Tìm mã đơn..."
-              className="border rounded-lg px-3 py-1.5 w-52 text-sm"
-            />
+              className="border rounded-lg px-3 py-1.5 w-52 text-sm" />
             <button
               onClick={() => {
                 const val = (document.querySelector("input") as HTMLInputElement)?.value || "";
                 updateQuery({ search: val, page: "1" });
               }}
-              className="bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-600"
-            >
+              className="bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-600">
               Tìm
             </button>
           </div>
@@ -1077,12 +1074,10 @@ function DonHangPageContent() {
         <div className="flex gap-3 mb-5 border-b pb-2 text-gray-700 overflow-x-auto">
           <button
             onClick={() => updateQuery({ trang_thai: "tat_ca", page: "1" })}
-            className={`px-4 py-2 border-b-2 font-medium ${
-              activeTab === "tat_ca"
-                ? "border-blue-500 text-blue-600 font-semibold"
-                : "border-transparent hover:text-blue-600"
-            }`}
-          >
+            className={`px-4 py-2 border-b-2 font-medium ${activeTab === "tat_ca"
+              ? "border-blue-500 text-blue-600 font-semibold"
+              : "border-transparent hover:text-blue-600"
+              }`}>
             Tất cả ({totalAll})
           </button>
 
@@ -1090,12 +1085,10 @@ function DonHangPageContent() {
             <button
               key={key}
               onClick={() => updateQuery({ trang_thai: key, page: "1" })}
-              className={`px-4 py-2 border-b-2 font-medium ${
-                activeTab === key
-                  ? "border-blue-500 text-blue-600 font-semibold"
-                  : "border-transparent hover:text-blue-600"
-              }`}
-            >
+              className={`px-4 py-2 border-b-2 font-medium ${activeTab === key
+                ? "border-blue-500 text-blue-600 font-semibold"
+                : "border-transparent hover:text-blue-600"
+                }`}>
               {label} ({counts[key] ?? 0})
             </button>
           ))}
@@ -1103,10 +1096,8 @@ function DonHangPageContent() {
 
         {/* Table */}
         <div
-          className={`relative overflow-x-auto bg-white rounded-xl transition-opacity ${
-            loading ? "opacity-60" : "opacity-100"
-          }`}
-        >
+          className={`relative overflow-x-auto bg-white rounded-xl transition-opacity ${loading ? "opacity-60" : "opacity-100"
+            }`}>
           <table className="min-w-full text-sm border-collapse">
             <thead className="bg-gray-300 text-gray-700 uppercase">
               <tr>
@@ -1118,7 +1109,7 @@ function DonHangPageContent() {
                 <th className="px-4 py-3 text-center">Chi tiết</th>
               </tr>
             </thead>
-            <tbody>
+            {/* <tbody>
               {donHangs.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-6 text-gray-500">
@@ -1143,19 +1134,70 @@ function DonHangPageContent() {
                     </td>
                     <td
                       className="px-4 py-3 text-center cursor-pointer w-[150px]"
-                      onClick={() => handleTrangThaiClick(don)}
-                    >
+                      onClick={() => handleTrangThaiClick(don)}>
                       <span
-                        className={`px-3 py-1 border rounded-full text-xs font-semibold hover:scale-105 transition-transform ${badgeColors[don.trang_thai]}`}
-                      >
+                        className={`px-3 py-1 border rounded-full text-xs font-semibold hover:scale-105 transition-transform ${badgeColors[don.trang_thai]}`}>
                         {trangThaiLabels[don.trang_thai]}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
                       <Link
                         href={`/don_hang/${don.id}`}
-                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs"
-                      >
+                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs">
+                        Chi tiết
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody> */}
+            <tbody>
+              {loading ? (
+                //  Hiển thị trạng thái "đang tải"
+                <tr>
+                  <td colSpan={6} className="py-10 text-center">
+                    <div className="flex items-center justify-center gap-2 text-gray-600">
+                      <div className="h-5 w-5 border-2 border-gray-400 border-t-blue-500 rounded-full animate-spin"></div>
+                      <span>Đang tải dữ liệu...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : donHangs.length === 0 ? (
+                // Khi không có dữ liệu sau khi load xong
+                <tr>
+                  <td colSpan={6} className="text-center py-6 text-gray-500">
+                    Không có đơn hàng nào.
+                  </td>
+                </tr>
+              ) : (
+                //  Hiển thị danh sách đơn hàng
+                donHangs.map((don) => (
+                  <tr key={don.id} className="border-t hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 font-semibold">
+                      {don.ma_don}
+                      <p className="text-xs text-gray-600">{formatDate(don.ngay_tao)}</p>
+                    </td>
+                    <td className="px-4 py-3 text-center">{don.ho_ten_nguoi_nhan}</td>
+                    <td className="px-4 py-3 text-center">
+                      {don.phuong_thuc_thanh_toan
+                        ? "Thanh toán khi nhận hàng"
+                        : "Thanh toán online"}
+                    </td>
+                    <td className="px-4 py-3 text-center text-red-600 font-semibold">
+                      {don.so_tien_thanh_toan.toLocaleString("vi-VN")} ₫
+                    </td>
+                    <td
+                      className="px-4 py-3 text-center cursor-pointer w-[150px]"
+                      onClick={() => handleTrangThaiClick(don)}>
+                      <span
+                        className={`px-3 py-1 border rounded-full text-xs font-semibold hover:scale-105 transition-transform ${badgeColors[don.trang_thai]}`}>
+                        {trangThaiLabels[don.trang_thai]}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <Link
+                        href={`/don_hang/${don.id}`}
+                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs">
                         Chi tiết
                       </Link>
                     </td>
@@ -1163,6 +1205,7 @@ function DonHangPageContent() {
                 ))
               )}
             </tbody>
+
           </table>
         </div>
 
@@ -1171,12 +1214,10 @@ function DonHangPageContent() {
           <button
             onClick={() => updateQuery({ page: "1" })}
             disabled={page === 1}
-            className={`px-3 py-1 rounded ${
-              page === 1
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
+            className={`px-3 py-1 rounded ${page === 1
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-gray-200 hover:bg-gray-300"
+              }`}>
             Đầu
           </button>
 
@@ -1188,12 +1229,10 @@ function DonHangPageContent() {
                 <button
                   key={p}
                   onClick={() => updateQuery({ page: String(p) })}
-                  className={`px-3 py-1 rounded ${
-                    p === page
-                      ? "bg-blue-500 text-white font-bold scale-105"
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
-                >
+                  className={`px-3 py-1 rounded ${p === page
+                    ? "bg-blue-500 text-white font-bold scale-105"
+                    : "bg-gray-200 hover:bg-gray-300"
+                    }`}>
                   {p}
                 </button>
               )
@@ -1203,12 +1242,10 @@ function DonHangPageContent() {
           <button
             onClick={() => updateQuery({ page: String(totalPages) })}
             disabled={page === totalPages}
-            className={`px-3 py-1 rounded ${
-              page === totalPages
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
+            className={`px-3 py-1 rounded ${page === totalPages
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-gray-200 hover:bg-gray-300"
+              }`}>
             Cuối
           </button>
         </div>
@@ -1217,7 +1254,6 @@ function DonHangPageContent() {
   );
 }
 
-// ===== Bọc Suspense cho Next.js 15 =====
 export default function DonHangPage() {
   return (
     <Suspense fallback={<div className="p-6 text-gray-500">Đang tải danh sách đơn hàng...</div>}>
