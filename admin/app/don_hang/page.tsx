@@ -861,7 +861,7 @@ function DonHangPageContent() {
                       {don.so_tien_thanh_toan.toLocaleString("vi-VN")} ₫
                     </td>
                     <td
-                      className="px-4 py-3 text-center cursor-pointer"
+                      className="px-4 py-3 text-center cursor-pointer w-[150px]"
                       onClick={() => handleTrangThaiClick(don)}
                     >
                       <span
