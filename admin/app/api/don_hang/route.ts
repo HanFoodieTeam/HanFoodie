@@ -308,6 +308,7 @@ export async function GET(req: Request) {
       order: orderCondition,
       offset: (page - 1) * limit,
       limit,
+       subQuery: false,
     });
 
     // ==== Tổng đơn hàng (không lọc trạng thái) ====
