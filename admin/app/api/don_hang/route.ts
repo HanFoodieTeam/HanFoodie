@@ -1,6 +1,3 @@
-
-
-
 import { NextResponse } from "next/server";
 import { DonHangModel, NguoiDungModel } from "@/app/lib/models";
 import { IDonHang } from "@/app/lib/cautrucdata";
@@ -57,20 +54,8 @@ export async function GET(req: Request) {
         ? { ...baseWhere, trang_thai: trang_thai as IDonHang["trang_thai"] }
         : baseWhere;
 
-    // ==== ORDER (sắp xếp) ====
-    // Ưu tiên đơn "chờ xác nhận" lên đầu trong tab Tất cả
-    const orderCondition: OrderItem[] =
-      trang_thai === "tat_ca" || !trang_thai
-        ? [
-            [
-              Sequelize.literal(
-                `CASE WHEN DonHangModel.trang_thai = 'cho_xac_nhan' THEN 0 ELSE 1 END`
-              ),
-              "ASC",
-            ],
-            [Sequelize.col("DonHangModel.id"), "DESC"],
-          ]
-        : [[Sequelize.col("DonHangModel.id"), "DESC"]];
+    // ==== ORDER: chỉ sắp xếp theo id giảm dần ====
+    const orderCondition: OrderItem[] = [["id", "DESC"]];
 
     // ==== TRUY VẤN PHÂN TRANG ====
     const { count, rows } = await DonHangModel.findAndCountAll({
@@ -122,10 +107,10 @@ export async function GET(req: Request) {
       data: rows as IDonHang[],
       page,
       limit,
-      totalItems: count, // tổng đơn hiện tại (tab cụ thể)
-      totalAll, // tổng đơn không lọc trạng thái
+      totalItems: count,
+      totalAll,
       totalPages: Math.ceil(count / limit),
-      countByStatus, // đếm theo trạng thái (lọc range/search)aaa
+      countByStatus,
     });
   } catch (e) {
     console.error("🔥 Lỗi truy vấn đơn hàng:", e);
