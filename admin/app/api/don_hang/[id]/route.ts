@@ -1,32 +1,29 @@
 import { NextResponse } from "next/server";
-import {
-  DonHangModel,
-  NguoiDungModel,
-  ChiTietDonHangModel,
-  BienTheModel,
-  SanPhamModel,
+import { DonHangModel, NguoiDungModel, ChiTietDonHangModel, BienTheModel, SanPhamModel,
 } from "@/app/lib/models";
 import { IDonHang, TrangThaiDonHang } from "@/app/lib/cautrucdata";
 
+//  Hàm parse ID hợp lệ
 function parseId(id: string): number | null {
   const n = Number(id);
   return Number.isInteger(n) && n > 0 ? n : null;
 }
 
-const ALLOWED: Record<TrangThaiDonHang, TrangThaiDonHang | null> = {
-  cho_xac_nhan: "da_xac_nhan",
-  da_xac_nhan: "dang_giao",
-  dang_giao: "da_giao",
-  da_giao: null,
-  da_huy: null,
+//  Định nghĩa các trạng thái cho phép chuyển
+const ALLOWED: Record<TrangThaiDonHang, TrangThaiDonHang[]> = {
+  cho_xac_nhan: ["da_xac_nhan", "da_huy"], // có thể xác nhận hoặc hủy
+  da_xac_nhan: ["dang_giao", "da_huy"],    // có thể giao hoặc hủy
+  dang_giao: ["da_giao"],                  // chỉ có thể giao xong
+  da_giao: [],                             // không thể đổi
+  da_huy: [],                              // không thể đổi
 };
 
-type RouteParams = { params: Promise<{ id: string }> }; // 🔹 quan trọng!
+type RouteParams = { params: Promise<{ id: string }> };
 
-/** ===================== GET /api/don_hang/:id ===================== */
+
 export async function GET(_req: Request, context: RouteParams) {
   try {
-    const { id } = await context.params; // ✅ await params
+    const { id } = await context.params;
     const parsedId = parseId(id);
     if (!parsedId) {
       return NextResponse.json({ error: "ID không hợp lệ" }, { status: 400 });
@@ -62,7 +59,10 @@ export async function GET(_req: Request, context: RouteParams) {
     });
 
     if (!don) {
-      return NextResponse.json({ error: "Không tìm thấy đơn hàng" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Không tìm thấy đơn hàng" },
+        { status: 404 }
+      );
     }
 
     const plain = don.get({ plain: true }) as unknown as IDonHang;
@@ -77,10 +77,11 @@ export async function GET(_req: Request, context: RouteParams) {
   }
 }
 
-/** ===================== PATCH /api/don_hang/:id ===================== */
+
+
 export async function PATCH(req: Request, context: RouteParams) {
   try {
-    const { id } = await context.params; // ✅ await params
+    const { id } = await context.params;
     const parsedId = parseId(id);
     if (!parsedId) {
       return NextResponse.json({ error: "ID không hợp lệ" }, { status: 400 });
@@ -89,37 +90,107 @@ export async function PATCH(req: Request, context: RouteParams) {
     const body = (await req.json()) as { trang_thai?: TrangThaiDonHang };
     const next = body.trang_thai;
     if (!next) {
-      return NextResponse.json({ error: "Thiếu trường 'trang_thai'" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Thiếu trường 'trang_thai'" },
+        { status: 400 }
+      );
     }
 
-    const don = await DonHangModel.findOne({ where: { id: parsedId } });
+    //  Lấy đơn hàng hiện tại
+    const don = await DonHangModel.findByPk(parsedId);
     if (!don) {
-      return NextResponse.json({ error: "Không tìm thấy đơn hàng" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Không tìm thấy đơn hàng" },
+        { status: 404 }
+      );
     }
 
     const current = don.getDataValue("trang_thai") as TrangThaiDonHang;
-    const allowedNext = ALLOWED[current];
-    if (allowedNext && next !== allowedNext) {
+    const allowedNext = ALLOWED[current] || [];
+
+    //  Không được chuyển trạng thái không hợp lệ
+    if (!allowedNext.includes(next)) {
       return NextResponse.json(
         {
-          error: `Chuyển từ '${current}' sang '${next}' không hợp lệ. Chỉ được sang '${allowedNext}'.`,
+          error: `Không thể chuyển từ trạng thái '${current}' sang '${next}'.`,
+          allowed: allowedNext,
         },
         { status: 400 }
       );
     }
 
+    //  Cập nhật trạng thái và thời gian
     await don.update({
       trang_thai: next,
       ngay_cap_nhat: new Date(),
     });
 
-    return NextResponse.json({ message: "Cập nhật trạng thái thành công" });
+    return NextResponse.json({
+      message: "✅ Cập nhật trạng thái đơn hàng thành công",
+      data: don,
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("PATCH /api/don_hang/:id error:", msg);
     return NextResponse.json(
-      { error: "Lỗi khi cập nhật trạng thái", detail: msg },
+      { error: "Lỗi khi cập nhật trạng thái đơn hàng", detail: msg },
       { status: 500 }
     );
   }
 }
+
+
+
+
+// export async function PATCH(req: Request, context: RouteParams) {
+//   try {
+//     const { id } = await context.params;
+//     const parsedId = parseId(id);
+//     if (!parsedId) {
+//       return NextResponse.json({ error: "ID không hợp lệ" }, { status: 400 });
+//     }
+
+//     const body = (await req.json()) as { trang_thai?: TrangThaiDonHang };
+//     const next = body.trang_thai;
+//     if (!next) {
+//       return NextResponse.json({ error: "Thiếu trường 'trang_thai'" }, { status: 400 });
+//     }
+
+//     const don = await DonHangModel.findByPk(parsedId);
+//     if (!don) {
+//       return NextResponse.json({ error: "Không tìm thấy đơn hàng" }, { status: 404 });
+//     }
+
+//     const current = don.getDataValue("trang_thai") as TrangThaiDonHang;
+//     const allowedNext = ALLOWED[current] || [];
+
+//     if (!allowedNext.includes(next)) {
+//       return NextResponse.json(
+//         { error: `Không thể chuyển từ '${current}' sang '${next}'.`, allowed: allowedNext },
+//         { status: 400 }
+//       );
+//     }
+
+//     // ✅ Cập nhật thời gian nếu trạng thái là “đã giao” hoặc “đã hủy”
+//     const updateData: Partial<IDonHang> = { trang_thai: next };
+
+//     if (next === "da_giao" || next === "da_huy") {
+//       updateData.ngay_cap_nhat = new Date(); // thời điểm hoàn tất / hủy
+//     }
+
+//     await don.update(updateData);
+
+//     return NextResponse.json({
+//       message: "✅ Cập nhật trạng thái đơn hàng thành công",
+//       data: don,
+//     });
+//   } catch (err) {
+//     const msg = err instanceof Error ? err.message : String(err);
+//     console.error("PATCH /api/don_hang/:id error:", msg);
+//     return NextResponse.json(
+//       { error: "Lỗi khi cập nhật trạng thái đơn hàng", detail: msg },
+//       { status: 500 }
+//     );
+//   }
+// }
+  

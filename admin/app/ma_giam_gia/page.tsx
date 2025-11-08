@@ -1,23 +1,32 @@
+
 // "use client";
 
 // import { useEffect, useState } from "react";
 // import Link from "next/link";
 // import { IMaGiamGia } from "../lib/cautrucdata";
 
+// type StatusKey = "all" | "upcoming" | "active" | "expired";
+
 // export default function MaGiamGiaList() {
 //   const [data, setData] = useState<IMaGiamGia[]>([]);
 //   const [loading, setLoading] = useState(true);
 //   const [confirmAnHien, setConfirmAnHien] = useState<IMaGiamGia | null>(null);
-
 //   const [search, setSearch] = useState("");
 //   const [searchQuery, setSearchQuery] = useState("");
+//   const [status, setStatus] = useState<StatusKey>("all");
 //   const [page, setPage] = useState(1);
 //   const [totalPages, setTotalPages] = useState(1);
 
+//   // ======== Lấy dữ liệu ========
 //   const fetchData = async () => {
 //     try {
 //       setLoading(true);
-//       const res = await fetch(`/api/ma_giam_gia?page=${page}&search=${searchQuery}`);
+//       const qs = new URLSearchParams({
+//         page: String(page),
+//         search: searchQuery,
+//         status,
+//       });
+//       const res = await fetch(`/api/ma_giam_gia?${qs.toString()}`);
 //       const json = await res.json();
 //       setData(json.data);
 //       setTotalPages(json.totalPages);
@@ -31,20 +40,14 @@
 
 //   useEffect(() => {
 //     fetchData();
-//   }, [page, searchQuery]);
+//   }, [page, searchQuery, status]);
 
 //   const handleSearch = () => {
 //     setPage(1);
 //     setSearchQuery(search.trim());
 //   };
 
-//   const handleDeleted = (id: number) => {
-//     setData((prev) => prev.filter((item) => item.id !== id));
-//   };
-
-//   const handleToggleAnHien = (item: IMaGiamGia) => {
-//     setConfirmAnHien(item);
-//   };
+//   const handleToggleAnHien = (item: IMaGiamGia) => setConfirmAnHien(item);
 
 //   const confirmToggle = async () => {
 //     if (!confirmAnHien) return;
@@ -66,7 +69,6 @@
 //     } else {
 //       alert("Không thể cập nhật trạng thái!");
 //     }
-
 //     setConfirmAnHien(null);
 //   };
 
@@ -77,57 +79,78 @@
 //       year: "numeric",
 //     });
 
+//   function getHieuLucBadge(bat_dau: string, ket_thuc: string) {
+//     const now = new Date();
+//     const start = new Date(bat_dau);
+//     const end = new Date(ket_thuc);
+
+//     if (now < start)
+//       return { label: "Chưa hoạt động", color: "bg-gray-200 text-gray-700 border-gray-400" };
+//     if (now > end)
+//       return { label: "Đã hết hạn", color: "bg-red-100 text-red-700 border-red-300" };
+//     return { label: "Đang hoạt động", color: "bg-green-100 text-green-700 border-green-300" };
+//   }
+
 //   if (loading) return <div className="p-4">Đang tải dữ liệu...</div>;
 
 //   return (
-//     <div className="">
+//     <div>
 //       <h1 className="text-2xl font-bold mb-2 text-gray-800">Quản lý Mã Giảm Giá</h1>
 
-//       {/* Tìm kiếm + Thêm mới */}
-//       <div className="flex justify-between items-center mb-3">
-//         <div className="flex space-x-2">
+//       {/* Tìm kiếm + Lọc + Thêm */}
+//       <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
+//         <div className="flex gap-2 flex-wrap">
 //           <input
 //             type="text"
 //             placeholder="Nhập tên hoặc mã số..."
 //             value={search}
 //             onChange={(e) => setSearch(e.target.value)}
 //             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-//             className="border border-gray-400 rounded-lg px-3 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
-//           />
+//             className="border border-gray-400 rounded-lg px-3 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-400" />
 //           <button
 //             onClick={handleSearch}
-//             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow"
-//           >
-//              Tìm
+//             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
+//             Tìm
 //           </button>
+
+//           <select
+//             value={status}
+//             onChange={(e) => {
+//               setPage(1);
+//               setStatus(e.target.value as StatusKey);
+//             }}
+//             className="border border-gray-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+//             <option value="all">Tất cả</option>
+//             <option value="active">Đang hoạt động</option>
+//             <option value="upcoming">Chưa hoạt động</option>
+//             <option value="expired">Đã hết hạn</option>
+//           </select>
 //         </div>
 
 //         <Link
 //           href="/ma_giam_gia/them"
-//           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow"
-//         >
-//            Thêm Mã Giảm Giá
+//           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow">
+//           Thêm Mã Giảm Giá
 //         </Link>
 //       </div>
 
-//       {/* Bảng danh sách */}
+//       {/* Bảng dữ liệu */}
 //       <div className="overflow-x-auto bg-white rounded-xl shadow-md">
 //         <table className="min-w-full text-sm text-left border-collapse">
 //           <thead className="bg-gray-300 text-gray-700 uppercase">
-//             {/* <thead className="bg-white/70 backdrop-blur-sm text-gray-700 uppercase shadow-sm border-b border-gray-200"> */}
-
 //             <tr>
 //               <th className="px-4 py-3">Tên / Mã số</th>
 //               <th className="px-4 py-3 text-center">Giá trị giảm</th>
 //               <th className="px-4 py-3 text-center">Giảm tối đa</th>
 //               <th className="px-4 py-3 text-center">GTG Tối thiểu</th>
 //               <th className="px-4 py-3 text-center">Số lượng</th>
-//               <th className="px-4 py-3 text-center">Bắt đầu / Kết thúc</th>
-//               <th className="px-4 py-3 text-center">Điều kiện</th>
+//               <th className="px-4 py-3 text-center">Hiệu lực</th>
+//               <th className="px-4 py-3 text-center max-w-[150px] truncate">Mô tả</th>
 //               <th className="px-4 py-3 text-center">Trạng thái</th>
 //               <th className="px-4 py-3 text-center">Sửa</th>
 //             </tr>
 //           </thead>
+
 //           <tbody>
 //             {data.length === 0 ? (
 //               <tr>
@@ -136,57 +159,65 @@
 //                 </td>
 //               </tr>
 //             ) : (
-//               data.map((mgg, i) => (
-//                 <tr
-//                   key={mgg.id}
-//                   className="border-t hover:bg-gray-200 transition-all duration-150"
-//                 >
-//                   <td className="px-4 py-3 font-semibold">
-//                     {mgg.ten}
-//                     <br />
-//                     <span className="text-sm text-gray-600">({mgg.ma_so})</span>
-//                   </td>
-//                   <td className="px-4 py-3 text-center text-red-600">
-//                     {mgg.loai_giam_gia
-//                       ? `${mgg.gia_tri_giam}%`
-//                       : `${mgg.gia_tri_giam.toLocaleString("vi")} ₫`}
-//                     <br />
+//               data.map((mgg) => {
+//                 const badge = getHieuLucBadge(mgg.bat_dau, mgg.ket_thuc);
 
-//                   </td>
-//                   <td className="px-4 py-3 text-center text-red-600">
-//                     {mgg.gia_tri_giam_toi_da}
-//                   </td>
-//                   <td className="px-4 py-3 text-center">
-//                     {mgg.gia_tri_toi_thieu.toLocaleString("vi")} ₫
-//                   </td>
-//                   <td className="px-4 py-3 text-center">{mgg.so_luong}</td>
-//                   <td className="px-4 py-3 text-center">
-//                     {formatDate(mgg.bat_dau)} <br />
-//                     <span className="text-red-500">{formatDate(mgg.ket_thuc)}</span>
-//                   </td>
-//                   <td className="px-4 py-3 text-center">{mgg.mo_ta}</td>
-//                   <td
-//                     className="px-4 py-3 text-center cursor-pointer select-none text-xl"
-//                     onClick={() => handleToggleAnHien(mgg)}
-//                   >
-//                     {mgg.an_hien ? "✅" : "❌"}
-//                   </td>
-//                   <td className="px-4 py-3 text-center">
-//                     <Link
-//                       href={`/ma_giam_gia/${mgg.id}`}
-//                       className="text-blue-500 hover:text-blue-700 font-semibold"
-//                     >
-//                       Sửa
-//                     </Link>{" "}
-//                     {/* |{" "} */}
-//                     {/* <NutXoaMGG
-//                       id={mgg.id}
-//                       ten={mgg.ten}
-//                       onDeleted={handleDeleted}
-//                     /> */}
-//                   </td>
-//                 </tr>
-//               ))
+//                 return (
+//                   <tr key={mgg.id} className="border-t hover:bg-gray-200 transition-all duration-150">
+//                     <td className="px-4 py-3 font-semibold max-w-[250px] truncate">
+//                       {mgg.ten}
+//                       <br />
+//                       <span className="text-sm text-gray-600">({mgg.ma_so})</span>
+//                     </td>
+
+//                     <td className="px-4 py-3 text-center text-red-600">
+//                       {mgg.loai_giam_gia
+//                         ? `${mgg.gia_tri_giam}%`
+//                         : `${mgg.gia_tri_giam.toLocaleString("vi")} ₫`}
+//                     </td>
+
+//                     <td className="px-4 py-3 text-center text-red-600">
+//                       {mgg.gia_tri_giam_toi_da != null
+//                         ? mgg.gia_tri_giam_toi_da.toLocaleString("vi")
+//                         : "-"}
+//                     </td>
+
+//                     <td className="px-4 py-3 text-center">
+//                       {mgg.gia_tri_toi_thieu.toLocaleString("vi")} ₫
+//                     </td>
+
+//                     <td className="px-4 py-3 text-center">{mgg.so_luong}</td>
+
+//                     {/* Hiệu lực */}
+//                     <td className="px-4 py-3 text-center">
+//                       <div
+//                         className={`rounded-lg p-2 border ${badge.color} text-sm leading-tight flex flex-col items-center`}>
+//                         <span className="font-semibold">{badge.label}</span>
+//                         <span className="text-xs mt-1">
+//                           {formatDate(mgg.bat_dau)} → {formatDate(mgg.ket_thuc)}
+//                         </span>
+//                       </div>
+//                     </td>
+
+//                     <td className="px-4 py-3 text-center max-w-[180px] truncate">{mgg.mo_ta}</td>
+
+//                     <td
+//                       className="px-4 py-3 text-center cursor-pointer select-none text-xl"
+//                       onClick={() => handleToggleAnHien(mgg)}
+//                       title="Bấm để ẩn/hiện">
+//                       {mgg.an_hien ? "✅" : "❌"}
+//                     </td>
+
+//                     <td className="px-4 py-3 text-center">
+//                       <Link
+//                         href={`/ma_giam_gia/${mgg.id}`}
+//                         className="text-blue-500 hover:text-blue-700 font-semibold">
+//                         Sửa
+//                       </Link>
+//                     </td>
+//                   </tr>
+//                 );
+//               })
 //             )}
 //           </tbody>
 //         </table>
@@ -197,11 +228,8 @@
 //         <button
 //           onClick={() => setPage(1)}
 //           disabled={page === 1}
-//           className={`px-3 py-1 rounded ${page === 1
-//               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-//               : "bg-gray-200 hover:bg-gray-300"
-//             }`}
-//         >
+//           className={`px-3 py-1 rounded ${page === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-200 hover:bg-gray-300"
+//             }`}>
 //           Đầu
 //         </button>
 
@@ -213,11 +241,8 @@
 //               <button
 //                 key={p}
 //                 onClick={() => setPage(p)}
-//                 className={`px-3 py-1 rounded ${p === page
-//                     ? "bg-blue-500 text-white font-bold scale-105"
-//                     : "bg-gray-200 hover:bg-gray-300"
-//                   }`}
-//               >
+//                 className={`px-3 py-1 rounded ${p === page ? "bg-blue-500 text-white font-bold scale-105" : "bg-gray-200 hover:bg-gray-300"
+//                   }`} >
 //                 {p}
 //               </button>
 //             )
@@ -230,8 +255,7 @@
 //           className={`px-3 py-1 rounded ${page === totalPages
 //               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
 //               : "bg-gray-200 hover:bg-gray-300"
-//             }`}
-//         >
+//             }`} >
 //           Cuối
 //         </button>
 //       </div>
@@ -240,9 +264,7 @@
 //       {confirmAnHien && (
 //         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 //           <div className="bg-white rounded-lg p-6 shadow-lg w-[380px]">
-//             <h2 className="text-lg font-semibold mb-3 text-center">
-//               Xác nhận thay đổi trạng thái
-//             </h2>
+//             <h2 className="text-lg font-semibold mb-3 text-center">Xác nhận thay đổi trạng thái</h2>
 //             <p className="text-center mb-5">
 //               Bạn có muốn{" "}
 //               <span className="font-semibold text-red-600">
@@ -257,14 +279,12 @@
 //             <div className="flex justify-center space-x-3">
 //               <button
 //                 onClick={confirmToggle}
-//                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-//               >
+//                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
 //                 Có
 //               </button>
 //               <button
 //                 onClick={() => setConfirmAnHien(null)}
-//                 className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
-//               >
+//                 className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded">
 //                 Không
 //               </button>
 //             </div>
@@ -275,23 +295,41 @@
 //   );
 // }
 
+
+
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { IMaGiamGia } from "../lib/cautrucdata";
 
 type StatusKey = "all" | "upcoming" | "active" | "expired";
 
-export default function MaGiamGiaList() {
+function MaGiamGiaListContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const page = Number(searchParams.get("page") || 1);
+  const searchQuery = searchParams.get("search") || "";
+  const status = (searchParams.get("status") || "all") as StatusKey;
+
   const [data, setData] = useState<IMaGiamGia[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmAnHien, setConfirmAnHien] = useState<IMaGiamGia | null>(null);
-  const [search, setSearch] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [status, setStatus] = useState<StatusKey>("all");
-  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState(searchQuery);
   const [totalPages, setTotalPages] = useState(1);
+
+  //  Cập nhật URL khi thay đổi tham số
+  const updateQuery = (updates: Record<string, string | undefined>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, val]) => {
+      if (val && val !== "") params.set(key, val);
+      else params.delete(key);
+    });
+    const newUrl = `/ma_giam_gia?${params.toString()}`;
+    router.push(newUrl);
+  };
 
   // ======== Lấy dữ liệu ========
   const fetchData = async () => {
@@ -307,7 +345,7 @@ export default function MaGiamGiaList() {
       setData(json.data);
       setTotalPages(json.totalPages);
     } catch (error) {
-      console.error("Lỗi khi tải mã giảm giá:", error);
+      console.error("❌ Lỗi khi tải mã giảm giá:", error);
       setData([]);
     } finally {
       setLoading(false);
@@ -316,13 +354,10 @@ export default function MaGiamGiaList() {
 
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchQuery, status]);
 
-  // ======== Xử lý ========
   const handleSearch = () => {
-    setPage(1);
-    setSearchQuery(search.trim());
+    updateQuery({ page: "1", search: search.trim() });
   };
 
   const handleToggleAnHien = (item: IMaGiamGia) => setConfirmAnHien(item);
@@ -357,7 +392,6 @@ export default function MaGiamGiaList() {
       year: "numeric",
     });
 
-  // ======== Xác định hiệu lực ========
   function getHieuLucBadge(bat_dau: string, ket_thuc: string) {
     const now = new Date();
     const start = new Date(bat_dau);
@@ -374,44 +408,36 @@ export default function MaGiamGiaList() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-2 text-gray-800">Quản lý Mã Giảm Giá</h1>
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
+        {/* Tiêu đề */}
+        <h1 className="text-2xl font-bold text-gray-800">Quản lý Mã Giảm Giá</h1>
 
-      {/* Tìm kiếm + Lọc + Thêm */}
-      <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
-        <div className="flex gap-2 flex-wrap">
-          <input
-            type="text"
-            placeholder="Nhập tên hoặc mã số..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="border border-gray-400 rounded-lg px-3 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-          <button
-            onClick={handleSearch}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
-            Tìm
-          </button>
-
-          <select
-            value={status}
-            onChange={(e) => {
-              setPage(1);
-              setStatus(e.target.value as StatusKey);
-            }}
-            className="border border-gray-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <div className="flex items-center gap-2">
+          <select value={status} onChange={(e) => updateQuery({ status: e.target.value, page: "1" })}
+            className="border rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
             <option value="all">Tất cả</option>
             <option value="active">Đang hoạt động</option>
             <option value="upcoming">Chưa hoạt động</option>
             <option value="expired">Đã hết hạn</option>
           </select>
-        </div>
 
-        <Link
-          href="/ma_giam_gia/them"
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow">
-          Thêm Mã Giảm Giá
-        </Link>
+          <input type="text" placeholder="🔍 Nhập tên hoặc mã giảm giá..." value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            className="border rounded-lg px-3 py-1.5 w-52 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+
+          <button onClick={handleSearch}
+            className="bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-600 transition-colors" >
+            Tìm
+          </button>
+
+          <Link href="/ma_giam_gia/them"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-1.5 rounded-lg text-sm shadow">
+            Thêm mã giảm giá
+          </Link>
+        </div>
       </div>
+
 
       {/* Bảng dữ liệu */}
       <div className="overflow-x-auto bg-white rounded-xl shadow-md">
@@ -419,9 +445,11 @@ export default function MaGiamGiaList() {
           <thead className="bg-gray-300 text-gray-700 uppercase">
             <tr>
               <th className="px-4 py-3">Tên / Mã số</th>
-              <th className="px-4 py-3 text-center">Giá trị giảm</th>
+              <th className="px-4 py-3 text-center">Giá trị giảm <br />
+                (GTG tối thiểu)
+              </th>
               <th className="px-4 py-3 text-center">Giảm tối đa</th>
-              <th className="px-4 py-3 text-center">GTG Tối thiểu</th>
+              {/* <th className="px-4 py-3 text-center">GTG Tối thiểu</th> */}
               <th className="px-4 py-3 text-center">Số lượng</th>
               <th className="px-4 py-3 text-center">Hiệu lực</th>
               <th className="px-4 py-3 text-center max-w-[150px] truncate">Mô tả</th>
@@ -443,7 +471,7 @@ export default function MaGiamGiaList() {
 
                 return (
                   <tr key={mgg.id} className="border-t hover:bg-gray-200 transition-all duration-150">
-                    <td className="px-4 py-3 font-semibold max-w-[250px] truncate">
+                    <td className="px-4 py-3 font-semibold max-w-[200px] truncate">
                       {mgg.ten}
                       <br />
                       <span className="text-sm text-gray-600">({mgg.ma_so})</span>
@@ -452,7 +480,11 @@ export default function MaGiamGiaList() {
                     <td className="px-4 py-3 text-center text-red-600">
                       {mgg.loai_giam_gia
                         ? `${mgg.gia_tri_giam}%`
-                        : `${mgg.gia_tri_giam.toLocaleString("vi")} ₫`}
+                        : `${mgg.gia_tri_giam.toLocaleString("vi")} ₫`} <br />
+                      <p className="px-4 py-3 text-center text-gray-700">
+                        ( {mgg.gia_tri_toi_thieu.toLocaleString("vi")} ₫)
+                      </p>
+
                     </td>
 
                     <td className="px-4 py-3 text-center text-red-600">
@@ -461,14 +493,14 @@ export default function MaGiamGiaList() {
                         : "-"}
                     </td>
 
-                    <td className="px-4 py-3 text-center">
+                    {/* <td className="px-4 py-3 text-center">
                       {mgg.gia_tri_toi_thieu.toLocaleString("vi")} ₫
-                    </td>
+                    </td> */}
 
                     <td className="px-4 py-3 text-center">{mgg.so_luong}</td>
 
                     {/* Hiệu lực */}
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center w-[200px]">
                       <div
                         className={`rounded-lg p-2 border ${badge.color} text-sm leading-tight flex flex-col items-center`}>
                         <span className="font-semibold">{badge.label}</span>
@@ -478,7 +510,10 @@ export default function MaGiamGiaList() {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 text-center max-w-[180px] truncate">{mgg.mo_ta}</td>
+                    <td className="px-4 py-3 text-center w-[250px] truncate">
+                      {mgg.mo_ta?.trim() ? mgg.mo_ta : "-"}
+
+                    </td>
 
                     <td
                       className="px-4 py-3 text-center cursor-pointer select-none text-xl"
@@ -505,9 +540,11 @@ export default function MaGiamGiaList() {
       {/* Phân trang */}
       <div className="flex justify-center mt-4 space-x-2">
         <button
-          onClick={() => setPage(1)}
+          onClick={() => updateQuery({ page: "1" })}
           disabled={page === 1}
-          className={`px-3 py-1 rounded ${page === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-200 hover:bg-gray-300"
+          className={`px-3 py-1 rounded ${page === 1
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-gray-200 hover:bg-gray-300"
             }`}>
           Đầu
         </button>
@@ -519,9 +556,11 @@ export default function MaGiamGiaList() {
             p <= totalPages && (
               <button
                 key={p}
-                onClick={() => setPage(p)}
-                className={`px-3 py-1 rounded ${p === page ? "bg-blue-500 text-white font-bold scale-105" : "bg-gray-200 hover:bg-gray-300"
-                  }`} >
+                onClick={() => updateQuery({ page: String(p) })}
+                className={`px-3 py-1 rounded ${p === page
+                  ? "bg-blue-500 text-white font-bold scale-105"
+                  : "bg-gray-200 hover:bg-gray-300"
+                  }`}>
                 {p}
               </button>
             )
@@ -529,12 +568,12 @@ export default function MaGiamGiaList() {
         })}
 
         <button
-          onClick={() => setPage(totalPages)}
+          onClick={() => updateQuery({ page: String(totalPages) })}
           disabled={page === totalPages}
           className={`px-3 py-1 rounded ${page === totalPages
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-gray-200 hover:bg-gray-300"
-            }`} >
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-gray-200 hover:bg-gray-300"
+            }`}>
           Cuối
         </button>
       </div>
@@ -543,7 +582,9 @@ export default function MaGiamGiaList() {
       {confirmAnHien && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 shadow-lg w-[380px]">
-            <h2 className="text-lg font-semibold mb-3 text-center">Xác nhận thay đổi trạng thái</h2>
+            <h2 className="text-lg font-semibold mb-3 text-center">
+              Xác nhận thay đổi trạng thái
+            </h2>
             <p className="text-center mb-5">
               Bạn có muốn{" "}
               <span className="font-semibold text-red-600">
@@ -571,5 +612,13 @@ export default function MaGiamGiaList() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function MaGiamGiaList() {
+  return (
+    <Suspense fallback={<div className="p-4">Đang tải mã giảm giá...</div>}>
+      <MaGiamGiaListContent />
+    </Suspense>
   );
 }
