@@ -16,6 +16,7 @@ export async function GET(req: Request) {
     const range = (searchParams.get("range") || "today") as RangeKey; 
 
     // ---- baseWhere: KHÔNG có trang_thai
+    // aaaaaaa
     const baseWhere: WhereOptions<IDonHang> = {};
 
     // search theo mã đơn
