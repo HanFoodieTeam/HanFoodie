@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     const page = Number(searchParams.get("page") || 1);
     const limit = Number(searchParams.get("limit") || 10);
     const search = searchParams.get("search")?.trim();
-    const range = (searchParams.get("range") || "today") as RangeKey; 
+    const range = (searchParams.get("range") || "today") as RangeKey;
 
     // ---- baseWhere: KHÔNG có trang_thai
     const baseWhere: WhereOptions<IDonHang> = {};
@@ -64,15 +64,15 @@ export async function GET(req: Request) {
     const totalAll = await DonHangModel.count({ where: baseWhere });
 
     // đếm theo trạng thái (theo range/search)
- const grouped = (await DonHangModel.findAll({
-  attributes: [
-    "trang_thai",
-    [Sequelize.fn("COUNT", Sequelize.col("id")), "cnt"],
-  ],
-  where: baseWhere,
-  group: ["trang_thai"],
-  raw: true,
-})) as unknown as Array<{ trang_thai: IDonHang["trang_thai"]; cnt: number }>;
+    const grouped = (await DonHangModel.findAll({
+      attributes: [
+        "trang_thai",
+        [Sequelize.fn("COUNT", Sequelize.col("id")), "cnt"],
+      ],
+      where: baseWhere,
+      group: ["trang_thai"],
+      raw: true,
+    })) as unknown as Array<{ trang_thai: IDonHang["trang_thai"]; cnt: number }>;
 
 
     const countByStatus: Record<IDonHang["trang_thai"], number> = {
