@@ -18,7 +18,6 @@ export async function GET(req: Request) {
     // ---- baseWhere: KHÔNG có trang_thai
     const baseWhere: WhereOptions<IDonHang> = {};
 
-    // search theo mã đơn
     if (search) baseWhere.ma_don = { [Op.like]: `%${search}%` };
 
     // lọc thời gian
