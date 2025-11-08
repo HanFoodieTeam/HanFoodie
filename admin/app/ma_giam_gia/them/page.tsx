@@ -80,10 +80,10 @@ export default function ThemMaGiamGia() {
     });
 
     if (res.ok) {
-      alert("✅ Thêm mã giảm giá thành công!");
+      alert(" Thêm mã giảm giá thành công!");
       router.push("/ma_giam_gia");
     } else {
-      alert("❌ Thêm thất bại, vui lòng kiểm tra lại!");
+      alert(" Thêm thất bại, vui lòng kiểm tra lại!");
     }
 
     setLoading(false);
@@ -104,27 +104,15 @@ export default function ThemMaGiamGia() {
         <div className="flex justify-between gap-4">
           <div className="w-1/2">
             <p className="text-lg">Tên mã giảm giá</p>
-            <input
-              type="text"
-              name="ten"
-              value={form.ten}
-              onChange={handleChange}
-              required
-              className="border border-gray-300 p-2 w-full rounded"
-              placeholder="VD: Giảm 10K đơn đầu tiên"
-            />
+            <input type="text" name="ten" value={form.ten} onChange={handleChange} required  placeholder="VD: Giảm 10K đơn đầu tiên"
+              className="border border-gray-300 p-2 w-full rounded"/>
+            
+            
           </div>
           <div className="w-1/2">
             <p className="text-lg">Mã số</p>
-            <input
-              type="text"
-              name="ma_so"
-              value={form.ma_so}
-              onChange={handleChange}
-              required
-              className="border border-gray-300 p-2 w-full rounded"
-              placeholder="VD: NEW10K"
-            />
+            <input type="text" name="ma_so" value={form.ma_so} onChange={handleChange} required
+              className="border border-gray-300 p-2 w-full rounded" placeholder="VD: NEW10K"/>
           </div>
         </div>
 
@@ -132,9 +120,7 @@ export default function ThemMaGiamGia() {
         <div className="flex justify-between gap-4">
           <div className="w-1/2">
             <p className="text-lg">Loại giảm giá</p>
-            <select
-              name="loai_giam_gia"
-              value={form.loai_giam_gia ? "percent" : "money"}
+            <select  name="loai_giam_gia" value={form.loai_giam_gia ? "percent" : "money"}
               onChange={(e) =>
                 setForm((f) => ({
                   ...f,
@@ -155,48 +141,27 @@ export default function ThemMaGiamGia() {
             <div className="flex w-1/2 gap-4">
               <div className="w-1/2">
                 <p className="text-lg">Giá trị giảm (%)</p>
-                <input
-                  type="number"
-                  name="gia_tri_giam"
-                  value={form.gia_tri_giam}
-                  onChange={handleChange}
-                  required
-                  min={1}
-                  max={100}
-                  className="border border-gray-300 p-2 w-full rounded"
-                />
+                <input  type="number" name="gia_tri_giam" value={form.gia_tri_giam} onChange={handleChange} required min={1} max={100}
+                  className="border border-gray-300 p-2 w-full rounded"/>
               </div>
               <div className="w-1/2">
                 <p className="text-lg">Giảm tối đa (VNĐ)</p>
-                <input
-                  type="text"
-                  name="gia_tri_giam_toi_da"
+                <input type="text" name="gia_tri_giam_toi_da"
                   value={
                     form.gia_tri_giam_toi_da
                       ? formatNumber(form.gia_tri_giam_toi_da)
                       : ""
                   }
                   onChange={handleChange}
-                  min={0}
-                  required
-                  className="border border-gray-300 p-2 w-full rounded"
-                  placeholder="VD: 50.000"
-                />
+                  min={0} required className="border border-gray-300 p-2 w-full rounded" placeholder="VD: 50.000" />
               </div>
             </div>
           ) : (
             // Nếu là giảm theo tiền
             <div className="w-1/2">
               <p className="text-lg">Giá trị giảm (VNĐ)</p>
-              <input
-                type="text"
-                name="gia_tri_giam"
-                value={form.gia_tri_giam ? formatNumber(form.gia_tri_giam) : ""}
-                onChange={handleChange}
-                required
-                className="border border-gray-300 p-2 w-full rounded"
-                placeholder="VD: 30.000"
-              />
+              <input type="text" name="gia_tri_giam" value={form.gia_tri_giam ? formatNumber(form.gia_tri_giam) : ""} onChange={handleChange} required
+                className="border border-gray-300 p-2 w-full rounded" placeholder="VD: 30.000"/>
             </div>
           )}
         </div>
@@ -205,31 +170,17 @@ export default function ThemMaGiamGia() {
         <div className="flex justify-between gap-4">
           <div className="w-1/2">
             <p className="text-lg">Giá trị tối thiểu (VNĐ)</p>
-            <input
-              type="text"
-              name="gia_tri_toi_thieu"
+            <input type="text" name="gia_tri_toi_thieu"
               value={
                 form.gia_tri_toi_thieu
                   ? formatNumber(form.gia_tri_toi_thieu)
                   : ""
               }
-              onChange={handleChange}
-              required
-              className="border border-gray-300 p-2 w-full rounded"
-              placeholder="VD: 100.000"
-            />
+              onChange={handleChange} required  className="border border-gray-300 p-2 w-full rounded" placeholder="VD: 100.000" />
           </div>
           <div className="w-1/2">
             <p className="text-lg">Số lượng</p>
-            <input
-              type="number"
-              name="so_luong"
-              value={form.so_luong ?? ""}
-              onChange={handleChange}
-              required
-              min={1}
-              className="border border-gray-300 p-2 w-full rounded"
-            />
+            <input type="number" name="so_luong" value={form.so_luong ?? ""} onChange={handleChange} required min={1} className="border border-gray-300 p-2 w-full rounded"/>
           </div>
         </div>
 
@@ -237,39 +188,20 @@ export default function ThemMaGiamGia() {
         <div className="flex justify-between gap-4">
           <div className="w-1/2">
             <p className="text-lg">Ngày bắt đầu</p>
-            <input
-              type="date"
-              name="bat_dau"
-              value={form.bat_dau}
-              onChange={handleChange}
-              required
-              className="border border-gray-300 p-2 w-full rounded"
-            />
+            <input type="date" name="bat_dau" value={form.bat_dau} onChange={handleChange} required
+              className="border border-gray-300 p-2 w-full rounded"/>
           </div>
           <div className="w-1/2">
             <p className="text-lg">Ngày kết thúc</p>
-            <input
-              type="date"
-              name="ket_thuc"
-              value={form.ket_thuc}
-              onChange={handleChange}
-              required
-              className="border border-gray-300 p-2 w-full rounded"
-            />
+            <input type="date" name="ket_thuc" value={form.ket_thuc} onChange={handleChange} required className="border border-gray-300 p-2 w-full rounded"/>
           </div>
         </div>
 
         {/* Điều kiện */}
         <div>
           <p className="text-lg">Điều kiện (mô tả)</p>
-          <textarea
-            name="dieu_kien"
-            value={form.mo_ta ?? ""}
-            onChange={handleChange}
-            rows={3}
-            className="border border-gray-300 p-2 w-full rounded"
-            placeholder='VD: {"quantity": 3} hoặc "Áp dụng cho sản phẩm X"'
-          />
+          <textarea name="mo_ta" value={form.mo_ta ?? ""} onChange={handleChange}  rows={3}
+            className="border border-gray-300 p-2 w-full rounded" placeholder='VD: {"quantity": 3} hoặc "Áp dụng cho sản phẩm X"'/>
         </div>
 
         {/* Ẩn / Hiện */}
@@ -277,23 +209,11 @@ export default function ThemMaGiamGia() {
           <p className="text-lg w-24">Ẩn / Hiện</p>
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-1 text-base">
-              <input
-                type="radio"
-                name="an_hien"
-                checked={form.an_hien}
-                onChange={() => setForm((f) => ({ ...f, an_hien: true }))}
-                className="h-4 w-4"
-              />
+              <input type="radio" name="an_hien" checked={form.an_hien} onChange={() => setForm((f) => ({ ...f, an_hien: true }))} className="h-4 w-4"/>
               <span>Hiện</span>
             </label>
             <label className="flex items-center gap-1 text-base">
-              <input
-                type="radio"
-                name="an_hien"
-                checked={!form.an_hien}
-                onChange={() => setForm((f) => ({ ...f, an_hien: false }))}
-                className="h-4 w-4"
-              />
+              <input type="radio" name="an_hien" checked={!form.an_hien} onChange={() => setForm((f) => ({ ...f, an_hien: false }))} className="h-4 w-4"/>
               <span>Ẩn</span>
             </label>
           </div>
@@ -301,10 +221,8 @@ export default function ThemMaGiamGia() {
 
         {/* Nút hành động */}
         <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded font-medium disabled:opacity-50"
-        >
+          type="submit" disabled={loading}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded font-medium disabled:opacity-50">
           {loading ? "Đang lưu..." : "Lưu mã giảm giá"}
         </button>
       </form>

@@ -408,42 +408,36 @@ function MaGiamGiaListContent() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-2 text-gray-800">Quản lý Mã Giảm Giá</h1>
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
+        {/* Tiêu đề */}
+        <h1 className="text-2xl font-bold text-gray-800">Quản lý Mã Giảm Giá</h1>
 
-      {/* Tìm kiếm + Lọc + Thêm */}
-      <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
-        <div className="flex gap-2 flex-wrap">
-          <input
-            type="text"
-            placeholder="Nhập tên hoặc mã số..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="border border-gray-400 rounded-lg px-3 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-          <button
-            onClick={handleSearch}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow" >
-            Tìm
-          </button>
-
-          <select
-            value={status}
-            onChange={(e) => updateQuery({ status: e.target.value, page: "1" })}
-            className="border border-gray-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <div className="flex items-center gap-2">
+          <select value={status} onChange={(e) => updateQuery({ status: e.target.value, page: "1" })}
+            className="border rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
             <option value="all">Tất cả</option>
             <option value="active">Đang hoạt động</option>
             <option value="upcoming">Chưa hoạt động</option>
             <option value="expired">Đã hết hạn</option>
           </select>
-        </div>
 
-        <Link
-          href="/ma_giam_gia/them"
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow"
-        >
-          Thêm Mã Giảm Giá
-        </Link>
+          <input type="text" placeholder="🔍 Nhập tên hoặc mã giảm giá..." value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            className="border rounded-lg px-3 py-1.5 w-52 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+
+          <button onClick={handleSearch}
+            className="bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-600 transition-colors" >
+            Tìm
+          </button>
+
+          <Link href="/ma_giam_gia/them"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-1.5 rounded-lg text-sm shadow">
+            Thêm mã giảm giá
+          </Link>
+        </div>
       </div>
+
 
       {/* Bảng dữ liệu */}
       <div className="overflow-x-auto bg-white rounded-xl shadow-md">
@@ -451,9 +445,11 @@ function MaGiamGiaListContent() {
           <thead className="bg-gray-300 text-gray-700 uppercase">
             <tr>
               <th className="px-4 py-3">Tên / Mã số</th>
-              <th className="px-4 py-3 text-center">Giá trị giảm</th>
+              <th className="px-4 py-3 text-center">Giá trị giảm <br />
+                (GTG tối thiểu)
+              </th>
               <th className="px-4 py-3 text-center">Giảm tối đa</th>
-              <th className="px-4 py-3 text-center">GTG Tối thiểu</th>
+              {/* <th className="px-4 py-3 text-center">GTG Tối thiểu</th> */}
               <th className="px-4 py-3 text-center">Số lượng</th>
               <th className="px-4 py-3 text-center">Hiệu lực</th>
               <th className="px-4 py-3 text-center max-w-[150px] truncate">Mô tả</th>
@@ -475,7 +471,7 @@ function MaGiamGiaListContent() {
 
                 return (
                   <tr key={mgg.id} className="border-t hover:bg-gray-200 transition-all duration-150">
-                    <td className="px-4 py-3 font-semibold max-w-[250px] truncate">
+                    <td className="px-4 py-3 font-semibold max-w-[200px] truncate">
                       {mgg.ten}
                       <br />
                       <span className="text-sm text-gray-600">({mgg.ma_so})</span>
@@ -484,7 +480,11 @@ function MaGiamGiaListContent() {
                     <td className="px-4 py-3 text-center text-red-600">
                       {mgg.loai_giam_gia
                         ? `${mgg.gia_tri_giam}%`
-                        : `${mgg.gia_tri_giam.toLocaleString("vi")} ₫`}
+                        : `${mgg.gia_tri_giam.toLocaleString("vi")} ₫`} <br />
+                      <p className="px-4 py-3 text-center text-gray-700">
+                        ( {mgg.gia_tri_toi_thieu.toLocaleString("vi")} ₫)
+                      </p>
+
                     </td>
 
                     <td className="px-4 py-3 text-center text-red-600">
@@ -493,14 +493,14 @@ function MaGiamGiaListContent() {
                         : "-"}
                     </td>
 
-                    <td className="px-4 py-3 text-center">
+                    {/* <td className="px-4 py-3 text-center">
                       {mgg.gia_tri_toi_thieu.toLocaleString("vi")} ₫
-                    </td>
+                    </td> */}
 
                     <td className="px-4 py-3 text-center">{mgg.so_luong}</td>
 
                     {/* Hiệu lực */}
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center w-[200px]">
                       <div
                         className={`rounded-lg p-2 border ${badge.color} text-sm leading-tight flex flex-col items-center`}>
                         <span className="font-semibold">{badge.label}</span>
@@ -510,7 +510,10 @@ function MaGiamGiaListContent() {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 text-center max-w-[180px] truncate">{mgg.mo_ta}</td>
+                    <td className="px-4 py-3 text-center w-[250px] truncate">
+                      {mgg.mo_ta?.trim() ? mgg.mo_ta : "-"}
+
+                    </td>
 
                     <td
                       className="px-4 py-3 text-center cursor-pointer select-none text-xl"
@@ -539,11 +542,10 @@ function MaGiamGiaListContent() {
         <button
           onClick={() => updateQuery({ page: "1" })}
           disabled={page === 1}
-          className={`px-3 py-1 rounded ${
-            page === 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-gray-200 hover:bg-gray-300"
-          }`}>
+          className={`px-3 py-1 rounded ${page === 1
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-gray-200 hover:bg-gray-300"
+            }`}>
           Đầu
         </button>
 
@@ -555,11 +557,10 @@ function MaGiamGiaListContent() {
               <button
                 key={p}
                 onClick={() => updateQuery({ page: String(p) })}
-                className={`px-3 py-1 rounded ${
-                  p === page
-                    ? "bg-blue-500 text-white font-bold scale-105"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}>
+                className={`px-3 py-1 rounded ${p === page
+                  ? "bg-blue-500 text-white font-bold scale-105"
+                  : "bg-gray-200 hover:bg-gray-300"
+                  }`}>
                 {p}
               </button>
             )
@@ -569,11 +570,10 @@ function MaGiamGiaListContent() {
         <button
           onClick={() => updateQuery({ page: String(totalPages) })}
           disabled={page === totalPages}
-          className={`px-3 py-1 rounded ${
-            page === totalPages
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-gray-200 hover:bg-gray-300"
-          }`}>
+          className={`px-3 py-1 rounded ${page === totalPages
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-gray-200 hover:bg-gray-300"
+            }`}>
           Cuối
         </button>
       </div>
