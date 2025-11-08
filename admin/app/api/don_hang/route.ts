@@ -286,14 +286,35 @@ export async function GET(req: Request) {
 
     // ==== ORDER ====
     // Tab "Tất cả" → Ưu tiên "Chờ xác nhận" trước, rồi id giảm dần
-    const orderCondition: OrderItem[] =
-      trang_thai === "tat_ca" || !trang_thai
-        ? [
-          //  CASE WHEN để đảm bảo đúng thứ tự
-          [literal(`CASE WHEN DonHangModel.trang_thai = 'cho_xac_nhan' THEN 0 ELSE 1 END`), "ASC"] as unknown as OrderItem,
-          [col("DonHangModel.id"), "DESC"],
-        ]
-        : [[col("DonHangModel.id"), "DESC"]];
+    // const orderCondition: OrderItem[] =
+    //   trang_thai === "tat_ca" || !trang_thai
+    //     ? [
+    //       //  CASE WHEN để đảm bảo đúng thứ tự
+    //       [literal(`CASE WHEN DonHangModel.trang_thai = 'cho_xac_nhan' THEN 0 ELSE 1 END`), "ASC"] as unknown as OrderItem,
+    //       [col("DonHangModel.id"), "DESC"],
+    //     ]
+    //     : [[col("DonHangModel.id"), "DESC"]];
+
+  //   const orderCondition: OrderItem[] =
+  // trang_thai === "tat_ca" || !trang_thai
+  //   ? [
+  //       [literal(`CASE WHEN trang_thai = 'cho_xac_nhan' THEN 0 ELSE 1 END`), "ASC"] as unknown as OrderItem,
+  //       [col("id"), "DESC"],
+  //     ]
+  //   : [[col("id"), "DESC"]];
+
+  const orderCondition: OrderItem[] =
+  trang_thai === "tat_ca" || !trang_thai
+    ? [
+        [
+          literal(`CASE WHEN DonHangModel.trang_thai = 'cho_xac_nhan' THEN 0 ELSE 1 END`),
+          "ASC",
+        ] as unknown as OrderItem,
+        [col("DonHangModel.id"), "DESC"],
+      ]
+    : [[col("DonHangModel.id"), "DESC"]];
+
+
 
     // ==== Lấy danh sách + phân trang ====
     const { count, rows } = await DonHangModel.findAndCountAll({
