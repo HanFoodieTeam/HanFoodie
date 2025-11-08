@@ -57,6 +57,7 @@ export async function GET(req: Request) {
       order: [["id", "desc"]],
       offset: (page - 1) * limit,
       limit,
+       subQuery: false,
     });
 
     // tổng tất cả theo range/search (không trạng thái)

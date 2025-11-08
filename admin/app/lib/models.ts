@@ -409,11 +409,13 @@ DonHangModel.init(
     },
   },
   {
-    sequelize: db, // ✅ dùng sequelize chứ không phải db
-    tableName: "don_hang",
+    sequelize: db, //  dùng sequelize chứ không phải db
+     tableName: "don_hang",      // đúng tên bảng
+    modelName: "DonHang", 
     timestamps: false,
   }
 );
+
 
 
 export const HinhModel = db.define(
