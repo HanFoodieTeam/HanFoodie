@@ -254,13 +254,13 @@ export interface ILoaiTuyChon {
 
 
 
-export interface IMonThem {
-  id: number;
-  ten: string;
-  gia_them: number;
-  loai_mon: number;
-  trang_thai?: boolean;
-}
+  export interface IMonThem {
+    id: number;
+    ten: string;
+    gia_them: number;
+    loai_mon: number;
+    trang_thai?: boolean;
+  }
 
 export interface INguoiDung {
   id?: number;
