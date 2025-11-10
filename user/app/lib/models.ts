@@ -58,7 +58,6 @@ export const NguoiDungModel = db.define<NguoiDungInstance>(
   "nguoi_dung",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        hinh: { type: DataTypes.STRING(255), allowNull: true },
     ho_ten: { type: DataTypes.STRING(255), allowNull: false },
     sdt: { type: DataTypes.INTEGER, allowNull: true },
     email: { type: DataTypes.STRING(255), allowNull: false },
