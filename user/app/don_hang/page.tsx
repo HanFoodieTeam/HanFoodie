@@ -766,11 +766,12 @@ export default function DonHangPage() {
                   )}
 
                   <button
-                    onClick={() => router.push(`/donhang/${dh.ma_don}`)}
+                    onClick={() => router.push(`/chi_tiet_don_hang/${dh.id}`)}
                     className="px-3 py-1 border rounded-lg text-blue-600 hover:bg-blue-50"
                   >
                     Xem chi tiết
                   </button>
+
 
                   {(dh.trang_thai === 'da_giao' || dh.trang_thai === 'da_huy') && (
                     <button
