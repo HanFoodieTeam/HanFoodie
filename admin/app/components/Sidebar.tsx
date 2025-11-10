@@ -226,7 +226,7 @@ const Sidebar = () => {
           >
             <div className="flex items-center space-x-2">
               <Gift size={18} />
-              <span>Quản lý ưu đãi</span>
+              <span>Quản lý mã giảm giá</span>
             </div>
             {openMenus["ma_giam_gia"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
