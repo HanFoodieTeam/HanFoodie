@@ -62,7 +62,7 @@ export const NguoiDungModel = db.define<NguoiDungInstance>(
     ho_ten: { type: DataTypes.STRING(255), allowNull: false },
     sdt: { type: DataTypes.INTEGER, allowNull: true },
     email: { type: DataTypes.STRING(255), allowNull: false },
-    hinh: { type: DataTypes.STRING(255), allowNull: true }, // ✅ thêm dòng này
+    // hinh: { type: DataTypes.STRING(255), allowNull: true }, // ✅ thêm dòng này
     tep_khach: { type: DataTypes.STRING(255), allowNull: true },
     mat_khau: { type: DataTypes.STRING(255), allowNull: false },
     trang_thai: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 0 },
@@ -410,7 +410,7 @@ export const MonThemModel = db.define(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     ten: { type: DataTypes.STRING(255), allowNull: false },
     gia_them: { type: DataTypes.INTEGER, allowNull: false },
-    loai_mon: { type: DataTypes.INTEGER, allowNull: false },
+    // loai_mon: { type: DataTypes.INTEGER, allowNull: false },
     trang_thai: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 0 },
   },
   { tableName: "mon_them", timestamps: false }
