@@ -58,7 +58,6 @@ export const NguoiDungModel = db.define<NguoiDungInstance>(
   "nguoi_dung",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        hinh: { type: DataTypes.STRING(255), allowNull: true },
     ho_ten: { type: DataTypes.STRING(255), allowNull: false },
     sdt: { type: DataTypes.INTEGER, allowNull: true },
     email: { type: DataTypes.STRING(255), allowNull: false },
@@ -428,7 +427,7 @@ export const TuyChonModel = db.define(
     an_hien: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 0 },
     id_loai_tuy_chon: { type: DataTypes.INTEGER, allowNull: false },
   },
-  { tableName: "tuy_ chon", timestamps: false }
+  { tableName: "tuy_chon", timestamps: false }
 );
 
 export const YeuThichModel = db.define(
