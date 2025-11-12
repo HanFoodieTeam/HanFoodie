@@ -1057,7 +1057,7 @@ function DonHangPageContent() {
                   updateQuery({ search: (e.target as HTMLInputElement).value, page: "1" });
                 }
               }}
-              placeholder="🔍 Tìm mã đơn..."
+              placeholder=" Tìm mã đơn..."
               className="border rounded-lg px-3 py-1.5 w-52 text-sm" />
             <button
               onClick={() => {
