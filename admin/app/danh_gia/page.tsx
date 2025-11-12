@@ -1,377 +1,195 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { Star } from "lucide-react";
-// import { IDanhGia } from "../lib/cautrucdata";
-
-// export default function QuanLyDanhGia() {
-//   const [data, setData] = useState<IDanhGia[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [confirmItem, setConfirmItem] = useState<IDanhGia | null>(null);
-
-//   useEffect(() => {
-//     fetchDanhGia();
-//   }, []);
-
-//   const fetchDanhGia = async () => {
-//     try {
-//       const res = await fetch("/api/danh_gia");
-//       const result = await res.json();
-//       setData(Array.isArray(result) ? result : []);
-//     } catch (err) {
-//       console.error("Lỗi khi tải dữ liệu:", err);
-//       setData([]);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleToggle = (item: IDanhGia) => {
-//     setConfirmItem(item);
-//   };
-
-//   const confirmToggle = async () => {
-//     if (!confirmItem) return;
-//     const id = confirmItem.id;
-//     const newState = !confirmItem.an_hien;
-
-//     const res = await fetch(`/api/danh_gia/${id}`, {
-//       method: "PATCH",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ an_hien: newState }),
-//     });
-
-//     if (res.ok) {
-//       setData((prev) =>
-//         prev.map((x) =>
-//           x.id === id ? { ...x, an_hien: newState } : x
-//         )
-//       );
-//     } else {
-//       alert("Không thể cập nhật trạng thái!");
-//     }
-
-//     setConfirmItem(null);
-//   };
-
-//   if (loading) return <div className="p-6 text-base">Đang tải dữ liệu...</div>;
-
-//   return (
-//     <div className="p-2">
-//       <h1 className="text-2xl font-bold mb-4 text-gray-800">
-//         Quản lý đánh giá
-//       </h1>
-
-//       <div className="overflow-x-auto bg-white rounded-xl shadow-md">
-//         <table className="min-w-full text-[15px] text-left border-collapse">
-//           <thead className="bg-gray-300 text-gray-700 uppercase text-sm">
-//             <tr>
-//               <th className="px-5 py-3">Hình</th>
-//               <th className="px-5 py-3">Sản phẩm</th>
-//               <th className="px-5 py-3">Nội dung</th>
-//               <th className="px-5 py-3 text-center">Sao</th>
-//               <th className="px-5 py-3">Người dùng</th>
-//               <th className="px-5 py-3 text-center">Ngày</th>
-//               <th className="px-5 py-3 text-center">Trạng thái</th>
-//             </tr>
-//           </thead>
-
-//           <tbody className="text-gray-800">
-//             {data.map((item) => (
-//               <tr
-//                 key={item.id}
-//                 className="border-b hover:bg-gray-200 transition-colors text-[15px]"
-//               >
-//                 {/* Hình */}
-//                 <td className="px-5 py-2">
-//                   {item.hinh ? (
-//                     <img
-//                       src={item.hinh}
-//                       alt="Ảnh sản phẩm"
-//                       className="w-14 h-14 rounded-lg object-cover border"
-//                     />
-//                   ) : (
-//                     <div className="w-14 h-14 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-xs">
-//                       N/A
-//                     </div>
-//                   )}
-//                 </td>
-
-//                 {/* Sản phẩm */}
-//                 <td className="px-5 py-2">
-//                   <div>
-//                     <div className="font-semibold truncate max-w-[140px]">
-//                       {item.bien_the?.san_pham?.ten || "Không rõ sản phẩm"}
-//                     </div>
-//                     <div className="text-gray-500 text-sm italic">
-//                       ({item.bien_the?.ten || "Không có biến thể"})
-//                     </div>
-//                   </div>
-//                 </td>
-
-//                 {/* Nội dung */}
-//                 <td className="px-5 py-2 max-w-[250px] truncate">
-//                   {item.noi_dung}
-//                 </td>
-
-//                 {/* Sao */}
-//                 <td className="px-5 py-2 text-center align-middle">
-//                   <div className="flex justify-center items-center gap-[2px]">
-//                     {[...Array(5)].map((_, j) => (
-//                       <Star
-//                         key={j}
-//                         size={20}
-//                         className={
-//                           j < item.sao
-//                             ? "text-yellow-400 fill-yellow-400"
-//                             : "text-gray-300"
-//                         }
-//                       />
-//                     ))}
-//                   </div>
-//                 </td>
-
-//                 {/* Người dùng */}
-//                 <td className="px-5 py-2 font-medium truncate max-w-[180px]">
-//                   {item.nguoi_dung?.ho_ten || "Ẩn danh"}
-//                 </td>
-
-//                 {/* Ngày */}
-//                 <td className="px-5 py-2">
-//                   {item.thoi_gian
-//                     ? new Date(item.thoi_gian).toLocaleDateString("vi-VN")
-//                     : "N/A"}
-//                 </td>
-
-//                 {/* Trạng thái */}
-//                 <td
-//                   className="px-2 py-2 text-center text-xl cursor-pointer select-none"
-//                   onClick={() => handleToggle(item)}
-//                 >
-//                   {item.an_hien ? "✅" : "❌"}
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-
-//       {/* Modal xác nhận */}
-//       {confirmItem && (
-//         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-//           <div className="bg-white rounded-lg p-6 shadow-lg w-[360px]">
-//             <h2 className="text-lg font-semibold mb-3 text-center">
-//               Xác nhận thay đổi trạng thái
-//             </h2>
-//             <p className="text-center mb-5">
-//               Bạn có muốn{" "}
-//               <span className="font-semibold text-red-600">
-//                 {confirmItem.an_hien ? "ẩn" : "hiển thị"}
-//               </span>{" "}
-//               đánh giá của{" "}
-//               <span className="font-semibold">
-//                 {confirmItem.nguoi_dung?.ho_ten || "người dùng ẩn danh"}
-//               </span>{" "}
-//               không?
-//             </p>
-//             <div className="flex justify-center space-x-3">
-//               <button
-//                 onClick={confirmToggle}
-//                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-//               >
-//                 Có
-//               </button>
-//               <button
-//                 onClick={() => setConfirmItem(null)}
-//                 className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
-//               >
-//                 Không
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-
-
 "use client";
 
-import { useEffect, useState } from "react";
-import { Star } from "lucide-react";
-import { IDanhGia, ISanPham } from "../lib/cautrucdata";
+import { Suspense, useEffect, useState, useMemo } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Star, Search, ArrowDownUp } from "lucide-react";
+import type { IThongKeDanhGia } from "@/app/lib/cautrucdata";
+import Link from "next/link";
 
-export default function QuanLyDanhGia() {
-  const [data, setData] = useState<IDanhGia[]>([]);
-  const [sanPhams, setSanPhams] = useState<ISanPham[]>([]);
-  const [selectedSP, setSelectedSP] = useState("all");
+// 🧩 Component con chứa logic chính (dùng useSearchParams)
+function DanhGiaTable() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [data, setData] = useState<IThongKeDanhGia[]>([]);
   const [loading, setLoading] = useState(true);
-  const [confirmItem, setConfirmItem] = useState<IDanhGia | null>(null);
 
-  //  Lấy danh sách sản phẩm để hiển thị trong bộ lọc
-  const fetchSanPhams = async () => {
-    const res = await fetch("/api/danh_gia/san_pham_danh_gia");
-    const result = await res.json();
-    setSanPhams(Array.isArray(result) ? result : []);
+  // 🧩 Lấy query params
+  const search = searchParams.get("search") || "";
+  const sortOrder =
+    (searchParams.get("sort") as "asc" | "desc" | "none") || "none";
+  const page = Number(searchParams.get("page") || "1");
+  const pageSize = 5;
+
+  // 🧭 Cập nhật query trên URL
+  const updateQuery = (params: Record<string, string>) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === "" || value === "none") newParams.delete(key);
+      else newParams.set(key, value);
+    });
+    router.replace(`${pathname}?${newParams.toString()}`);
   };
 
-  const fetchDanhGia = async (san_pham_id = "all") => {
-    try {
-      setLoading(true);
-      const res = await fetch(`/api/danh_gia?san_pham_id=${san_pham_id}`);
-      const result = await res.json();
-      setData(Array.isArray(result) ? result : []);
-    } catch (err) {
-      console.error("Lỗi khi tải dữ liệu:", err);
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // 🔹 Lấy dữ liệu từ API
   useEffect(() => {
-    fetchSanPhams();
-    fetchDanhGia();
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/danh_gia/tong_quan");
+        const result = await res.json();
+        setData(Array.isArray(result) ? result : []);
+      } catch (error) {
+        console.error("Lỗi tải dữ liệu:", error);
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
-  // Khi đổi sản phẩm thì gọi lại API
-  useEffect(() => {
-    fetchDanhGia(selectedSP);
-  }, [selectedSP]);
+  // 🔹 Lọc + sắp xếp
+  const filteredData = useMemo(() => {
+    let filtered = data;
 
-  const handleToggle = (item: IDanhGia) => setConfirmItem(item);
-
-  const confirmToggle = async () => {
-    if (!confirmItem) return;
-    const id = confirmItem.id;
-    const newState = !confirmItem.an_hien;
-
-    const res = await fetch(`/api/danh_gia/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ an_hien: newState }),
-    });
-
-    if (res.ok) {
-      setData((prev) =>
-        prev.map((x) => (x.id === id ? { ...x, an_hien: newState } : x))
+    if (search.trim()) {
+      filtered = filtered.filter((sp) =>
+        sp.ten.toLowerCase().includes(search.toLowerCase())
       );
-    } else alert("Không thể cập nhật trạng thái!");
+    }
 
-    setConfirmItem(null);
-  };
+    if (sortOrder === "asc") {
+      filtered = [...filtered].sort((a, b) => a.trung_binh - b.trung_binh);
+    } else if (sortOrder === "desc") {
+      filtered = [...filtered].sort((a, b) => b.trung_binh - a.trung_binh);
+    }
 
-  if (loading) return <div className="p-6 text-base">Đang tải dữ liệu...</div>;
+    return filtered;
+  }, [data, search, sortOrder]);
+
+  // 🔹 Phân trang
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+  const paginatedData = filteredData.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
+
+  if (loading) return <div className="p-6 text-lg">Đang tải dữ liệu...</div>;
 
   return (
-    <div className="p-2">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-gray-800">Quản lý đánh giá</h1>
+    <div className="p-4">
+      {/* Tiêu đề + Thanh tìm kiếm */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Thống kê đánh giá sản phẩm
+        </h1>
 
-        {/* 🔽 Bộ lọc sản phẩm */}
-        <select
-          value={selectedSP}
-          onChange={(e) => setSelectedSP(e.target.value)}
-          className="border border-gray-400 rounded-lg px-3 py-2"
-        >
-          <option value="all">Tất cả sản phẩm</option>
-          {sanPhams.map((sp) => (
-            <option key={sp.id} value={sp.id}>
-              {sp.ten}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center gap-2">
+          {/* Ô tìm kiếm */}
+          <div className="flex items-center border rounded-lg px-3 py-1.5 bg-white">
+            <Search size={18} className="text-gray-500 mr-2" />
+            <input
+              type="text"
+              placeholder="Tìm sản phẩm..."
+              defaultValue={search}
+              onChange={(e) => updateQuery({ search: e.target.value, page: "1" })}
+              className="outline-none text-sm w-48"
+            />
+          </div>
+
+          {/* Nút sắp xếp */}
+          <button
+            onClick={() =>
+              updateQuery({
+                sort:
+                  sortOrder === "asc"
+                    ? "desc"
+                    : sortOrder === "desc"
+                    ? "none"
+                    : "asc",
+                page: "1",
+              })
+            }
+            className="flex items-center gap-1 border rounded-lg px-3 py-1.5 bg-white hover:bg-gray-100 transition text-sm"
+          >
+            <ArrowDownUp size={16} />
+            {sortOrder === "asc"
+              ? "Tăng dần"
+              : sortOrder === "desc"
+              ? "Giảm dần"
+              : "Mặc định"}
+          </button>
+        </div>
       </div>
 
-      {/* Bảng dữ liệu */}
+      {/* Bảng hiển thị */}
       <div className="overflow-x-auto bg-white rounded-xl shadow-md">
-        <table className="min-w-full text-[15px] text-left border-collapse">
-          <thead className="bg-gray-300 text-gray-700 uppercase text-sm">
+        <table className="min-w-full text-[16px] text-left border-collapse">
+          <thead className="bg-gray-300 text-gray-700 uppercase text-[15px]">
             <tr>
               <th className="px-5 py-3">Hình</th>
               <th className="px-5 py-3">Sản phẩm</th>
-              <th className="px-5 py-3">Nội dung</th>
-              <th className="px-5 py-3 text-center">Sao</th>
-              <th className="px-5 py-3">Người dùng</th>
-              <th className="px-5 py-3 text-center">Ngày</th>
-              <th className="px-5 py-3 text-center">Trạng thái</th>
+              <th className="px-5 py-3 text-center">Trung bình</th>
+              <th className="px-5 py-3 text-center">1⭐</th>
+              <th className="px-5 py-3 text-center">2⭐</th>
+              <th className="px-5 py-3 text-center">3⭐</th>
+              <th className="px-5 py-3 text-center">4⭐</th>
+              <th className="px-5 py-3 text-center">5⭐</th>
             </tr>
           </thead>
 
           <tbody className="text-gray-800">
-            {data.length === 0 ? (
+            {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center py-4 text-gray-500">
-                  Không có đánh giá nào
+                <td colSpan={8} className="text-center py-4 text-gray-500">
+                  Không có dữ liệu phù hợp
                 </td>
               </tr>
             ) : (
-              data.map((item) => (
+              paginatedData.map((sp) => (
                 <tr
-                  key={item.id}
-                  className="border-b hover:bg-gray-200 transition-colors text-[15px]"
+                  key={sp.san_pham_id}
+                  className="border-b hover:bg-gray-100 transition-colors"
                 >
                   <td className="px-5 py-2">
-                    {item.hinh ? (
+                    <Link href={`/admin/danh_gia/${sp.san_pham_id}`}>
                       <img
-                        src={item.hinh}
-                        alt="Ảnh sản phẩm"
-                        className="w-14 h-14 rounded-lg object-cover border"
+                        src={sp.hinh || "/no-image.png"}
+                        alt={sp.ten}
+                        className="w-16 h-16 rounded-lg object-cover border"
                       />
-                    ) : (
-                      <div className="w-14 h-14 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-xs">
-                        N/A
-                      </div>
-                    )}
+                    </Link>
                   </td>
 
-                  <td className="px-5 py-2">
-                    <div className="font-semibold truncate max-w-[140px]">
-                      {item.bien_the?.san_pham?.ten || "Không rõ sản phẩm"}
-                    </div>
-                    <div className="text-gray-500 text-sm italic">
-                      ({item.bien_the?.ten || "Không có biến thể"})
-                    </div>
+                  <td className="px-5 py-2 font-semibold text-[16px]">
+                    <Link
+                      href={`/admin/danh_gia/${sp.san_pham_id}`}
+                      className="hover:text-blue-600"
+                    >
+                      {sp.ten}
+                    </Link>
                   </td>
 
-                  <td className="px-5 py-2 max-w-[250px] truncate">
-                    {item.noi_dung}
-                  </td>
-
-                  <td className="px-5 py-2 text-center align-middle">
-                    <div className="flex justify-center items-center gap-[2px]">
-                      {[...Array(5)].map((_, j) => (
-                        <Star
-                          key={j}
-                          size={20}
-                          className={
-                            j < item.sao
-                              ? "text-yellow-400 fill-yellow-400"
-                              : "text-gray-300"
-                          }
-                        />
-                      ))}
+                  {/* ⭐ Trung bình và sao cùng hàng */}
+                  <td className="px-5 py-2 text-center">
+                    <div className="flex items-center justify-center gap-1 text-yellow-600 font-semibold text-[16px]">
+                      {sp.trung_binh.toFixed(1)}
+                      <Star
+                        size={18}
+                        className="text-yellow-500 fill-yellow-500"
+                      />
+                      <span className="text-sm text-gray-600">
+                        ({sp.tong_danh_gia})
+                      </span>
                     </div>
                   </td>
 
-                  <td className="px-5 py-2 font-medium truncate max-w-[180px]">
-                    {item.nguoi_dung?.ho_ten || "Ẩn danh"}
-                  </td>
-
-                  <td className="px-5 py-2">
-                    {item.thoi_gian
-                      ? new Date(item.thoi_gian).toLocaleDateString("vi-VN")
-                      : "N/A"}
-                  </td>
-
-                  <td
-                    className="px-2 py-2 text-center text-xl cursor-pointer select-none"
-                    onClick={() => handleToggle(item)}
-                  >
-                    {item.an_hien ? "✅" : "❌"}
-                  </td>
+                  <td className="px-5 py-2 text-center">{sp.sao_1}</td>
+                  <td className="px-5 py-2 text-center">{sp.sao_2}</td>
+                  <td className="px-5 py-2 text-center">{sp.sao_3}</td>
+                  <td className="px-5 py-2 text-center">{sp.sao_4}</td>
+                  <td className="px-5 py-2 text-center">{sp.sao_5}</td>
                 </tr>
               ))
             )}
@@ -379,41 +197,63 @@ export default function QuanLyDanhGia() {
         </table>
       </div>
 
-      {/* Modal xác nhận ẩn/hiện */}
-      {confirmItem && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg w-[360px]">
-            <h2 className="text-lg font-semibold mb-3 text-center">
-              Xác nhận thay đổi trạng thái
-            </h2>
-            <p className="text-center mb-5">
-              Bạn có muốn{" "}
-              <span className="font-semibold text-red-600">
-                {confirmItem.an_hien ? "ẩn" : "hiển thị"}
-              </span>{" "}
-              đánh giá của{" "}
-              <span className="font-semibold">
-                {confirmItem.nguoi_dung?.ho_ten || "người dùng ẩn danh"}
-              </span>{" "}
-              không?
-            </p>
-            <div className="flex justify-center space-x-3">
-              <button
-                onClick={confirmToggle}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                Có
-              </button>
-              <button
-                onClick={() => setConfirmItem(null)}
-                className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
-              >
-                Không
-              </button>
-            </div>
-          </div>
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-5 space-x-2">
+          <button
+            onClick={() => updateQuery({ page: "1" })}
+            disabled={page === 1}
+            className={`px-3 py-1 rounded ${
+              page === 1
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          >
+            Đầu
+          </button>
+
+          {Array.from({ length: 3 }, (_, i) => {
+            const start = Math.max(1, Math.min(page - 1, totalPages - 2));
+            const p = start + i;
+            return (
+              p <= totalPages && (
+                <button
+                  key={p}
+                  onClick={() => updateQuery({ page: String(p) })}
+                  className={`px-3 py-1 rounded ${
+                    p === page
+                      ? "bg-blue-500 text-white font-bold scale-105"
+                      : "bg-gray-200 hover:bg-gray-300"
+                  }`}
+                >
+                  {p}
+                </button>
+              )
+            );
+          })}
+
+          <button
+            onClick={() => updateQuery({ page: String(totalPages) })}
+            disabled={page === totalPages}
+            className={`px-3 py-1 rounded ${
+              page === totalPages
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          >
+            Cuối
+          </button>
         </div>
       )}
     </div>
+  );
+}
+
+// 🧩 Component chính: chỉ bọc bằng Suspense
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="p-6 text-lg">Đang tải dữ liệu...</div>}>
+      <DanhGiaTable />
+    </Suspense>
   );
 }

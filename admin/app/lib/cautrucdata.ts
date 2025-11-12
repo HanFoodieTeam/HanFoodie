@@ -30,6 +30,19 @@ export interface IDanhGia {
     san_pham?: { ten: string; hinh?: string };
   };
 }
+export interface IThongKeDanhGia {
+  san_pham_id: number;
+  ten: string;
+  hinh?: string | null;
+  tong_danh_gia: number;
+  trung_binh: number;
+  sao_1: number;
+  sao_2: number;
+  sao_3: number;
+  sao_4: number;
+  sao_5: number;
+}
+
 
 export interface ISanPham {
   id: number;
@@ -201,8 +214,6 @@ export interface IDonHang {
     chi_tiet_don_hang?: IChiTietDonHang[];
 
 }
-
-
 
 
 export interface IGioHang {
