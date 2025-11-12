@@ -1,68 +1,27 @@
-
-
-import { MaGiamGiaModel } from "../../lib/models";
 import { NextResponse } from "next/server";
+import { MaGiamGiaModel } from "@/app/lib/models";
 import { Op } from "sequelize";
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const search = searchParams.get("search") || "";
-  const status = (searchParams.get("status") || "all") as
-    | "all"
-    | "active"
-    | "upcoming"
-    | "expired";
+export async function GET(req?: Request) {
+  try {
+    // Lấy toàn bộ mã giảm giá, sắp theo id desc
+    const rows = await MaGiamGiaModel.findAll({
+      order: [["id", "desc"]],
+      raw: true,
+    });
 
-  const limit = 7;
-  const offset = (page - 1) * limit;
-
-  // Tìm kiếm
-  const whereSearch =
-    search.trim() !== ""
-      ? {
-          [Op.or]: [
-            { ten: { [Op.like]: `%${search}%` } },
-            { ma_so: { [Op.like]: `%${search}%` } },
-          ],
-        }
-      : {};
-
-  // Lọc theo trạng thái ngày
-  const now = new Date();
-  let whereStatus = {};
-  if (status === "upcoming") {
-    whereStatus = { bat_dau: { [Op.gt]: now } };
-  } else if (status === "active") {
-    whereStatus = {
-      bat_dau: { [Op.lte]: now },
-      ket_thuc: { [Op.gte]: now },
-    };
-  } else if (status === "expired") {
-    whereStatus = { ket_thuc: { [Op.lt]: now } };
+    // Trả về dữ liệu full (client sẽ xử lý lọc + phân trang)
+    return NextResponse.json({
+      data: rows,
+      total: rows.length,
+    });
+  } catch (error) {
+    console.error("Lỗi API GET /api/ma_giam_gia:", error);
+    return NextResponse.json({ data: [], total: 0 }, { status: 500 });
   }
-
-  const where = {
-    [Op.and]: [whereSearch, whereStatus],
-  };
-
-  const { rows, count } = await MaGiamGiaModel.findAndCountAll({
-    where,
-    order: [["id", "desc"]],
-    limit,
-    offset,
-  });
-
-  const totalPages = Math.ceil(count / limit);
-
-  return NextResponse.json({
-    data: rows,
-    totalPages,
-    currentPage: page,
-  });
 }
 
-// thêm mã giảm giá giữ nguyên như bạn đã có
+// POST giữ nguyên như bạn có
 export async function POST(req: Request) {
   try {
     const data = await req.json();
