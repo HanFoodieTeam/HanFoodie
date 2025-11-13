@@ -52,6 +52,9 @@ export interface IDanhGia {
   id_nguoi_dung: number;
   id_bien_the: number;
   an_hien?: boolean;
+  an_ten?: boolean;
+
+
   hinh?: string | null;
 }
 
@@ -222,7 +225,7 @@ export interface IMonThem {
 
 export interface INguoiDung {
   id?: number;
-  hinh?:string;
+  hinh?: string;
   ho_ten: string;
   sdt?: number | null;
   email: string;
@@ -251,7 +254,7 @@ export interface ISanPham {
   trang_thai?: string | null;
   id_danh_muc: number;
 
-   so_sao_tb?: number|null;
+  so_sao_tb?: number | null;
 
 }
 

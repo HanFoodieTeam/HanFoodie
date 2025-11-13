@@ -13,7 +13,8 @@ export const MaGiamGiaModel = db.define("ma_giam_gia", {
   an_hien: { type: DataTypes.BOOLEAN, allowNull: true, defaultValue: false },
   ma_so: { type: DataTypes.STRING(255), allowNull: false },
   mo_ta: { type: DataTypes.STRING(255), allowNull: true },
-  gia_tri_giam_toi_da: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null,
+  gia_tri_giam_toi_da: {
+    type: DataTypes.INTEGER, allowNull: true, defaultValue: null,
     comment: "Giá trị giảm tối đa đối với mã giảm theo phần trăm",
   },
 }, {
@@ -151,7 +152,7 @@ export const NguoiDungModel = db.define<NguoiDungInstance>(
   "nguoi_dung",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        hinh: { type: DataTypes.STRING(255), allowNull: true },
+    hinh: { type: DataTypes.STRING(255), allowNull: true },
     ho_ten: { type: DataTypes.STRING(255), allowNull: false },
     sdt: { type: DataTypes.INTEGER, allowNull: true },
     email: { type: DataTypes.STRING(255), allowNull: false },
@@ -182,7 +183,7 @@ export const GioHangModel = db.define(
     json_tuy_chon: { type: DataTypes.TEXT("long"), allowNull: true, },
     id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false, },
     id_bien_the: { type: DataTypes.INTEGER, allowNull: true, },
-  
+
   },
   {
     tableName: "gio_hang",
@@ -264,6 +265,8 @@ export const DanhGiaModel = db.define(
     id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false },
     id_bien_the: { type: DataTypes.INTEGER, allowNull: false },
     an_hien: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 1 },
+    an_ten: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 1 },
+
     hinh: { type: DataTypes.STRING(255), allowNull: true },
   },
   { tableName: "danh_gia", timestamps: false }
@@ -410,8 +413,8 @@ DonHangModel.init(
   },
   {
     sequelize: db, //  dùng sequelize chứ không phải db
-     tableName: "don_hang",      // đúng tên bảng
-    modelName: "DonHang", 
+    tableName: "don_hang",      // đúng tên bảng
+    modelName: "DonHang",
     timestamps: false,
   }
 );

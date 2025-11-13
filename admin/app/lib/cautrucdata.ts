@@ -1,17 +1,17 @@
-  export interface IMaGiamGia {
-    id: number;
-    ten: string;
-    gia_tri_giam: number;
-    loai_giam_gia: boolean | null;     // tinyint(1) → boolean trong JS
-    gia_tri_toi_thieu: number;
-    so_luong: number | null;      // có thể null
-    bat_dau: string;              // kiểu DATE trong DB → string ISO
-    ket_thuc: string;             // kiểu DATE trong DB → string ISO
-    an_hien: boolean ;
-    ma_so: string;
-    mo_ta: string;
-    gia_tri_giam_toi_da: number | null;
-  }
+export interface IMaGiamGia {
+  id: number;
+  ten: string;
+  gia_tri_giam: number;
+  loai_giam_gia: boolean | null;     // tinyint(1) → boolean trong JS
+  gia_tri_toi_thieu: number;
+  so_luong: number | null;      // có thể null
+  bat_dau: string;              // kiểu DATE trong DB → string ISO
+  ket_thuc: string;             // kiểu DATE trong DB → string ISO
+  an_hien: boolean;
+  ma_so: string;
+  mo_ta: string;
+  gia_tri_giam_toi_da: number | null;
+}
 
 
 
@@ -23,6 +23,8 @@ export interface IDanhGia {
   id_nguoi_dung: number;
   id_bien_the: number;
   an_hien: boolean | number;
+  an_ten: boolean | number;
+
   hinh: string | null;
   nguoi_dung?: { ho_ten: string };
   bien_the?: {
@@ -42,6 +44,14 @@ export interface IThongKeDanhGia {
   sao_4: number;
   sao_5: number;
 }
+// 🧩 Đánh giá chi tiết (DayDu): mở rộng từ IDanhGia, bao gồm đầy đủ dữ liệu liên kết
+export interface IDanhGiaDayDu extends Omit<IDanhGia, "bien_the"> {
+  bien_the?: IBienThe & {
+    san_pham?: ISanPham;
+  };
+  nguoi_dung?: INguoiDung;
+}
+
 
 
 export interface ISanPham {
@@ -94,22 +104,7 @@ export interface IBienThe {
 
 }
 
-// export interface IChiTietDonHang {
-//   id: number;
-//   don_gia: number;
-//   so_luong: number;
-//   san_pham: {
-//     ten: string;
-//     hinh_anh: string;
-//   };
-//   json_tuy_chon?: string | null;
-//   json_mon_them?: string | null;
-//   id_don_hang: number;
-//   id_bien_the?: number | null;
-//   thanh_tien: number;
 
-//   ten_san_pham?: string;
-// }
 
 
 export interface IChiTietDonHang {
@@ -211,7 +206,7 @@ export interface IDonHang {
   tong_tien_hang: number;
   so_tien_giam: number;
 
-    chi_tiet_don_hang?: IChiTietDonHang[];
+  chi_tiet_don_hang?: IChiTietDonHang[];
 
 }
 
@@ -265,17 +260,17 @@ export interface ILoaiTuyChon {
 
 
 
-  export interface IMonThem {
-    id: number;
-    ten: string;
-    gia_them: number;
-    loai_mon: number;
-    trang_thai?: boolean;
-  }
+export interface IMonThem {
+  id: number;
+  ten: string;
+  gia_them: number;
+  loai_mon: number;
+  trang_thai?: boolean;
+}
 
 export interface INguoiDung {
   id?: number;
-  hinh?:string;
+  hinh?: string;
   ho_ten: string;
   sdt?: number | null;
   email: string;

@@ -54,7 +54,7 @@ export interface NguoiDungInstance
   INguoiDung { }
 
 export const NguoiDungModel = db.define<NguoiDungInstance>(
-  
+
   "nguoi_dung",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -90,7 +90,7 @@ export const GioHangModel = db.define(
     json_tuy_chon: { type: DataTypes.TEXT("long"), allowNull: true, },
     id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false, },
     id_bien_the: { type: DataTypes.INTEGER, allowNull: true, },
-  
+
   },
   {
     tableName: "gio_hang",
@@ -172,6 +172,8 @@ export const DanhGiaModel = db.define(
     id_nguoi_dung: { type: DataTypes.INTEGER, allowNull: false },
     id_bien_the: { type: DataTypes.INTEGER, allowNull: false },
     an_hien: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 1 },
+    an_ten: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 1 },
+
     hinh: { type: DataTypes.STRING(255), allowNull: true },
   },
   { tableName: "danh_gia", timestamps: false }

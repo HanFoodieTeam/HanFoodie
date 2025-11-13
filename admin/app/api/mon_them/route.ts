@@ -1,61 +1,3 @@
-// import { NextResponse } from "next/server";
-// import { MonThemModel } from "@/app/lib/models";
-
-// // ====== LẤY DANH SÁCH MÓN THÊM ======
-// export async function GET() {
-//   try {
-//     const danhSachMonThem = await MonThemModel.findAll({
-//       order: [["id", "DESC"]], // sắp xếp id giảm dần
-//     });
-
-//     return NextResponse.json({
-//       success: true,
-//       data: danhSachMonThem,
-//     });
-//   } catch (error) {
-//     console.error("Lỗi lấy danh sách món thêm:", error);
-//     return NextResponse.json(
-//       { success: false, message: "Lỗi khi lấy danh sách món thêm" },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-// // ====== THÊM MÓN THÊM MỚI ======
-// export async function POST(req: Request) {
-//   try {
-//     const body = await req.json();
-//     const { ten, gia_them, loai_mon, trang_thai } = body;
-
-//     if (!ten || gia_them === undefined) {
-//       return NextResponse.json(
-//         { success: false, message: "Thiếu tên hoặc giá thêm" },
-//         { status: 400 }
-//       );
-//     }
-
-//     const monMoi = await MonThemModel.create({
-//       ten,
-//       gia_them,
-//       loai_mon: loai_mon ?? 0,
-//       trang_thai: trang_thai ?? 1,
-//     });
-
-//     return NextResponse.json({
-//       success: true,
-//       message: "Thêm món thêm thành công",
-//       data: monMoi,
-//     });
-//   } catch (error) {
-//     console.error("Lỗi thêm món thêm:", error);
-//     return NextResponse.json(
-//       { success: false, message: "Lỗi khi thêm món thêm" },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-
 
 import { NextResponse } from "next/server";
 import { Op, WhereOptions } from "sequelize";
@@ -68,7 +10,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     const page = Number(searchParams.get("page") || 1);
-    const limit = 5;
+const limit = Number(searchParams.get("limit") || 7); 
     const offset = (page - 1) * limit;
     const search = searchParams.get("search") || "";
     const loai = searchParams.get("loai") || "all";
