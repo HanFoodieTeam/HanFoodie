@@ -98,6 +98,7 @@ export async function GET() {
 
     // 🧩 Lấy toàn bộ đánh giá (kèm sản phẩm qua biến thể)
     const danhGiaList = (await DanhGiaModel.findAll({
+      where: { an_hien: 1 },
       include: [
         {
           model: BienTheModel,
