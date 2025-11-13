@@ -805,7 +805,7 @@ function MaGiamGiaListContent() {
     }
   };
 
-  if (loading) return <div className="p-4">Đang tải dữ liệu...</div>;
+  // if (loading) return <div className="p-4">Đang tải dữ liệu...</div>;
 
   return (
     <div>
@@ -882,7 +882,16 @@ function MaGiamGiaListContent() {
           </thead>
 
           <tbody>
-            {pageData.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={8} className="py-10 text-center">
+                  <div className="flex items-center justify-center gap-2 text-gray-600">
+                    <div className="h-5 w-5 border-2 border-gray-400 border-t-blue-500 rounded-full animate-spin"></div>
+                    <span>Đang tải dữ liệu...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : pageData.length === 0 ? (
               <tr>
                 <td colSpan={8} className="text-center py-4 text-gray-500">
                   Không tìm thấy dữ liệu
@@ -893,28 +902,37 @@ function MaGiamGiaListContent() {
                 const badge = getHieuLucBadge(mgg.bat_dau, mgg.ket_thuc);
 
                 return (
-                  <tr key={mgg.id} className="border-t hover:bg-gray-200 transition-all duration-150">
+                  <tr key={mgg.id} className="border-t hover:bg-gray-200 transition-all duration-150" >
+                    {/* Tên */}
                     <td className="px-4 py-3 font-semibold max-w-[200px] truncate">
                       {mgg.ten}
                       <br />
-                      <span className="text-sm text-gray-600">({mgg.ma_so})</span>
+                      <span className="text-sm text-gray-600">
+                        ({mgg.ma_so})
+                      </span>
                     </td>
 
+                    {/* Giá trị giảm */}
                     <td className="px-4 py-3 text-center text-red-600">
-                      {mgg.loai_giam_gia ? `${mgg.gia_tri_giam}%` : `${mgg.gia_tri_giam.toLocaleString("vi")} ₫`}
-                      <p className="px-4 py-3 text-center text-gray-700">
+                      {mgg.loai_giam_gia
+                        ? `${mgg.gia_tri_giam}%`
+                        : `${mgg.gia_tri_giam.toLocaleString("vi")} ₫`}
+                      <p className="text-gray-700">
                         ({mgg.gia_tri_toi_thieu.toLocaleString("vi")} ₫)
                       </p>
                     </td>
 
-                    <td className="px-4 py-3 text-center text-red-600">
-                      {mgg.gia_tri_giam_toi_da != null ? mgg.gia_tri_giam_toi_da.toLocaleString("vi") : "-"}
+                    <td className="px-4 py-3 text-center">
+                      {mgg.gia_tri_giam_toi_da != null
+                        ? mgg.gia_tri_giam_toi_da.toLocaleString("vi")
+                        : "-"}
                     </td>
 
                     <td className="px-4 py-3 text-center">{mgg.so_luong ?? "-"}</td>
 
                     <td className="px-4 py-3 text-center w-[200px]">
-                      <div className={`rounded-lg p-2 border ${badge.color} text-sm leading-tight flex flex-col items-center`}>
+                      <div
+                        className={`rounded-lg p-2 border ${badge.color} text-sm leading-tight flex flex-col items-center`}>
                         <span className="font-semibold">{badge.label}</span>
                         <span className="text-xs mt-1">
                           {formatDate(mgg.bat_dau)} → {formatDate(mgg.ket_thuc)}
@@ -927,12 +945,15 @@ function MaGiamGiaListContent() {
                     </td>
 
                     <td className="px-4 py-3 text-center cursor-pointer select-none text-xl"
-                      onClick={() => handleToggleAnHien(mgg)} title="Bấm để ẩn/hiện">
+                      onClick={() => handleToggleAnHien(mgg)}
+                      title="Bấm để ẩn/hiện">
                       {mgg.an_hien ? "✅" : "❌"}
                     </td>
 
                     <td className="px-4 py-3 text-center">
-                      <Link href={`/ma_giam_gia/${mgg.id}`} className="text-blue-500 hover:text-blue-700 font-semibold">
+                      <Link
+                        href={`/ma_giam_gia/${mgg.id}`}
+                        className="text-blue-500 hover:text-blue-700 font-semibold">
                         Sửa
                       </Link>
                     </td>
@@ -941,6 +962,7 @@ function MaGiamGiaListContent() {
               })
             )}
           </tbody>
+
         </table>
       </div>
 

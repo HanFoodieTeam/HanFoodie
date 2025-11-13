@@ -1109,48 +1109,7 @@ function DonHangPageContent() {
                 <th className="px-4 py-3 text-center">Chi tiết</th>
               </tr>
             </thead>
-            {/* <tbody>
-              {donHangs.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="text-center py-6 text-gray-500">
-                    Không có đơn hàng nào.
-                  </td>
-                </tr>
-              ) : (
-                donHangs.map((don) => (
-                  <tr key={don.id} className="border-t hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 font-semibold">
-                      {don.ma_don}
-                      <p className="text-xs text-gray-600">{formatDate(don.ngay_tao)}</p>
-                    </td>
-                    <td className="px-4 py-3 text-center">{don.ho_ten_nguoi_nhan}</td>
-                    <td className="px-4 py-3 text-center">
-                      {don.phuong_thuc_thanh_toan
-                        ? "Thanh toán khi nhận hàng"
-                        : "Thanh toán online"}
-                    </td>
-                    <td className="px-4 py-3 text-center text-red-600 font-semibold">
-                      {don.so_tien_thanh_toan.toLocaleString("vi-VN")} ₫
-                    </td>
-                    <td
-                      className="px-4 py-3 text-center cursor-pointer w-[150px]"
-                      onClick={() => handleTrangThaiClick(don)}>
-                      <span
-                        className={`px-3 py-1 border rounded-full text-xs font-semibold hover:scale-105 transition-transform ${badgeColors[don.trang_thai]}`}>
-                        {trangThaiLabels[don.trang_thai]}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Link
-                        href={`/don_hang/${don.id}`}
-                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs">
-                        Chi tiết
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody> */}
+            
             <tbody>
               {loading ? (
                 //  Hiển thị trạng thái "đang tải"
