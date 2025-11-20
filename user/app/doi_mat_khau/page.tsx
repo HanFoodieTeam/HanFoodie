@@ -1,234 +1,9 @@
-// // 'use client';
-
-// // import { useEffect, useState } from 'react';
-// // import { useRouter } from 'next/navigation';
-
-// // interface UserInfo {
-// //   ho_ten: string;
-// //   email: string;
-// //   sdt: string;
-// //   ngay_sinh: string;
-// // }
-
-// // export default function DoiMatKhauPage() {
-// //   const [user, setUser] = useState<UserInfo | null>(null);
-// //   const [thongBao, setThongBao] = useState('');
-// //   const [passOld, setPassOld] = useState('');
-// //   const [passNew1, setPassNew1] = useState('');
-// //   const [passNew2, setPassNew2] = useState('');
-// //   const [loading, setLoading] = useState(false);
-// //   const router = useRouter();
-
-// //   //  Lấy thông tin user từ localStorage
-// //   useEffect(() => {
-// //     if (typeof window === 'undefined') return;
-
-// //     const token = localStorage.getItem('token');
-// //     if (!token) {
-// //       alert('Bạn cần đăng nhập để xem hồ sơ');
-// //       router.push('/dang-nhap');
-// //       return;
-// //     }
-
-// //     setUser({
-// //       ho_ten: localStorage.getItem('ho_ten') || '',
-// //       email: localStorage.getItem('email') || '',
-// //       sdt: localStorage.getItem('sdt') || '',
-// //       ngay_sinh: '',
-// //     });
-// //   }, [router]);
-
-// //   //  Xử lý đổi mật khẩu
-// //   async function handleDoiMatKhau(e: React.FormEvent<HTMLFormElement>) {
-// //     e.preventDefault();
-// //     setThongBao('');
-// //     setLoading(true);
-
-// //     const token = localStorage.getItem('token');
-// //     if (!token) {
-// //       setThongBao('Bạn chưa đăng nhập');
-// //       setLoading(false);
-// //       return;
-// //     }
-
-// //     if (passNew1 !== passNew2) {
-// //       setThongBao('Hai mật khẩu mới không giống nhau');
-// //       setLoading(false);
-// //       return;
-// //     }
-
-// //     if (passNew1.length < 6) {
-// //       setThongBao('Mật khẩu mới phải từ 6 ký tự');
-// //       setLoading(false);
-// //       return;
-// //     }
-
-// //     try {
-// //       const res = await fetch('/api/doi_mat_khau', {
-// //         method: 'POST',
-// //         headers: {
-// //           'Content-Type': 'application/json',
-// //           Authorization: `Bearer ${token}`,
-// //         },
-// //         body: JSON.stringify({
-// //           pass_old: passOld,
-// //           pass_new1: passNew1,
-// //           pass_new2: passNew2,
-// //         }),
-// //       });
-
-// //       const data = await res.json();
-
-// //       if (!res.ok) {
-// //         setThongBao(data.thong_bao || 'Lỗi đổi mật khẩu');
-// //       } else {
-// //         setThongBao('Đổi mật khẩu thành công!');
-// //         //  Cập nhật lại localStorage nếu API trả về user
-// //         if (data.user) {
-// //           localStorage.setItem('ho_ten', data.user.ho_ten);
-// //           localStorage.setItem('email', data.user.email);
-// //           localStorage.setItem('sdt', data.user.sdt);
-// //         }
-
-// //         // localStorage.clear();
-// //         // router.push('/dang-nhap');
-// //       }
-// //     } catch (error) {
-// //       console.error(error);
-// //       setThongBao('Lỗi kết nối đến máy chủ');
-// //     } finally {
-// //       setLoading(false);
-// //     }
-// //   }
-
-// //   if (!user) return <p>Đang tải dữ liệu...</p>;
-
-// //   return (
-// //     <div className="flex w-full min-h-screen bg-gray-50">
-// //       {/* Sidebar */}
-// //       <aside className="w-[25%] md:w-[20%] bg-white shadow-md border-r">
-// //         <div className="flex flex-col items-center mt-6">
-// //           <div className="w-24 h-24 bg-emerald-400 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-// //             {user.ho_ten ? user.ho_ten.charAt(0).toUpperCase() : 'U'}
-// //           </div>
-// //           <p className="mt-3 font-semibold text-gray-700">{user.ho_ten}</p>
-// //         </div>
-
-// //         <div className="mt-8 px-4">
-// //           <ul className="space-y-3 text-gray-700">
-// //             <li className="font-semibold border-b pb-2">Tài Khoản Của Tôi</li>
-// //             <li
-// //               className="cursor-pointer hover:text-emerald-500"
-// //               onClick={() => router.push('/ho_so')}
-// //             >
-// //               Hồ Sơ
-// //             </li>
-// //             <li className="cursor-pointer hover:text-emerald-500">Ngân Hàng</li>
-// //             <li
-// //               className="cursor-pointer hover:text-emerald-500"
-// //               onClick={() => router.push('/dia_chi/tat_ca/[id]')}
-// //             >
-// //               Địa Chỉ
-// //             </li>
-// //             <li
-// //               className="cursor-pointer text-emerald-500 font-medium"
-// //               onClick={() => router.push('/doi_mat_khau')}
-// //             >
-// //               Đổi Mật Khẩu
-// //             </li>
-// //             <li
-// //               className="cursor-pointer hover:text-emerald-500 mt-4"
-// //               onClick={() => router.push('/don_hang')}
-// //             >
-// //               Đơn Hàng
-// //             </li>
-// //           </ul>
-// //         </div>
-// //       </aside>
-
-// //       {/* Main content */}
-// //       <main className="flex-1 p-8">
-// //         <h2 className="text-2xl font-bold text-gray-800 mb-6">
-// //           Đổi mật khẩu
-// //         </h2>
-
-// //         <form
-// //           onSubmit={handleDoiMatKhau}
-// //           className="w-full md:w-[60%] border rounded-lg shadow-md p-6 bg-white"
-// //         >
-// //           <div>
-// //             <label className="font-semibold">Email:</label>
-// //             <input
-// //               type="email"
-// //               className="w-full border p-2 mt-1 rounded bg-gray-100"
-// //               value={user.email}
-// //               disabled
-// //             />
-// //           </div>
-
-// //           <div className="mt-4">
-// //             <label className="font-semibold">Mật khẩu cũ:</label>
-// //             <input
-// //               type="password"
-// //               className="w-full border p-2 mt-1 rounded"
-// //               value={passOld}
-// //               onChange={(e) => setPassOld(e.target.value)}
-// //               placeholder="Nhập mật khẩu cũ"
-// //             />
-// //           </div>
-
-// //           <div className="mt-4">
-// //             <label className="font-semibold">Mật khẩu mới:</label>
-// //             <input
-// //               type="password"
-// //               className="w-full border p-2 mt-1 rounded"
-// //               value={passNew1}
-// //               onChange={(e) => setPassNew1(e.target.value)}
-// //               placeholder="Nhập mật khẩu mới"
-// //             />
-// //           </div>
-
-// //           <div className="mt-4">
-// //             <label className="font-semibold">Nhập lại mật khẩu mới:</label>
-// //             <input
-// //               type="password"
-// //               className="w-full border p-2 mt-1 rounded"
-// //               value={passNew2}
-// //               onChange={(e) => setPassNew2(e.target.value)}
-// //               placeholder="Nhập lại mật khẩu mới"
-// //             />
-// //           </div>
-
-// //           {thongBao && (
-// //             <div
-// //               className={`mt-4 text-center ${
-// //                 thongBao.includes('thành công')
-// //                   ? 'text-green-600'
-// //                   : 'text-red-500'
-// //               }`}
-// //             >
-// //               {thongBao}
-// //             </div>
-// //           )}
-
-// //           <div className="mt-6 text-center">
-// //             <button
-// //               type="submit"
-// //               disabled={loading}
-// //               className="bg-emerald-500 text-white px-6 py-2 rounded hover:bg-emerald-600 transition"
-// //             >
-// //               {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
-// //             </button>
-// //           </div>
-// //         </form>
-// //       </main>
-// //     </div>
-// //   );
-// // }
 // 'use client';
 
 // import { useEffect, useState } from 'react';
 // import { useRouter } from 'next/navigation';
+// import { Loader2, Lock, Mail } from 'lucide-react';
+// import QuenMatKhauModal from '@/app/components/QuenMatKhauModal';
 
 // interface UserInfo {
 //   ho_ten: string;
@@ -244,15 +19,12 @@
 //   const [passNew1, setPassNew1] = useState('');
 //   const [passNew2, setPassNew2] = useState('');
 //   const [loading, setLoading] = useState(false);
+//   const [showForgot, setShowForgot] = useState(false);
 //   const router = useRouter();
 
-//   // Lấy thông tin người dùng
 //   useEffect(() => {
-//     if (typeof window === 'undefined') return;
-
 //     const token = localStorage.getItem('token');
 //     if (!token) {
-//       alert('Bạn cần đăng nhập để đổi mật khẩu');
 //       router.push('/dang-nhap');
 //       return;
 //     }
@@ -265,7 +37,6 @@
 //     });
 //   }, [router]);
 
-//   // Xử lý đổi mật khẩu
 //   async function handleDoiMatKhau(e: React.FormEvent<HTMLFormElement>) {
 //     e.preventDefault();
 //     setThongBao('');
@@ -319,361 +90,106 @@
 //     }
 //   }
 
-//   if (!user) return <p>Đang tải dữ liệu...</p>;
+//   if (!user) return <p>Đang tải...</p>;
 
 //   return (
-//     <div className="flex w-full min-h-screen bg-gray-50">
-//       {/* Sidebar */}
-//       <aside className="w-[25%] md:w-[20%] bg-white shadow-md border-r">
-//         <div className="flex flex-col items-center mt-6">
-//           <div className="w-24 h-24 bg-emerald-400 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-//             {user.ho_ten ? user.ho_ten.charAt(0).toUpperCase() : 'U'}
+//     <div className="min-h-screen w-full bg-gradient-to-br from-emerald-100 via-white to-emerald-50 flex items-center justify-center p-6">
+//       {/* Card */}
+//       <div className="w-full max-w-lg bg-white/80 backdrop-blur-xl shadow-2xl rounded-2xl border border-emerald-100 p-8 animate-[fadeIn_0.6s_ease]">
+        
+//         {/* Title */}
+//         <div className="text-center mb-6">
+//           <div className="mx-auto w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg mb-3">
+//             <Lock className="text-white" size={30} />
 //           </div>
-//           <p className="mt-3 font-semibold text-gray-700">{user.ho_ten}</p>
+//           <h2 className="text-2xl font-bold text-gray-800">Đổi mật khẩu</h2>
+//           <p className="text-gray-500 text-sm mt-1">{user.email}</p>
 //         </div>
 
-//         <div className="mt-8 px-4">
-//           <ul className="space-y-3 text-gray-700">
-//             <li className="font-semibold border-b pb-2">Tài Khoản Của Tôi</li>
-//             <li
-//               className="cursor-pointer hover:text-emerald-500"
-//               onClick={() => router.push('/ho_so')}
-//             >
-//               Hồ Sơ
-//             </li>
-//             <li className="cursor-pointer hover:text-emerald-500">Ngân Hàng</li>
-//             <li
-//               className="cursor-pointer hover:text-emerald-500"
-//               onClick={() => router.push('/dia_chi/tat_ca/[id]')}
-//             >
-//               Địa Chỉ
-//             </li>
-//             <li
-//               className="cursor-pointer text-emerald-500 font-medium"
-//               onClick={() => router.push('/doi_mat_khau')}
-//             >
-//               Đổi Mật Khẩu
-//             </li>
-//             <li
-//               className="cursor-pointer hover:text-emerald-500 mt-4"
-//               onClick={() => router.push('/don_hang')}
-//             >
-//               Đơn Hàng
-//             </li>
-//           </ul>
-//         </div>
-//       </aside>
-
-//       {/* Main Content */}
-//       <main className="flex-1 p-8">
-//         <h2 className="text-2xl font-bold text-gray-800 mb-6">
-//           Đổi mật khẩu
-//         </h2>
-
-//         <form
-//           onSubmit={handleDoiMatKhau}
-//           className="w-full md:w-[60%] border rounded-lg shadow-md p-6 bg-white"
-//         >
+//         {/* Form */}
+//         <form onSubmit={handleDoiMatKhau} className="space-y-5">
+          
 //           <div>
-//             <label className="font-semibold">Email:</label>
-//             <input
-//               type="email"
-//               className="w-full border p-2 mt-1 rounded bg-gray-100"
-//               value={user.email}
-//               disabled
-//             />
-//           </div>
-
-//           <div className="mt-4">
-//             <label className="font-semibold">Mật khẩu cũ:</label>
+//             <label className="font-medium text-gray-700">Mật khẩu cũ</label>
 //             <input
 //               type="password"
-//               className="w-full border p-2 mt-1 rounded"
+//               required
+//               placeholder="Nhập mật khẩu hiện tại"
 //               value={passOld}
 //               onChange={(e) => setPassOld(e.target.value)}
-//               placeholder="Nhập mật khẩu cũ"
-//               required
+//               className="w-full mt-1 p-3 border rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-emerald-400 outline-none"
 //             />
 //           </div>
 
-//           <div className="mt-4">
-//             <label className="font-semibold">Mật khẩu mới:</label>
+//           <div>
+//             <label className="font-medium text-gray-700">Mật khẩu mới</label>
 //             <input
 //               type="password"
-//               className="w-full border p-2 mt-1 rounded"
+//               required
+//               placeholder="Nhập mật khẩu mới"
 //               value={passNew1}
 //               onChange={(e) => setPassNew1(e.target.value)}
-//               placeholder="Nhập mật khẩu mới"
-//               required
+//               className="w-full mt-1 p-3 border rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-emerald-400 outline-none"
 //             />
 //           </div>
 
-//           <div className="mt-4">
-//             <label className="font-semibold">Nhập lại mật khẩu mới:</label>
+//           <div>
+//             <label className="font-medium text-gray-700">Nhập lại mật khẩu mới</label>
 //             <input
 //               type="password"
-//               className="w-full border p-2 mt-1 rounded"
+//               required
+//               placeholder="Nhập lại mật khẩu mới"
 //               value={passNew2}
 //               onChange={(e) => setPassNew2(e.target.value)}
-//               placeholder="Nhập lại mật khẩu mới"
-//               required
+//               className="w-full mt-1 p-3 border rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-emerald-400 outline-none"
 //             />
+
+//             <button
+//               type="button"
+//               onClick={() => setShowForgot(true)}
+//               className="text-emerald-600 text-sm mt-2 hover:underline float-right"
+//             >
+//               Quên mật khẩu?
+//             </button>
 //           </div>
 
 //           {thongBao && (
-//             <div
-//               className={`mt-4 text-center ${
-//                 thongBao.includes('thành công')
-//                   ? 'text-green-600'
-//                   : 'text-red-500'
+//             <p
+//               className={`text-center text-sm font-medium ${
+//                 thongBao.includes('thành công') ? 'text-emerald-600' : 'text-red-500'
 //               }`}
 //             >
 //               {thongBao}
-//             </div>
+//             </p>
 //           )}
 
-//           <div className="mt-6 text-center">
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="bg-emerald-500 text-white px-6 py-2 rounded hover:bg-emerald-600 transition"
-//             >
-//               {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
-//             </button>
-//           </div>
+//           <button
+//             type="submit"
+//             disabled={loading}
+//             className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl shadow-lg transition disabled:bg-gray-400"
+//           >
+//             {loading ? (
+//               <span className="flex items-center justify-center gap-2">
+//                 <Loader2 className="animate-spin" size={20} />
+//                 Đang xử lý...
+//               </span>
+//             ) : (
+//               'Đổi mật khẩu'
+//             )}
+//           </button>
 //         </form>
-//       </main>
-//     </div>
-//   );
-// // }
-// 'use client';
 
-// import { useEffect, useState } from 'react';
-// import { useRouter } from 'next/navigation';
-// import QuenMatKhauModal from "@/app/components/QuenMatKhauModal";
-
-// interface UserInfo {
-//   ho_ten: string;
-//   email: string;
-//   sdt: string;
-//   ngay_sinh: string;
-// }
-
-// export default function DoiMatKhauPage() {
-//   const [user, setUser] = useState<UserInfo | null>(null);
-//   const [thongBao, setThongBao] = useState('');
-//   const [passOld, setPassOld] = useState('');
-//   const [passNew1, setPassNew1] = useState('');
-//   const [passNew2, setPassNew2] = useState('');
-//   const [loading, setLoading] = useState(false);
-//   const router = useRouter();
-
-//   // Lấy thông tin người dùng
-//   useEffect(() => {
-//     if (typeof window === 'undefined') return;
-
-//     const token = localStorage.getItem('token');
-//     if (!token) {
-//       alert('Bạn cần đăng nhập để đổi mật khẩu');
-//       router.push('/dang-nhap');
-//       return;
-//     }
-
-//     setUser({
-//       ho_ten: localStorage.getItem('ho_ten') || '',
-//       email: localStorage.getItem('email') || '',
-//       sdt: localStorage.getItem('sdt') || '',
-//       ngay_sinh: '',
-//     });
-//   }, [router]);
-
-//   // Xử lý đổi mật khẩu
-//   async function handleDoiMatKhau(e: React.FormEvent<HTMLFormElement>) {
-//     e.preventDefault();
-//     setThongBao('');
-//     setLoading(true);
-
-//     const token = localStorage.getItem('token');
-//     if (!token) {
-//       setThongBao('Bạn chưa đăng nhập');
-//       setLoading(false);
-//       return;
-//     }
-
-//     if (passNew1 !== passNew2) {
-//       setThongBao('Hai mật khẩu mới không giống nhau');
-//       setLoading(false);
-//       return;
-//     }
-
-//     if (passNew1.length < 6) {
-//       setThongBao('Mật khẩu mới phải có ít nhất 6 ký tự');
-//       setLoading(false);
-//       return;
-//     }
-
-//     try {
-//       const res = await fetch('/api/doi_mat_khau', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({
-//           pass_old: passOld,
-//           pass_new1: passNew1,
-//           pass_new2: passNew2,
-//         }),
-//       });
-
-//       const data = await res.json();
-
-//       if (!res.ok) {
-//         setThongBao(data.thong_bao || 'Đổi mật khẩu thất bại');
-//       } else {
-//         setThongBao('Đổi mật khẩu thành công!');
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       setThongBao('Lỗi kết nối máy chủ');
-//     } finally {
-//       setLoading(false);
-//     }
-//   }
-
-//   if (!user) return <p>Đang tải dữ liệu...</p>;
-
-//   return (
-//     <div className="flex w-full min-h-screen bg-gray-50">
-//       {/* Sidebar */}
-//       <aside className="w-[25%] md:w-[20%] bg-white shadow-md border-r">
-//         <div className="flex flex-col items-center mt-6">
-//           <div className="w-24 h-24 bg-emerald-400 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-//             {user.ho_ten ? user.ho_ten.charAt(0).toUpperCase() : 'U'}
-//           </div>
-//           <p className="mt-3 font-semibold text-gray-700">{user.ho_ten}</p>
-//         </div>
-
-//         <div className="mt-8 px-4">
-//           <ul className="space-y-3 text-gray-700">
-//             <li className="font-semibold border-b pb-2">Tài Khoản Của Tôi</li>
-//             <li
-//               className="cursor-pointer hover:text-emerald-500"
-//               onClick={() => router.push('/ho_so')}
-//             >
-//               Hồ Sơ
-//             </li>
-//             <li className="cursor-pointer hover:text-emerald-500">Ngân Hàng</li>
-//             <li
-//               className="cursor-pointer hover:text-emerald-500"
-//               onClick={() => router.push('/dia_chi/tat_ca/[id]')}
-//             >
-//               Địa Chỉ
-//             </li>
-//             <li
-//               className="cursor-pointer text-emerald-500 font-medium"
-//               onClick={() => router.push('/doi_mat_khau')}
-//             >
-//               Đổi Mật Khẩu
-//             </li>
-//             <li
-//               className="cursor-pointer hover:text-emerald-500 mt-4"
-//               onClick={() => router.push('/don_hang')}
-//             >
-//               Đơn Hàng
-//             </li>
-//           </ul>
-//         </div>
-//       </aside>
-
-//       {/* Main Content */}
-//       <main className="flex-1 p-8">
-//         <h2 className="text-2xl font-bold text-gray-800 mb-6">
-//           Đổi mật khẩu
-//         </h2>
-
-//         <form
-//           onSubmit={handleDoiMatKhau}
-//           className="w-full md:w-[60%] border rounded-lg shadow-md p-6 bg-white"
+//         {/* Back */}
+//         <button
+//           onClick={() => router.push('/ho_so')}
+//           className="w-full text-center mt-5 text-gray-600 hover:text-emerald-600 transition"
 //         >
-//           <div>
-//             <label className="font-semibold">Email:</label>
-//             <input
-//               type="email"
-//               className="w-full border p-2 mt-1 rounded bg-gray-100"
-//               value={user.email}
-//               disabled
-//             />
-//           </div>
+//           ← Quay lại hồ sơ
+//         </button>
+//       </div>
 
-//           <div className="mt-4">
-//             <label className="font-semibold">Mật khẩu cũ:</label>
-//             <input
-//               type="password"
-//               className="w-full border p-2 mt-1 rounded"
-//               value={passOld}
-//               onChange={(e) => setPassOld(e.target.value)}
-//               placeholder="Nhập mật khẩu cũ"
-//               required
-//             />
-//           </div>
-
-//           <div className="mt-4">
-//             <label className="font-semibold">Mật khẩu mới:</label>
-//             <input
-//               type="password"
-//               className="w-full border p-2 mt-1 rounded"
-//               value={passNew1}
-//               onChange={(e) => setPassNew1(e.target.value)}
-//               placeholder="Nhập mật khẩu mới"
-//               required
-//             />
-//           </div>
-
-//           <div className="mt-4">
-//             <label className="font-semibold">Nhập lại mật khẩu mới:</label>
-//             <input
-//               type="password"
-//               className="w-full border p-2 mt-1 rounded"
-//               value={passNew2}
-//               onChange={(e) => setPassNew2(e.target.value)}
-//               placeholder="Nhập lại mật khẩu mới"
-//               required
-//             />
-//             {/* 👇 Thêm link “Quên mật khẩu?” ngay dưới ô nhập lại */}
-//             <div className="text-right mt-2">
-//                 <button
-//                     type="button"
-//                     onClick={() => setShowForgot(true)}
-//                     className="text-emerald-600 text-sm hover:underline"
-//                 >
-//                     Quên mật khẩu?
-//                 </button>
-//           </div>
-
-//           {thongBao && (
-//             <div
-//               className={`mt-4 text-center ${
-//                 thongBao.includes('thành công')
-//                   ? 'text-green-600'
-//                   : 'text-red-500'
-//               }`}
-//             >
-//               {thongBao}
-//             </div>
-//           )}
-
-//           <div className="mt-6 text-center">
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="bg-emerald-500 text-white px-6 py-2 rounded hover:bg-emerald-600 transition"
-//             >
-//               {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
-//             </button>
-//           </div>
-//         </form>
-//       </main>
+//       {/* Modal */}
+//       {showForgot && <QuenMatKhauModal onClose={() => setShowForgot(false)} />}
 //     </div>
 //   );
 // }
@@ -681,7 +197,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import QuenMatKhauModal from "@/app/components/QuenMatKhauModal";
+import { Loader2, Lock } from 'lucide-react';
+import QuenMatKhauModal from '@/app/components/QuenMatKhauModal';
 
 interface UserInfo {
   ho_ten: string;
@@ -697,19 +214,12 @@ export default function DoiMatKhauPage() {
   const [passNew1, setPassNew1] = useState('');
   const [passNew2, setPassNew2] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showForgot, setShowForgot] = useState(false); // 👈 thêm state điều khiển modal
+  const [showForgot, setShowForgot] = useState(false);
   const router = useRouter();
 
-  // Lấy thông tin người dùng
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
     const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Bạn cần đăng nhập để đổi mật khẩu');
-      router.push('/dang-nhap');
-      return;
-    }
+    if (!token) return router.push('/dang-nhap');
 
     setUser({
       ho_ten: localStorage.getItem('ho_ten') || '',
@@ -719,13 +229,13 @@ export default function DoiMatKhauPage() {
     });
   }, [router]);
 
-  // Xử lý đổi mật khẩu
   async function handleDoiMatKhau(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setThongBao('');
     setLoading(true);
 
     const token = localStorage.getItem('token');
+
     if (!token) {
       setThongBao('Bạn chưa đăng nhập');
       setLoading(false);
@@ -764,6 +274,9 @@ export default function DoiMatKhauPage() {
         setThongBao(data.thong_bao || 'Đổi mật khẩu thất bại');
       } else {
         setThongBao('Đổi mật khẩu thành công!');
+        setTimeout(() => {
+          router.back(); // 🔥 QUAY LẠI TRANG TRƯỚC
+        }, 900);
       }
     } catch (error) {
       console.error(error);
@@ -773,143 +286,105 @@ export default function DoiMatKhauPage() {
     }
   }
 
-  if (!user) return <p>Đang tải dữ liệu...</p>;
+  if (!user) return <p>Đang tải...</p>;
 
   return (
-    <div className="flex w-full min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-[25%] md:w-[20%] bg-white shadow-md border-r">
-        <div className="flex flex-col items-center mt-6">
-          <div className="w-24 h-24 bg-emerald-400 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-            {user.ho_ten ? user.ho_ten.charAt(0).toUpperCase() : 'U'}
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 backdrop-blur-sm"
+      onClick={() => router.back()}  // 🔥 CLICK RA NGOÀI → BACK
+    >
+      <div
+        className="w-full max-w-lg bg-white/85 backdrop-blur-xl shadow-2xl rounded-2xl border border-red-200 p-8 animate-[fadeIn_0.5s_ease]"
+        onClick={(e) => e.stopPropagation()} // ⛔ CHẶN CLICK TRONG FORM
+      >
+        {/* Title */}
+        <div className="text-center mb-6">
+          <div className="mx-auto w-14 h-14 bg-red-500 rounded-full flex items-center justify-center shadow-lg mb-3">
+            <Lock size={30} className="text-white" />
           </div>
-          <p className="mt-3 font-semibold text-gray-700">{user.ho_ten}</p>
+          <h2 className="text-2xl font-bold text-gray-800">Đổi mật khẩu</h2>
+          <p className="text-gray-500 text-sm mt-1">{user.email}</p>
         </div>
 
-        <div className="mt-8 px-4">
-          <ul className="space-y-3 text-gray-700">
-            <li className="font-semibold border-b pb-2">Tài Khoản Của Tôi</li>
-            <li
-              className="cursor-pointer hover:text-emerald-500"
-              onClick={() => router.push('/ho_so')}
-            >
-              Hồ Sơ
-            </li>
-            <li className="cursor-pointer hover:text-emerald-500">Ngân Hàng</li>
-            <li
-              className="cursor-pointer hover:text-emerald-500"
-              onClick={() => router.push('/dia_chi/tat_ca/[id]')}
-            >
-              Địa Chỉ
-            </li>
-            <li
-              className="cursor-pointer text-emerald-500 font-medium"
-              onClick={() => router.push('/doi_mat_khau')}
-            >
-              Đổi Mật Khẩu
-            </li>
-            <li
-              className="cursor-pointer hover:text-emerald-500 mt-4"
-              onClick={() => router.push('/don_hang')}
-            >
-              Đơn Hàng
-            </li>
-          </ul>
-        </div>
-      </aside>
+        {/* Form */}
+        <form onSubmit={handleDoiMatKhau} className="space-y-5">
 
-      {/* Main Content */}
-      <main className="flex-1 p-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          Đổi mật khẩu
-        </h2>
-
-        <form
-          onSubmit={handleDoiMatKhau}
-          className="w-full md:w-[60%] border rounded-lg shadow-md p-6 bg-white"
-        >
           <div>
-            <label className="font-semibold">Email:</label>
-            <input
-              type="email"
-              className="w-full border p-2 mt-1 rounded bg-gray-100"
-              value={user.email}
-              disabled
-            />
-          </div>
-
-          <div className="mt-4">
-            <label className="font-semibold">Mật khẩu cũ:</label>
+            <label className="font-medium text-gray-700">Mật khẩu cũ</label>
             <input
               type="password"
-              className="w-full border p-2 mt-1 rounded"
+              required
+              placeholder="Nhập mật khẩu hiện tại"
               value={passOld}
               onChange={(e) => setPassOld(e.target.value)}
-              placeholder="Nhập mật khẩu cũ"
-              required
+              className="w-full mt-1 p-3 border rounded-xl bg-white shadow-sm 
+              focus:ring-2 focus:ring-red-400 outline-none"
             />
           </div>
 
-          <div className="mt-4">
-            <label className="font-semibold">Mật khẩu mới:</label>
+          <div>
+            <label className="font-medium text-gray-700">Mật khẩu mới</label>
             <input
               type="password"
-              className="w-full border p-2 mt-1 rounded"
+              required
+              placeholder="Nhập mật khẩu mới"
               value={passNew1}
               onChange={(e) => setPassNew1(e.target.value)}
-              placeholder="Nhập mật khẩu mới"
-              required
+              className="w-full mt-1 p-3 border rounded-xl bg-white shadow-sm 
+              focus:ring-2 focus:ring-red-400 outline-none"
             />
           </div>
 
-          <div className="mt-4">
-            <label className="font-semibold">Nhập lại mật khẩu mới:</label>
+          <div>
+            <label className="font-medium text-gray-700">Nhập lại mật khẩu mới</label>
             <input
               type="password"
-              className="w-full border p-2 mt-1 rounded"
+              required
+              placeholder="Nhập lại mật khẩu mới"
               value={passNew2}
               onChange={(e) => setPassNew2(e.target.value)}
-              placeholder="Nhập lại mật khẩu mới"
-              required
+              className="w-full mt-1 p-3 border rounded-xl bg-white shadow-sm 
+              focus:ring-2 focus:ring-red-400 outline-none"
             />
 
-            {/* 👇 Thêm nút “Quên mật khẩu?” */}
-            <div className="text-right mt-2">
-              <button
-                type="button"
-                onClick={() => setShowForgot(true)}
-                className="text-emerald-600 text-sm hover:underline"
-              >
-                Quên mật khẩu?
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setShowForgot(true)}
+              className="text-red-600 text-sm mt-2 hover:underline float-right"
+            >
+              Quên mật khẩu?
+            </button>
           </div>
 
           {thongBao && (
-            <div
-              className={`mt-4 text-center ${
-                thongBao.includes('thành công')
-                  ? 'text-green-600'
-                  : 'text-red-500'
+            <p
+              className={`text-center text-sm font-medium ${
+                thongBao.includes('thành công') ? 'text-green-600' : 'text-red-500'
               }`}
             >
               {thongBao}
-            </div>
+            </p>
           )}
 
-          <div className="mt-6 text-center">
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-emerald-500 text-white px-6 py-2 rounded hover:bg-emerald-600 transition"
-            >
-              {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
-            </button>
-          </div>
-        </form>
-      </main>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-semibold 
+            rounded-xl shadow-lg transition disabled:bg-gray-400"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin" size={20} />
+                Đang xử lý...
+              </span>
+            ) : (
+              'Đổi mật khẩu'
+            )}
+          </button>
 
-      {/* 👇 Thêm Modal Quên mật khẩu */}
+        </form>
+      </div>
+
       {showForgot && <QuenMatKhauModal onClose={() => setShowForgot(false)} />}
     </div>
   );
