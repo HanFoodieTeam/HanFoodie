@@ -13,7 +13,7 @@ export async function GET() {
     const sanPhams = await SanPhamModel.findAll({
       where: { an_hien: true },
       order: [["luot_xem", "DESC"]],
-      limit: 5,
+      limit: 8,
     });
 
     const result: ISanPham[] = [];

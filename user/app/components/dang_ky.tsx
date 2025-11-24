@@ -97,14 +97,14 @@ export default function RegisterForm({
         className="border w-full p-2 rounded"
         disabled={dangThanhCong} />
 
-      {/* {thongBao && (
+      {thongBao && (
         <p
           className={`text-center text-sm ${
             dangThanhCong ? "text-green-600 font-medium" : "text-red-500"
           }`}>
           {thongBao}
         </p>
-      )} */}
+      )}
 
       <button
         type="submit"
