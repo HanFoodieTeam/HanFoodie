@@ -214,10 +214,13 @@ function DanhGiaChiTiet() {
                       className="inline text-yellow-500 fill-yellow-500" />
                   </td>
 
-                  <td className="px-5 py-3 w-[300px] truncate text-center"
+                  <td
+                    className="px-5 py-3 max-w-[300px] text-center overflow-hidden text-ellipsis whitespace-nowrap"
                     title={dg.noi_dung ?? ""}>
                     {dg.noi_dung || "—"}
                   </td>
+
+
 
                   <td className="px-5 py-3 text-center cursor-pointer select-none text-xl"
                     onClick={() => setConfirmAnHien(dg)}>
