@@ -31,6 +31,18 @@ export interface IBienThe {
 
 }
 
+export interface IOrderEmail {
+  logoUrl: string;
+  hoTen: string;
+  maDon: string;
+  ngayDat: string;
+  phuongThucThanhToan: string;
+  sanPhamListHtml: string;
+  tongTienHang: number;
+  giamGia: number;
+  tongThanhToan: number;
+  urlDonHang: string;
+}
 export interface IChiTietDonHang {
   id: number;
   don_gia: number;
@@ -40,7 +52,6 @@ export interface IChiTietDonHang {
   id_don_hang: number;
   id_bien_the?: number | null;
   thanh_tien: number;
-
   ten_san_pham?: string;
 }
 
