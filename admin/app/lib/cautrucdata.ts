@@ -117,7 +117,7 @@ export interface IChiTietDonHang {
   id_bien_the?: number | null;
   thanh_tien: number;
 
-  // 🔹 Mối quan hệ với Biến Thể
+  //  Mối quan hệ với Biến Thể
   bien_the?: {
     id: number;
     ten: string;
@@ -269,19 +269,24 @@ export interface IMonThem {
 }
 
 export interface INguoiDung {
-  id?: number;
-  hinh?: string;
+  id: number;
   ho_ten: string;
-  sdt?: number | null;
   email: string;
-  tep_khach?: string | null;
-  mat_khau: string;
-  trang_thai?: boolean;
+  mat_khau?: string;
+  hinh?: string | null;
+  sdt?: string | null;
   ngay_sinh?: string | null;
-  ma_kich_hoat?: string | null;
-  vai_tro?: boolean;
-  ngay_tao?: Date | null;
+  vai_tro: boolean;       // true: admin, false: user
+  trang_thai: boolean;    // true: hoạt động, false: khóa
+  token_kich_hoat: boolean;     // xác thực email
+  han_token?: string | null;
+  ngay_tao?: string | null;
+  kich_hoat:boolean;
+
+  don_hang?: IDonHang[]; 
+  dia_chi?: IDiaChi[];    // danh sách địa chỉ giao hàng
 }
+
 export interface ITuyChon {
   id: number;
   ten: string;
