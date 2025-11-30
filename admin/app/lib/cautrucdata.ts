@@ -266,6 +266,7 @@ export interface IMonThem {
   gia_them: number;
   loai_mon: number;
   trang_thai?: boolean;
+  het_mon: string |null;
 }
 
 export interface INguoiDung {

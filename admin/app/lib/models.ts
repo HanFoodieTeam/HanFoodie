@@ -502,6 +502,11 @@ export const MonThemModel = db.define(
     gia_them: { type: DataTypes.INTEGER, allowNull: false },
     loai_mon: { type: DataTypes.INTEGER, allowNull: false },
     trang_thai: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 0 },
+het_mon: {
+  type: DataTypes.DATEONLY,
+  allowNull: true, 
+  comment: "Ngày hết món",
+},
   },
   { tableName: "mon_them", timestamps: false }
 );

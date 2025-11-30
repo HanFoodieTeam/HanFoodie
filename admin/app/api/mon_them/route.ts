@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     const page = Number(searchParams.get("page") || 1);
-const limit = Number(searchParams.get("limit") || 7); 
+    const limit = Number(searchParams.get("limit") || 7);
     const offset = (page - 1) * limit;
     const search = searchParams.get("search") || "";
     const loai = searchParams.get("loai") || "all";
@@ -75,6 +75,7 @@ export async function POST(req: Request) {
       gia_them: body.gia_them,
       loai_mon: body.loai_mon ?? 0,
       trang_thai: body.trang_thai ? 1 : 0,
+      het_mon: body.het_mon,
     });
 
     const created: IMonThem = {
@@ -83,6 +84,7 @@ export async function POST(req: Request) {
       gia_them: newItem.getDataValue("gia_them"),
       loai_mon: newItem.getDataValue("loai_mon"),
       trang_thai: !!newItem.getDataValue("trang_thai"),
+      het_mon: newItem.getDataValue("het_mon"),
     };
 
     return NextResponse.json({

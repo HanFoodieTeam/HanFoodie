@@ -13,6 +13,7 @@ export default function ThemMonThem() {
     gia_them: 0,
     loai_mon: 0,
     trang_thai: true,
+    het_mon: null,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -117,3 +118,4 @@ export default function ThemMonThem() {
     </div>
   );
 }
+

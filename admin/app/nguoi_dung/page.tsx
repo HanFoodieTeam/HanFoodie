@@ -176,9 +176,8 @@ function NguoiDungContent() {
               </tr>
             ) : (
               pageData.map((u) => (
-                <tr key={u.id} className="border-t hover:bg-gray-100 transition">
-
-                  <td className="px-4 py-3 w-50">  <Link href={`/nguoi_dung/${u.id}`}>{u.ho_ten}</Link></td>
+                <tr key={u.id} onClick={() => router.push(`/nguoi_dung/${u.id}`)} className="border-t hover:bg-gray-200 transition cursor-pointer">
+                  <td className="px-4 py-3 w-50">{u.ho_ten}</td>
                   <td className="px-4 py-3 w-56">{u.email}</td>
                   <td className="px-4 py-3 w-30">{u.sdt ?? "-"}</td>
                   <td className="px-4 py-3">{u.vai_tro ? "Admin" : "User"}</td>
@@ -190,6 +189,7 @@ function NguoiDungContent() {
                       : "-"}
                   </td>
                 </tr>
+
               ))
             )}
           </tbody>

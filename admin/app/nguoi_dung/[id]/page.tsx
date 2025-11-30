@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { INguoiDung } from "@/app/lib/cautrucdata";
-import DiaChi from "./DiaChi";
 import ThongTin from "./ThongTin";
 import DonHangUser from "./DonHangUser";
 
-const tabs = ["thong_tin", "dia_chi", "don_hang"];
+const tabs = ["thong_tin",  "don_hang"];
 
 export default function UserDetailPage() {
   const { id } = useParams();
@@ -49,7 +48,7 @@ export default function UserDetailPage() {
   if (!user) return <div className="p-6 text-red-600">Không tìm thấy người dùng!</div>;
 
   return (
-    <div className="p-2 bg-gray-50 min-h-screen">
+    <div className="p-2 bg-gray-50">
       <div className="">
         <h1 className="text-2xl font-bold mb-4">Chi tiết người dùng</h1>
 
@@ -63,14 +62,12 @@ export default function UserDetailPage() {
                 : "text-gray-600 hover:text-blue-600"
               }`} >
               {t === "thong_tin" && "Thông tin"}
-              {t === "dia_chi" && "Địa chỉ"}
               {t === "don_hang" && "Lịch sử đơn hàng"}
             </button>
           ))}
         </div>
 
         {activeTab === "thong_tin" && <ThongTin user={user} />}
-        {activeTab === "dia_chi" && <DiaChi addresses={user.dia_chi} />}
         {activeTab === "don_hang" && <DonHangUser orders={user.don_hang ?? []} />}
       </div>
     </div>

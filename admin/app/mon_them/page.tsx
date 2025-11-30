@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
@@ -28,6 +29,14 @@ function MonThemListContent() {
   const [search, setSearch] = useState<string>(searchQuery); // input tìm kiếm
   const [totalPages, setTotalPages] = useState<number>(1);
   const [confirmItem, setConfirmItem] = useState<IMonThem | null>(null);
+
+  // hết món 
+  const [confirmHetMon, setConfirmHetMon] = useState<IMonThem | null>(null);
+  const [confirmCoLai, setConfirmCoLai] = useState<IMonThem | null>(null);
+
+  const today = new Date().toISOString().split("T")[0];
+
+
 
   //  Cập nhật URL query 
   const updateQuery = (updates: Record<string, string | undefined>) => {
@@ -107,22 +116,59 @@ function MonThemListContent() {
     }
   };
 
-  const handleDelete = async (item: IMonThem) => {
-    const isConfirm = confirm(`Bạn có chắc muốn xóa món "${item.ten}" không?`);
-    if (!isConfirm) return;
+
+  const handleHetMonClick = (item: IMonThem) => {
+    const isHet = item.het_mon === today;
+    if (isHet) setConfirmCoLai(item);
+    else setConfirmHetMon(item);
+  };
+
+  const confirmHetMonSubmit = async () => {
+    if (!confirmHetMon) return;
+    const id = confirmHetMon.id;
 
     try {
-      const res = await fetch(`/api/mon_them/${item.id}`, { method: "DELETE" });
-      if (res.ok) {
-        setData((prev) => prev.filter((m) => m.id !== item.id));
-      } else {
-        alert("Xóa thất bại!");
-      }
-    } catch (err) {
-      console.error(" Lỗi khi xóa món thêm:", err);
-      alert("Không thể kết nối tới máy chủ!");
+      const res = await fetch(`/api/mon_them/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ het_mon: true }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      setData((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, het_mon: today } : m))
+      );
+    } catch {
+      alert("Không thể cập nhật hết món!");
+    } finally {
+      setConfirmHetMon(null);
     }
   };
+
+  const confirmCoLaiSubmit = async () => {
+    if (!confirmCoLai) return;
+    const id = confirmCoLai.id;
+
+    try {
+      const res = await fetch(`/api/mon_them/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ co_lai_mon: true }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      setData((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, het_mon: null } : m))
+      );
+    } catch {
+      alert("Không thể cập nhật mở bán!");
+    } finally {
+      setConfirmCoLai(null);
+    }
+  };
+
 
 
   return (
@@ -167,6 +213,7 @@ function MonThemListContent() {
         <table className="min-w-full text-base text-left border-collapse table-fixed">
           <thead className="bg-gray-300 text-gray-700 uppercase text-base">
             <tr>
+              <th className="px-5 py-3 w-[180px] text-center">Hết món hôm nay</th>
               <th className="px-5 py-3 w-[240px] truncate">Tên món thêm</th>
               <th className="px-5 py-3 w-[120px] text-center">Giá thêm</th>
               <th className="px-5 py-3 w-[140px] text-center">Loại món</th>
@@ -194,41 +241,52 @@ function MonThemListContent() {
               </tr>
             ) : (
               //  HIỂN THỊ DỮ LIỆU 
-              data.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-t hover:bg-gray-100 transition-all">
-                  <td className="px-5 py-4 font-semibold max-w-[240px] truncate whitespace-nowrap overflow-hidden">
-                    {item.ten}
-                  </td>
+              data.map((item) => {
+                const isHetToday = item.het_mon === today;
+                return (
+                  <tr
+                    key={item.id}
+                    className={`border-t hover:bg-gray-100 transition ${isHetToday ? "opacity-40 bg-red-50" : ""
+                      }`}
+                  >
+                    <td className="px-5 py-4 text-center cursor-pointer text-2xl" onClick={() => handleHetMonClick(item)}>
+                      {isHetToday ? "🚫" : "🍜"}
+                    </td>
 
-                  <td className="px-5 py-4 text-center text-red-600 font-medium truncate whitespace-nowrap overflow-hidden">
-                    {item.gia_them.toLocaleString("vi-VN")} ₫
-                  </td>
+                    <td className="px-5 py-4 font-semibold max-w-[240px] truncate whitespace-nowrap overflow-hidden">
+                      {item.ten}
+                    </td>
 
-                  <td className="px-5 py-4 text-center truncate whitespace-nowrap overflow-hidden">
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${item.loai_mon === 1
-                        ? "bg-purple-100 text-purple-700 border border-purple-300"
-                        : "bg-yellow-100 text-yellow-700 border border-yellow-300"
-                      }`}>
-                      {item.loai_mon === 1 ? "Món ăn kèm" : "Topping"}
-                    </span>
-                  </td>
+                    <td className="px-5 py-4 text-center text-red-600 font-medium">
+                      {item.gia_them.toLocaleString("vi-VN")} ₫
+                    </td>
 
-                  <td className="px-5 py-4 text-center cursor-pointer select-none text-2xl truncate whitespace-nowrap overflow-hidden" onClick={() => handleToggleClick(item)}
-                    title="Bấm để đổi trạng thái">
-                    {item.trang_thai ? "✅" : "❌"}
-                  </td>
+                    <td className="px-5 py-4 text-center">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${item.loai_mon === 1
+                            ? "bg-purple-100 text-purple-700 border border-purple-300"
+                            : "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                          }`}
+                      >
+                        {item.loai_mon === 1 ? "Món ăn kèm" : "Topping"}
+                      </span>
+                    </td>
 
-                  <td className="px-5 py-4 text-center truncate whitespace-nowrap overflow-hidden">
-                    <Link href={`/mon_them/${item.id}`} className="text-blue-600 hover:text-blue-800 font-semibold">
-                      Sửa
-                    </Link>
+                    <td className="px-5 py-4 text-center text-2xl cursor-pointer" onClick={() => handleToggleClick(item)}>
+                      {item.trang_thai ? "✅" : "❌"}
+                    </td>
 
-                  </td>
+                    <td className="px-5 py-4 text-center truncate whitespace-nowrap overflow-hidden">
+                      <Link href={`/mon_them/${item.id}`} className="text-blue-600 hover:text-blue-800 font-semibold">
+                        Sửa
+                      </Link>
 
-                </tr>
-              ))
+                    </td>
+
+
+                  </tr>
+                );
+              })
             )}
           </tbody>
 
@@ -304,6 +362,39 @@ function MonThemListContent() {
           </div>
         </div>
       )}
+
+
+      {confirmHetMon && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-5 shadow-lg w-[340px]">
+            <h2 className="text-lg font-bold text-center mb-3 text-red-600">Hết món hôm nay?</h2>
+            <p className="text-center mb-4 text-base">
+              Món <span className="font-bold">{confirmHetMon.ten}</span> sẽ tạm ẩn trong ngày hôm nay.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button onClick={confirmHetMonSubmit} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold text-base">Xác nhận</button>
+              <button onClick={() => setConfirmHetMon(null)} className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg font-medium text-base">Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmCoLai && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-5 shadow-lg w-[340px]">
+            <h2 className="text-lg font-bold text-center mb-3 text-green-600">Mở bán lại hôm nay?</h2>
+            <p className="text-center mb-4 text-base">
+              Món <span className="font-bold">{confirmCoLai.ten}</span> sẽ được mở bán lại trong ngày hôm nay.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button onClick={confirmCoLaiSubmit} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-base">Xác nhận</button>
+              <button onClick={() => setConfirmCoLai(null)} className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg font-medium text-base">Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }
@@ -316,3 +407,4 @@ export default function MonThemList() {
     </Suspense>
   );
 }
+
