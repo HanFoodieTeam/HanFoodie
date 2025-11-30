@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     const search = searchParams.get("search")?.trim();
     const range = (searchParams.get("range") || "today") as RangeKey;
 
-    // ==== BỘ LỌC CƠ BẢN ====
+    //  BỘ LỌC CƠ BẢN 
     const baseWhere: WhereOptions<IDonHang> = {};
 
     // Tìm kiếm theo mã đơn
@@ -48,16 +48,16 @@ export async function GET(req: Request) {
       }
     }
 
-    // ==== WHERE CHO TỪNG TAB ====
+    //  WHERE CHO TỪNG TAB 
     const queryWhere: WhereOptions<IDonHang> =
       trang_thai && trang_thai !== "tat_ca"
         ? { ...baseWhere, trang_thai: trang_thai as IDonHang["trang_thai"] }
         : baseWhere;
 
-    // ==== ORDER: chỉ sắp xếp theo id giảm dần ====
+    //  ORDER: chỉ sắp xếp theo id giảm dần 
     const orderCondition: OrderItem[] = [["id", "DESC"]];
 
-    // ==== TRUY VẤN PHÂN TRANG ====
+    //  TRUY VẤN PHÂN TRANG 
     const { count, rows } = await DonHangModel.findAndCountAll({
       where: queryWhere,
       include: [
@@ -73,10 +73,10 @@ export async function GET(req: Request) {
       subQuery: false,
     });
 
-    // ==== TỔNG TẤT CẢ ====
+    //  TỔNG TẤT CẢ 
     const totalAll = await DonHangModel.count({ where: baseWhere });
 
-    // ==== ĐẾM THEO TRẠNG THÁI ====
+    //  ĐẾM THEO TRẠNG THÁI 
     const grouped = (await DonHangModel.findAll({
       attributes: [
         "trang_thai",
@@ -102,7 +102,7 @@ export async function GET(req: Request) {
       if (r.trang_thai) countByStatus[r.trang_thai] = Number(r.cnt) || 0;
     }
 
-    // ==== TRẢ KẾT QUẢ ====
+    //  TRẢ KẾT QUẢ 
     return NextResponse.json({
       data: rows as IDonHang[],
       page,
@@ -113,7 +113,7 @@ export async function GET(req: Request) {
       countByStatus,
     });
   } catch (e) {
-    console.error("🔥 Lỗi truy vấn đơn hàng:", e);
+    console.error(" Lỗi truy vấn đơn hàng:", e);
     const msg = e instanceof Error ? e.message : String(e);
     return NextResponse.json(
       { error: "Lỗi khi lấy danh sách đơn hàng", detail: msg },

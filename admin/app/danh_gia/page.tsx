@@ -117,23 +117,28 @@ function DanhGiaTable() {
 
 
   return (
-    <div className="p-4">
+    <div className="p-2">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
         <h1 className="text-3xl font-bold text-gray-800">
           Thống kê đánh giá sản phẩm
         </h1>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center border rounded-lg px-3 py-1.5 bg-white">
+          <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2 bg-white">
             <Search size={18} className="text-gray-500 mr-2" />
-            <input
-              type="text"
-              placeholder="Tìm sản phẩm..."
-              defaultValue={search}
-              onChange={(e) => updateQuery({ search: e.target.value, page: "1" })}
-              className="outline-none text-sm w-48"
-            />
+
+            <input type="text" placeholder="Tìm sản phẩm..." value={search}
+              onChange={(e) => updateQuery({ search: e.target.value.trim(), page: "1" })}
+              className="outline-none text-sm w-48" />
+
+            {search && (
+              <button onClick={() => updateQuery({ search: "", page: "1" })}
+                className="text-gray-400 hover:text-red-500 ml-2 transition" title="Xoá nội dung tìm kiếm">
+                ✕
+              </button>
+            )}
           </div>
+
 
           {/*  Lọc theo số sao */}
           <select
@@ -196,47 +201,38 @@ function DanhGiaTable() {
               </tr>
             ) : (
               paginatedData.map((sp) => (
-                <tr key={sp.san_pham_id}
-                  className="border-b hover:bg-gray-100 transition-colors">
+                <tr key={sp.san_pham_id} onClick={() => router.push(`/danh_gia/${sp.san_pham_id}`)}
+                  className="border-b hover:bg-gray-100 transition-colors cursor-pointer">
                   <td className="px-5 py-2">
-                    <Link href={`/danh_gia/${sp.san_pham_id}`}>
-                      <img
-                        src={sp.hinh || "/no-image.png"}
-                        alt={sp.ten}
-                        className="w-16 h-16 rounded-lg object-cover border"
-                      />
+                    <Link href={`/danh_gia/${sp.san_pham_id}`}  onClick={(e) => e.stopPropagation()}  >
+                      <img src={sp.hinh || "/no-image.png"} alt={sp.ten} className="w-16 h-16 rounded-lg object-cover border"/>
                     </Link>
                   </td>
 
                   <td className="px-2 py-2 font-semibold text-[16px] max-w-[200px]">
-                    <Link
-                      href={`/danh_gia/${sp.san_pham_id}`}
-                      className="hover:text-blue-600 block truncate"
-                      title={sp.ten}>
+                    <Link href={`/danh_gia/${sp.san_pham_id}`} onClick={(e) => e.stopPropagation()} className="hover:text-blue-600 block truncate" title={sp.ten}>
                       {sp.ten}
                     </Link>
                   </td>
 
                   <td className="px-5 py-2 text-center">
                     <div className="flex items-center justify-center gap-1 text-yellow-600 font-semibold text-[16px]">
-                      {sp.tong_danh_gia > 0 ? (<>
-                        {sp.trung_binh.toFixed(1)}
-                        <Star size={18} className="text-yellow-500 fill-yellow-500" />
-                        <span className="text-sm text-gray-600">
-                          ({sp.tong_danh_gia})
-                        </span> </>
+                      {sp.tong_danh_gia > 0 ? ( <>
+                          {sp.trung_binh.toFixed(1)}
+                          <Star size={18} className="text-yellow-500 fill-yellow-500" />
+                          <span className="text-sm text-gray-600">({sp.tong_danh_gia})</span> </>
                       ) : (
                         <span className="text-gray-400">–</span>
                       )}
                     </div>
                   </td>
-
                   <td className="px-5 py-2 text-center">{sp.sao_1}</td>
                   <td className="px-5 py-2 text-center">{sp.sao_2}</td>
                   <td className="px-5 py-2 text-center">{sp.sao_3}</td>
                   <td className="px-5 py-2 text-center">{sp.sao_4}</td>
                   <td className="px-5 py-2 text-center">{sp.sao_5}</td>
                 </tr>
+
               ))
             )}
           </tbody>

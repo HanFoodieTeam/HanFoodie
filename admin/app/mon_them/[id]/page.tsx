@@ -35,7 +35,7 @@ export default function SuaMonThem() {
           trang_thai: !!data.trang_thai,
         });
       } catch {
-        alert("❌ Lỗi khi tải dữ liệu món thêm!");
+        alert(" Lỗi khi tải dữ liệu món thêm!");
         router.push("/mon_them");
       } finally {
         setInitialLoading(false);

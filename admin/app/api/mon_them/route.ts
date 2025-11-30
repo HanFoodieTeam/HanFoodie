@@ -4,7 +4,7 @@ import { Op, WhereOptions } from "sequelize";
 import { MonThemModel } from "@/app/lib/models";
 import { IMonThem } from "@/app/lib/cautrucdata";
 
-// ===== GET: Danh sách món thêm (lọc, tìm kiếm, phân trang) =====
+//  GET: Danh sách món thêm (lọc, tìm kiếm, phân trang) 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -50,7 +50,7 @@ const limit = Number(searchParams.get("limit") || 7);
       currentPage: page,
     });
   } catch (error) {
-    console.error("❌ Lỗi khi lấy danh sách món thêm:", error);
+    console.error(" Lỗi khi lấy danh sách món thêm:", error);
     return NextResponse.json(
       { success: false, message: "Lỗi khi lấy danh sách món thêm" },
       { status: 500 }
@@ -58,7 +58,7 @@ const limit = Number(searchParams.get("limit") || 7);
   }
 }
 
-// ===== POST: Thêm món thêm =====
+//  POST: Thêm món thêm 
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as IMonThem;
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
       data: created,
     });
   } catch (error) {
-    console.error("❌ Lỗi thêm món thêm:", error);
+    console.error(" Lỗi thêm món thêm:", error);
     return NextResponse.json(
       { success: false, message: "Lỗi khi thêm món thêm" },
       { status: 500 }

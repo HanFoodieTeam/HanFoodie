@@ -10,9 +10,8 @@ export default function ThongTin({ user }: { user: INguoiDung }) {
     : "/default-user.png";
 
   return (
-    <div className="space-y-4 text-gray-700">
+    <div className="space-y- text-gray-700">
 
-      {/* Avatar + tên */}
       <div className="flex items-center gap-4">
         <img
           src={avatarUrl}

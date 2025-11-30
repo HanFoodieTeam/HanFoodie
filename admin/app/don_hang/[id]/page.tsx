@@ -53,11 +53,11 @@ export default function DonHangDetail() {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(`❌ Hủy thất bại: ${data.error || "Lỗi không xác định"}`);
+        alert(` Hủy thất bại: ${data.error || "Lỗi không xác định"}`);
         return;
       }
 
-      alert("✅ Đơn hàng đã được hủy thành công!");
+      alert(" Đơn hàng đã được hủy thành công!");
       setDonHang((prev) => (prev ? { ...prev, trang_thai: "da_huy" } : prev));
     } catch (err) {
       console.error("Lỗi khi hủy đơn hàng:", err);

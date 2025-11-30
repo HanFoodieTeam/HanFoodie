@@ -53,46 +53,46 @@ export async function GET(
         },
 
         // ĐƠN HÀNG
-       // ĐƠN HÀNG
-{
-  model: DonHangModel,
-  as: "don_hang",
-  attributes: [
-    "id",
-    "ma_don",
-    "trang_thai",
-    "so_tien_thanh_toan",
-    "ngay_tao",
-  ],
-  include: [
-    {
-      model: ChiTietDonHangModel,
-      as: "chi_tiet_don_hang",
-      attributes: [
-        "id",
-        "so_luong",
-        "don_gia",
-        "thanh_tien",
-        "json_tuy_chon",
-        "json_mon_them",
-      ],
-      include: [
+        // ĐƠN HÀNG
         {
-          model: BienTheModel,
-          as: "bien_the",
-          attributes: ["id", "ten", "gia_them", "id_san_pham"],
+          model: DonHangModel,
+          as: "don_hang",
+          attributes: [
+            "id",
+            "ma_don",
+            "trang_thai",
+            "so_tien_thanh_toan",
+            "ngay_tao",
+          ],
           include: [
             {
-              model: SanPhamModel,
-              as: "san_pham",
-              attributes: ["id", "ten", "hinh", "gia_goc"],
+              model: ChiTietDonHangModel,
+              as: "chi_tiet_don_hang",
+              attributes: [
+                "id",
+                "so_luong",
+                "don_gia",
+                "thanh_tien",
+                "json_tuy_chon",
+                "json_mon_them",
+              ],
+              include: [
+                {
+                  model: BienTheModel,
+                  as: "bien_the",
+                  attributes: ["id", "ten", "gia_them", "id_san_pham"],
+                  include: [
+                    {
+                      model: SanPhamModel,
+                      as: "san_pham",
+                      attributes: ["id", "ten", "hinh", "gia_goc"],
+                    },
+                  ],
+                },
+              ],
             },
           ],
-        },
-      ],
-    },
-  ],
-}
+        }
 
       ],
     });

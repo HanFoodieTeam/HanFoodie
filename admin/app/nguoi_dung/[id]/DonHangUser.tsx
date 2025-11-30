@@ -106,7 +106,7 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
       {/* Danh sách đơn hàng */}
       {currentData.map((d: IDonHang) => (
         <Link key={d.id} href={`/don_hang/${d.id}`}
-          className="block border rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition" >
+          className="block border border-gray-300 rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition" >
           <div className="flex justify-between items-center">
             <p className="font-semibold">
               Mã đơn: <span className="text-blue-600">{d.ma_don}</span>
@@ -120,7 +120,7 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
             Ngày đặt: {new Date(d.ngay_tao).toLocaleDateString("vi-VN")}
           </p>
 
-          <div className="border rounded-lg p-3 mt-3 space-y-3">
+          <div className="border border-gray-500 rounded-lg p-3 mt-3 space-y-3">
             {(d.chi_tiet_don_hang ?? []).map((item: IChiTietDonHang) => {
               const product = item.bien_the?.san_pham;
               const toppings =
@@ -135,7 +135,7 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
                   .join(", ");
 
               return (
-                <div key={item.id} className="flex gap-3 items-center border-b last:border-b-0 pb-3 last:pb-0">
+                <div key={item.id} className="flex gap-3 items-center border-gray-300 border-b  last:border-b-0 pb-3 last:pb-0">
                   <img src={product?.hinh ?? "/no-img.jpg"} alt={product?.ten ?? ""} className="w-14 h-14 rounded-lg object-cover"/>
 
                   <div className="flex-1">
@@ -160,7 +160,7 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
             })}
           </div>
 
-          <div className="mt-3 pt-3 border-t flex justify-between">
+          <div className="mt-2 pt-2  flex justify-between">
             <p className="font-semibold">
               Tổng thanh toán:{" "}
               <span className="text-red-600">

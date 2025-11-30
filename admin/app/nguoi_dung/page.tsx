@@ -95,9 +95,7 @@ function NguoiDungContent() {
   );
 
   return (
-    <div className="p-6">
-
-      {/* Header */}
+    <div className="p-2">
       {/* Header */}
       <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
 
@@ -144,9 +142,7 @@ function NguoiDungContent() {
       </div>
 
 
-      {/* icon xóa tìm kiếm  */}
       {/* ✕  */}
-
 
       {/* Table */}
       <div className="overflow-x-auto bg-white rounded-xl shadow-md">
@@ -214,14 +210,11 @@ function NguoiDungContent() {
         {Array.from({ length: 5 }, (_, i) => currentPage - 2 + i)
           .filter((p) => p >= 1 && p <= totalPages)
           .map((p) => (
-            <button
-              key={p}
-              onClick={() => updateQuery({ page: String(p) })}
+            <button key={p} onClick={() => updateQuery({ page: String(p) })}
               className={`px-4 py-2 rounded ${p === currentPage
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 hover:bg-gray-300"
-                }`}
-            >
+                }`}>
               {p}
             </button>
           ))}

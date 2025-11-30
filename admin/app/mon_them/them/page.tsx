@@ -94,12 +94,8 @@ export default function ThemMonThem() {
         <div>
           <div>
             <label className="block mb-1 font-medium text-gray-700">Loại món</label>
-            <select
-              name="loai_mon"
-              value={form.loai_mon}
-              onChange={handleChange}
-              className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
+            <select name="loai_mon"  value={form.loai_mon} onChange={handleChange}
+              className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
               <option value={1}>Món ăn kèm</option>
               <option value={0}>Topping</option>
             </select>

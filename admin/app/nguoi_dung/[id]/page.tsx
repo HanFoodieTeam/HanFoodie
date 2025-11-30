@@ -50,7 +50,7 @@ export default function UserDetailPage() {
 
   return (
     <div className="p-2 bg-gray-50 min-h-screen">
-      <div className="mx-auto bg-white shadow-lg rounded-xl p-6">
+      <div className="">
         <h1 className="text-2xl font-bold mb-4">Chi tiết người dùng</h1>
 
         <div className="flex gap-2 border-b pb-2 mb-4">
