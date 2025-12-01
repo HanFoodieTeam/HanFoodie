@@ -371,8 +371,11 @@ export async function GET(req: Request) {
         email: u.email,
         sdt: u.sdt,
         ngay_sinh: u.ngay_sinh,
-        hinh: u.hinh ? `/uploads/avatars/${u.hinh}` : null,
-      },
+        hinh: u.hinh && u.hinh.trim() !== ''
+        ? `/uploads/avatars/${u.hinh}`
+        : '/avatar.png',
+
+            },
     });
   } catch (err) {
     console.error("Lỗi lấy hồ sơ:", err);
@@ -417,7 +420,10 @@ export async function POST(req: Request) {
       ho_ten: ho_ten || user.ho_ten,
        sdt: sdt ? Number(sdt) : null,
       ngay_sinh: ngay_sinh || user.ngay_sinh,
-      hinh: tenFile || user.hinh,
+      hinh: tenFile
+  ? `/uploads/avatars/${tenFile}`
+  : '/avatar.png',
+
     });
 
     return NextResponse.json({

@@ -11,11 +11,8 @@ export async function GET() {
         "slug",
         "hinh",
         "an_hien",
-        [
-          // ⚠️ alias phải trùng với hasMany: "san_pham"
-          Sequelize.fn("COUNT", Sequelize.col("san_pham.id")),
-          "so_san_pham"
-        ],
+        [Sequelize.literal("COUNT(`san_pham`.`id`)"), "so_san_pham"],
+
       ],
       include: [
         {
