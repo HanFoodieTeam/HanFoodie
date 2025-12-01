@@ -77,8 +77,8 @@ export default function Header() {
           <nav className="hidden md:flex space-x-8 text-lg">
             <Link href="/">Trang chủ</Link>
             <Link href="/san_pham">Sản phẩm</Link>
-            <Link href="/tin-tuc">Tin tức</Link>
-            <Link href="/lien-he">Liên hệ</Link>
+            <Link href="/bai_viet">Tin tức</Link>
+            <Link href="/lien_he">Liên hệ</Link>
           </nav>
 
           {/* ICONS */}
@@ -204,7 +204,7 @@ export default function Header() {
               <Link href="/san-pham" onClick={() => setOpenMenu(false)}>
                 Sản phẩm
               </Link>
-              <Link href="/tin-tuc" onClick={() => setOpenMenu(false)}>
+              <Link href="/bai_viet" onClick={() => setOpenMenu(false)}>
                 Tin tức
               </Link>
               <Link href="/lien-he" onClick={() => setOpenMenu(false)}>
