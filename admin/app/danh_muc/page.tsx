@@ -98,21 +98,9 @@ function DanhMucListContent() {
     }
   };
 
-  const handleDelete = async (item: IDanhMuc) => {
-    const isConfirm = confirm(`Bạn có chắc muốn xóa danh mục "${item.ten}" không?`);
-    if (!isConfirm) return;
-
-    try {
-      const res = await fetch(`/api/danh_muc/${item.id}`, { method: "DELETE" });
-      if (res.ok) {
-        setData((prev) => prev.filter((dm) => dm.id !== item.id));
-      } else {
-        alert("Xóa thất bại!");
-      }
-    } catch (err) {
-      console.error("Lỗi khi xóa danh mục:", err);
-      alert("Không thể kết nối tới máy chủ!");
-    }
+  const goToPage = (p: number) => {
+    if (p < 1 || p > totalPages) return;
+    updateQuery({ page: String(p) });
   };
 
   return (
@@ -122,7 +110,7 @@ function DanhMucListContent() {
         <h1 className="text-2xl font-bold text-gray-800">Quản lý Danh Mục</h1>
 
         <div className="flex gap-2 flex-wrap items-center">
-          <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2 bg-white relative">
+          <div className="flex items-center border border-gray-400 rounded-lg px-3 py-1.5 bg-white relative">
             <input
               type="text"
               placeholder="Tìm theo tên..."
@@ -146,7 +134,7 @@ function DanhMucListContent() {
 
           <Link
             href="/danh_muc/them"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg shadow text-sm"
           >
             Thêm Danh Mục
           </Link>
@@ -155,61 +143,97 @@ function DanhMucListContent() {
 
       {/* Bảng dữ liệu */}
       <div className="overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-200">
-        <table className="min-w-full text-base text-left border-collapse">
-          <thead className="bg-gray-300 text-gray-700 uppercase text-base">
+        <table className="min-w-full text-sm text-left border-collapse">
+          <thead className="bg-gray-300 text-gray-700 uppercase text-sm text-center">
             <tr>
-              <th className="px-5 py-3">Tên</th>
-              <th className="px-5 py-3 text-center">Ẩn/Hiện</th>
-              <th className="px-5 py-3 text-center">Sửa | Xóa</th>
+              <th className="px-3 py-2-text-center">HÌNH</th>
+              <th className="px-3 py-2-text-center">TÊN</th>
+              <th className="px-3 py-2 text-center">ẨN/HIỆN</th>
+              <th className="px-3 py-2 text-center">SỬA</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={3} className="py-10 text-center">
+                <td colSpan={4} className="py-6 text-center">
                   <div className="flex items-center justify-center gap-2 text-gray-600">
-                    <div className="h-6 w-6 border-2 border-gray-400 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div className="h-5 w-5 border-2 border-gray-400 border-t-blue-500 rounded-full animate-spin"></div>
                     <span>Đang tải dữ liệu...</span>
                   </div>
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={3} className="text-center py-6 text-gray-500 italic text-lg">
+                <td colSpan={4} className="text-center py-4 text-gray-500 italic">
                   Không có dữ liệu
                 </td>
               </tr>
             ) : (
               data.map((dm) => (
                 <tr key={dm.id} className="border-t hover:bg-gray-100 transition-all">
-                  <td className="px-5 py-4 font-semibold">{dm.ten}</td>
+                  <td className="px-3 py-2">
+                    {dm.hinh ? (
+                      <img
+                        src={dm.hinh}
+                        alt={dm.ten}
+                        className="w-12 h-12 object-cover rounded-lg mx-auto"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto flex items-center justify-center text-gray-400 text-xs">
+                        Chưa có
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-3 py-2 font-medium">{dm.ten}</td>
                   <td
-                    className="px-5 py-4 text-center cursor-pointer select-none text-2xl"
+                    className="px-3 py-2 text-center cursor-pointer select-none text-xl"
                     onClick={() => handleToggleClick(dm)}
                     title="Bấm để đổi trạng thái"
                   >
                     {dm.an_hien ? "✅" : "❌"}
                   </td>
-                  <td className="px-5 py-4 text-center">
+                  <td className="px-3 py-2 text-center">
                     <Link
                       href={`/danh_muc/${dm.id}`}
-                      className="text-blue-600 hover:text-blue-800 font-semibold"
+                      className="text-blue-600 hover:text-blue-800 font-medium"
                     >
                       Sửa
                     </Link>
-                    {" | "}
-                    <button
-                      onClick={() => handleDelete(dm)}
-                      className="text-red-600 hover:text-red-800 font-semibold"
-                    >
-                      Xóa
-                    </button>
                   </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Phân trang */}
+      <div className="flex justify-center mt-4 gap-2 text-sm">
+        <button
+          onClick={() => goToPage(page - 1)}
+          disabled={page <= 1}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          Trước
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+          <button
+            key={p}
+            onClick={() => goToPage(p)}
+            className={`px-3 py-1 rounded ${
+              p === page ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          >
+            {p}
+          </button>
+        ))}
+        <button
+          onClick={() => goToPage(page + 1)}
+          disabled={page >= totalPages}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          Sau
+        </button>
       </div>
 
       {/* Modal xác nhận */}

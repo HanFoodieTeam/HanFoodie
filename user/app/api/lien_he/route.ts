@@ -7,7 +7,7 @@ export async function POST(request: Request) {
 
     const name = formData.get("name")?.toString().trim();
     const email = formData.get("email")?.toString().trim();
-    const subject = formData.get("subject")?.toString().trim(); // thêm subject
+    const subject = formData.get("subject")?.toString().trim();
     const message = formData.get("message")?.toString().trim();
 
     if (!name || !email || !subject || !message) {
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       .trim();
     const emailPass = (process.env.EMAIL_PASS || process.env.EMAIL_APP_PASSWORD || "")
       .replace(/"/g, "")
-      .replace(/\s+/g, "");
+      .trim();
 
     if (!emailUser || !emailPass) {
       console.error("EMAIL_USER/EMAIL_PASS chưa được cấu hình đúng.");
@@ -41,14 +41,15 @@ export async function POST(request: Request) {
       from: `"HanFoodie Contact Form" <${emailUser}>`,
       to: emailUser,
       replyTo: email,
-      subject: `Liên hệ mới: ${subject}`, // hiển thị tiêu đề từ form
+      subject: `Liên hệ mới: ${subject}`,
       text: `Tên: ${name}\nEmail: ${email}\nTiêu đề: ${subject}\nNội dung:\n${message}`,
     });
 
     console.log(`Mail từ ${email} đã gửi thành công!`);
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (err) {
-    console.error("Lỗi gửi mail:", err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("Lỗi gửi mail:", message);
     return NextResponse.json(
       { success: false, error: "Lỗi server. Vui lòng thử lại!" },
       { status: 500 }

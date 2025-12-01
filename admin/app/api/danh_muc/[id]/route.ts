@@ -4,13 +4,27 @@ import { NextResponse } from "next/server";
 import { DanhMucModel } from "@/app/lib/models";
 import { IDanhMuc } from "@/app/lib/cautrucdata";
 
+// Kiểu dữ liệu PUT
+interface UpdateDanhMucBody {
+  ten: string;
+  slug?: string;
+  hinh?: string | null;
+  thu_tu?: number;
+  an_hien?: boolean;
+}
+
+// Kiểu dữ liệu PATCH trạng thái
+interface PatchDanhMucBody {
+  an_hien: boolean;
+}
+
 // ===== LẤY THEO ID =====
 export async function GET(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = context.params;
     const dm = await DanhMucModel.findByPk(id);
 
     if (!dm)
@@ -24,7 +38,7 @@ export async function GET(
       an_hien: !!dm.getDataValue("an_hien"),
     };
 
-    return NextResponse.json(data);
+    return NextResponse.json({ success: true, data });
   } catch (err) {
     console.error("GET danh_muc lỗi:", err);
     return NextResponse.json(
@@ -37,11 +51,11 @@ export async function GET(
 // ===== CẬP NHẬT TOÀN BỘ =====
 export async function PUT(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await context.params;
-    const body = await req.json();
+    const { id } = context.params;
+    const body: UpdateDanhMucBody = await req.json();
 
     if (!body.ten)
       return NextResponse.json(
@@ -64,13 +78,15 @@ export async function PUT(
       an_hien: body.an_hien ? 1 : 0,
     });
 
+    const data: IDanhMuc = {
+      ...dm.toJSON(),
+      an_hien: !!dm.getDataValue("an_hien"),
+    };
+
     return NextResponse.json({
       success: true,
       message: "Cập nhật danh mục thành công",
-      data: {
-        ...dm.toJSON(),
-        an_hien: !!dm.getDataValue("an_hien"),
-      },
+      data,
     });
   } catch (err) {
     console.error("PUT danh_muc lỗi:", err);
@@ -84,13 +100,13 @@ export async function PUT(
 // ===== CẬP NHẬT TRẠNG THÁI ẨN/HIỆN =====
 export async function PATCH(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await context.params;
-    const { an_hien } = (await req.json()) as { an_hien: boolean };
+    const { id } = context.params;
+    const body: PatchDanhMucBody = await req.json();
 
-    if (typeof an_hien !== "boolean") {
+    if (typeof body.an_hien !== "boolean") {
       return NextResponse.json(
         { success: false, message: "an_hien phải là boolean" },
         { status: 400 }
@@ -105,12 +121,12 @@ export async function PATCH(
       );
     }
 
-    await dm.update({ an_hien: an_hien ? 1 : 0 });
+    await dm.update({ an_hien: body.an_hien ? 1 : 0 });
 
     return NextResponse.json({
       success: true,
       message: "Cập nhật trạng thái thành công",
-      data: { id, an_hien },
+      data: { id, an_hien: body.an_hien },
     });
   } catch (err) {
     console.error("PATCH danh_muc lỗi:", err);
@@ -124,10 +140,10 @@ export async function PATCH(
 // ===== XÓA =====
 export async function DELETE(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = context.params;
     const dm = await DanhMucModel.findByPk(id);
 
     if (!dm)

@@ -7,7 +7,7 @@ import { Calendar, ChevronDown } from "lucide-react";
 interface ILoaiBaiViet {
   id: number;
   ten_loai: string;
-  slug: string;
+  slug?: string;
 }
 
 interface IBaiViet {
@@ -28,24 +28,31 @@ export default function BaiVietPage() {
   const [loaiId, setLoaiId] = useState<number | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [danhSachLoai, setDanhSachLoai] = useState<{ id: number | null; ten_loai: string }[]>([]);
+  const [showAll, setShowAll] = useState(false);
 
   const fetchBaiViet = async () => {
     setLoading(true);
     try {
       const res = await fetch(`/api/bai_viet`, { cache: "no-store" });
       if (!res.ok) throw new Error("Lỗi khi tải dữ liệu bài viết");
-      const data: IBaiViet[] = await res.json();
+
+      const json = await res.json();
+      const data: IBaiViet[] = json.success ? json.data : [];
       setDsBaiViet(data);
 
       // Lấy danh sách loại duy nhất
-      const loaiUnique = Array.from(
-        new Map(
+      const loaiUnique: ILoaiBaiViet[] = Array.from(
+        new Map<number, ILoaiBaiViet>(
           data
-            .filter(bv => bv.loai_bai_viet)
-            .map(bv => [bv.loai_bai_viet!.id, bv.loai_bai_viet])
+            .filter((bv): bv is IBaiViet & { loai_bai_viet: ILoaiBaiViet } => bv.loai_bai_viet !== null)
+            .map(bv => [bv.loai_bai_viet.id, bv.loai_bai_viet])
         ).values()
       );
-      setDanhSachLoai([{ id: null, ten_loai: "Tất cả" }, ...loaiUnique.map(lbv => ({ id: lbv!.id, ten_loai: lbv!.ten_loai }))]);
+
+      setDanhSachLoai([
+        { id: null, ten_loai: "Tất cả" },
+        ...loaiUnique.map(lbv => ({ id: lbv.id, ten_loai: lbv.ten_loai }))
+      ]);
     } catch (error) {
       console.error(error);
     } finally {
@@ -57,8 +64,11 @@ export default function BaiVietPage() {
     fetchBaiViet();
   }, []);
 
-  // Lọc bài viết theo loại
-  const filteredBaiViet = loaiId ? dsBaiViet.filter(bv => bv.loai_bai_viet?.id === loaiId) : dsBaiViet;
+  const filteredBaiViet = loaiId
+    ? dsBaiViet.filter(bv => bv.loai_bai_viet?.id === loaiId)
+    : dsBaiViet;
+
+  const displayedBaiViet = showAll ? filteredBaiViet : filteredBaiViet.slice(0, 3);
 
   if (loading)
     return (
@@ -92,7 +102,7 @@ export default function BaiVietPage() {
                     className={`w-full text-left px-4 py-2 hover:bg-gray-200 ${
                       loaiId === loai.id ? "bg-[#6A0A0A] text-white" : ""
                     }`}
-                    onClick={() => { setLoaiId(loai.id); setShowDropdown(false); }}
+                    onClick={() => { setLoaiId(loai.id); setShowAll(false); setShowDropdown(false); }}
                   >
                     {loai.ten_loai}
                   </button>
@@ -106,11 +116,9 @@ export default function BaiVietPage() {
             {danhSachLoai.map(loai => (
               <button
                 key={loai.id ?? "all"}
-                onClick={() => setLoaiId(loai.id)}
+                onClick={() => { setLoaiId(loai.id); setShowAll(false); }}
                 className={`px-4 py-2 rounded-lg font-medium text-left transition-colors ${
-                  loaiId === loai.id
-                    ? "bg-[#6A0A0A] text-white shadow"
-                    : "bg-gray-100 hover:bg-gray-200"
+                  loaiId === loai.id ? "bg-[#6A0A0A] text-white shadow" : "bg-gray-100 hover:bg-gray-200"
                 }`}
               >
                 {loai.ten_loai}
@@ -120,52 +128,58 @@ export default function BaiVietPage() {
         </aside>
 
         {/* Danh sách bài viết */}
-        <section className="md:w-3/4 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <section className="md:w-3/4 flex flex-col gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayedBaiViet.map(bv => (
+              <Link
+                key={bv.id}
+                href={`/bai_viet/${bv.id}`}
+                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden group block"
+              >
+                {bv.hinh && (
+                  <img
+                    src={bv.hinh}
+                    alt={bv.tieu_de}
+                    className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                )}
+                <div className="p-5 flex flex-col justify-between h-[220px]">
+                  <div>
+                    <h3 className="font-semibold text-lg text-gray-800 mb-2 line-clamp-2 group-hover:text-[#6A0A0A]">
+                      {bv.tieu_de}
+                    </h3>
+                    <p className="text-gray-600 text-sm line-clamp-3 mb-3">
+                      {bv.noi_dung}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} />
+                      <span>{bv.ngay_dang ? new Date(bv.ngay_dang).toLocaleDateString("vi-VN") : ""}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-gray-700">Lượt xem: {bv.luot_xem}</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Nút Xem thêm / Thu gọn */}
+          {filteredBaiViet.length > 3 && (
+            <button
+              className="self-center px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              onClick={() => setShowAll(prev => !prev)}
+            >
+              {showAll ? "Thu gọn" : "Xem thêm"}
+            </button>
+          )}
+
           {filteredBaiViet.length === 0 && (
             <p className="col-span-full text-center text-gray-500 mt-10">Không có bài viết nào.</p>
           )}
-
-          {filteredBaiViet.map(bv => (
-            <div
-              key={bv.id}
-              className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden group"
-            >
-              {bv.hinh && (
-                <img
-                  src={bv.hinh}
-                  alt={bv.tieu_de}
-                  className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              )}
-              <div className="p-5 flex flex-col justify-between h-[220px]">
-                <div>
-                  <h3 className="font-semibold text-lg text-gray-800 mb-2 line-clamp-2 group-hover:text-[#6A0A0A]">
-                    {bv.tieu_de}
-                  </h3>
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-3">
-                    {bv.noi_dung}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={16} />
-                    <span>{bv.ngay_dang ? new Date(bv.ngay_dang).toLocaleDateString("vi-VN") : ""}</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-700">Lượt xem: {bv.luot_xem}</span>
-                    <Link
-                      href={`/bai_viet/${bv.id}`}
-                      className="text-[#6A0A0A] font-medium hover:underline"
-                    >
-                      Xem chi tiết →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
         </section>
-
       </div>
     </main>
   );
