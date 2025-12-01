@@ -3,28 +3,28 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { IBaiViet } from "@/app/lib/cautrucdata";
+import { IDanhMuc } from "@/app/lib/cautrucdata";
 
-interface IBaiVietResponse {
+interface IDanhMucResponse {
   success: boolean;
-  data: IBaiViet[];
+  data: IDanhMuc[];
   totalPages: number;
   totalItems: number;
   currentPage: number;
 }
 
-function BaiVietListContent() {
+function DanhMucListContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const page = Number(searchParams.get("page") || 1);
   const searchQuery = searchParams.get("search") || "";
 
-  const [data, setData] = useState<IBaiViet[]>([]);
+  const [data, setData] = useState<IDanhMuc[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>(searchQuery);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [confirmItem, setConfirmItem] = useState<IBaiViet | null>(null);
+  const [confirmItem, setConfirmItem] = useState<IDanhMuc | null>(null);
 
   const updateQuery = (updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -32,7 +32,7 @@ function BaiVietListContent() {
       if (val && val !== "") params.set(key, val);
       else params.delete(key);
     });
-    router.push(`/bai_viet?${params.toString()}`);
+    router.push(`/danh_muc?${params.toString()}`);
   };
 
   const fetchData = async () => {
@@ -43,8 +43,8 @@ function BaiVietListContent() {
         search: searchQuery,
       });
 
-      const res = await fetch(`/api/bai_viet?${qs.toString()}`);
-      const json: IBaiVietResponse = await res.json();
+      const res = await fetch(`/api/danh_muc?${qs.toString()}`);
+      const json: IDanhMucResponse = await res.json();
 
       if (json.success) {
         setData(json.data);
@@ -53,7 +53,7 @@ function BaiVietListContent() {
         setData([]);
       }
     } catch (err) {
-      console.error("Lỗi khi tải danh sách bài viết:", err);
+      console.error("Lỗi khi tải danh sách danh mục:", err);
       setData([]);
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ function BaiVietListContent() {
     return () => clearTimeout(delay);
   }, [search]);
 
-  const handleToggleClick = (item: IBaiViet) => setConfirmItem(item);
+  const handleToggleClick = (item: IDanhMuc) => setConfirmItem(item);
 
   const confirmToggle = async () => {
     if (!confirmItem) return;
@@ -79,7 +79,7 @@ function BaiVietListContent() {
     const newState = !confirmItem.an_hien;
 
     try {
-      const res = await fetch(`/api/bai_viet/${id}`, {
+      const res = await fetch(`/api/danh_muc/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ an_hien: newState }),
@@ -88,7 +88,7 @@ function BaiVietListContent() {
       if (!res.ok) throw new Error("Lỗi cập nhật trạng thái");
 
       setData((prev) =>
-        prev.map((bv) => (bv.id === id ? { ...bv, an_hien: newState } : bv))
+        prev.map((dm) => (dm.id === id ? { ...dm, an_hien: newState } : dm))
       );
     } catch (err) {
       console.error("❌ PATCH lỗi:", err);
@@ -98,19 +98,19 @@ function BaiVietListContent() {
     }
   };
 
-  const handleDelete = async (item: IBaiViet) => {
-    const isConfirm = confirm(`Bạn có chắc muốn xóa bài viết "${item.tieu_de}" không?`);
+  const handleDelete = async (item: IDanhMuc) => {
+    const isConfirm = confirm(`Bạn có chắc muốn xóa danh mục "${item.ten}" không?`);
     if (!isConfirm) return;
 
     try {
-      const res = await fetch(`/api/bai_viet/${item.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/danh_muc/${item.id}`, { method: "DELETE" });
       if (res.ok) {
-        setData((prev) => prev.filter((bv) => bv.id !== item.id));
+        setData((prev) => prev.filter((dm) => dm.id !== item.id));
       } else {
         alert("Xóa thất bại!");
       }
     } catch (err) {
-      console.error("Lỗi khi xóa bài viết:", err);
+      console.error("Lỗi khi xóa danh mục:", err);
       alert("Không thể kết nối tới máy chủ!");
     }
   };
@@ -119,13 +119,13 @@ function BaiVietListContent() {
     <div>
       {/* Thanh tiêu đề + tìm kiếm */}
       <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
-        <h1 className="text-2xl font-bold text-gray-800">Quản lý Bài Viết</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Quản lý Danh Mục</h1>
 
         <div className="flex gap-2 flex-wrap items-center">
           <div className="flex items-center border border-gray-400 rounded-lg px-3 py-2 bg-white relative">
             <input
               type="text"
-              placeholder="Tìm theo tiêu đề..."
+              placeholder="Tìm theo tên..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="outline-none w-64 text-sm"
@@ -145,10 +145,10 @@ function BaiVietListContent() {
           </div>
 
           <Link
-            href="/bai_viet/them"
+            href="/danh_muc/them"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow"
           >
-            Thêm Bài Viết
+            Thêm Danh Mục
           </Link>
         </div>
       </div>
@@ -158,8 +158,7 @@ function BaiVietListContent() {
         <table className="min-w-full text-base text-left border-collapse">
           <thead className="bg-gray-300 text-gray-700 uppercase text-base">
             <tr>
-              <th className="px-5 py-3">Tiêu đề</th>
-              <th className="px-5 py-3 text-center">Ngày đăng</th>
+              <th className="px-5 py-3">Tên</th>
               <th className="px-5 py-3 text-center">Ẩn/Hiện</th>
               <th className="px-5 py-3 text-center">Sửa | Xóa</th>
             </tr>
@@ -167,7 +166,7 @@ function BaiVietListContent() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={4} className="py-10 text-center">
+                <td colSpan={3} className="py-10 text-center">
                   <div className="flex items-center justify-center gap-2 text-gray-600">
                     <div className="h-6 w-6 border-2 border-gray-400 border-t-blue-500 rounded-full animate-spin"></div>
                     <span>Đang tải dữ liệu...</span>
@@ -176,32 +175,31 @@ function BaiVietListContent() {
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center py-6 text-gray-500 italic text-lg">
+                <td colSpan={3} className="text-center py-6 text-gray-500 italic text-lg">
                   Không có dữ liệu
                 </td>
               </tr>
             ) : (
-              data.map((bv) => (
-                <tr key={bv.id} className="border-t hover:bg-gray-100 transition-all">
-                  <td className="px-5 py-4 font-semibold">{bv.tieu_de}</td>
-                  <td className="px-5 py-4 text-center">{new Date(bv.ngay_dang|| new Date()).toLocaleDateString()}</td>
+              data.map((dm) => (
+                <tr key={dm.id} className="border-t hover:bg-gray-100 transition-all">
+                  <td className="px-5 py-4 font-semibold">{dm.ten}</td>
                   <td
                     className="px-5 py-4 text-center cursor-pointer select-none text-2xl"
-                    onClick={() => handleToggleClick(bv)}
+                    onClick={() => handleToggleClick(dm)}
                     title="Bấm để đổi trạng thái"
                   >
-                    {bv.an_hien ? "✅" : "❌"}
+                    {dm.an_hien ? "✅" : "❌"}
                   </td>
                   <td className="px-5 py-4 text-center">
                     <Link
-                      href={`/bai_viet/${bv.id}`}
+                      href={`/danh_muc/${dm.id}`}
                       className="text-blue-600 hover:text-blue-800 font-semibold"
                     >
                       Sửa
                     </Link>
                     {" | "}
                     <button
-                      onClick={() => handleDelete(bv)}
+                      onClick={() => handleDelete(dm)}
                       className="text-red-600 hover:text-red-800 font-semibold"
                     >
                       Xóa
@@ -226,10 +224,8 @@ function BaiVietListContent() {
               <span className="text-red-600 font-semibold">
                 {confirmItem.an_hien ? "ẩn" : "hiển thị"}
               </span>{" "}
-              bài viết{" "}
-              <span className="font-semibold text-gray-700">
-                {confirmItem.tieu_de}
-              </span>{" "}
+              danh mục{" "}
+              <span className="font-semibold text-gray-700">{confirmItem.ten}</span>{" "}
               không?
             </p>
             <div className="flex justify-center space-x-4">
@@ -253,10 +249,10 @@ function BaiVietListContent() {
   );
 }
 
-export default function BaiVietList() {
+export default function DanhMucList() {
   return (
     <Suspense fallback={<div className="p-4 text-lg">Đang tải...</div>}>
-      <BaiVietListContent />
+      <DanhMucListContent />
     </Suspense>
   );
 }

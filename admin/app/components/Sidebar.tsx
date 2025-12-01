@@ -68,27 +68,30 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* Loại sản phẩm */}
+        {/* Danh mục */}
         <div>
-          <button onClick={() => toggleMenu("loai_san_pham")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200">
+          <button
+            onClick={() => toggleMenu("danh_muc")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
+          >
             <div className="flex items-center space-x-2">
               <Layers size={18} />
-              <span>Quản lý loại sản phẩm</span>
+              <span>Quản lý danh mục</span>
             </div>
-            {openMenus["loai_san_pham"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {openMenus["danh_muc"] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
-          {openMenus["loai_san_pham"] && (
+          {openMenus["danh_muc"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/loai_san_pham" className="block p-2 hover:bg-gray-200 rounded">
+              <Link href="/danh_muc" className="block p-2 hover:bg-gray-200 rounded">
                 Danh sách
               </Link>
-              <Link href="/loai_san_pham/them" className="block p-2 hover:bg-gray-200 rounded">
-                Thêm loại
+              <Link href="/danh_muc/them" className="block p-2 hover:bg-gray-200 rounded">
+                Thêm danh mục
               </Link>
             </div>
           )}
         </div>
+
 
         {/* Món thêm */}
         <div>
