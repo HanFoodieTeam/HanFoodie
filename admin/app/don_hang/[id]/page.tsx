@@ -53,11 +53,11 @@ export default function DonHangDetail() {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(`❌ Hủy thất bại: ${data.error || "Lỗi không xác định"}`);
+        alert(` Hủy thất bại: ${data.error || "Lỗi không xác định"}`);
         return;
       }
 
-      alert("✅ Đơn hàng đã được hủy thành công!");
+      alert(" Đơn hàng đã được hủy thành công!");
       setDonHang((prev) => (prev ? { ...prev, trang_thai: "da_huy" } : prev));
     } catch (err) {
       console.error("Lỗi khi hủy đơn hàng:", err);
@@ -65,13 +65,15 @@ export default function DonHangDetail() {
     }
   };
 
-if (loading)
-  return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-white z-50">
-      <div className="h-10 w-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-      <p className="mt-4 text-gray-600 text-lg">Đang tải chi tiết đơn hàng...</p>
-    </div>
-  );
+  if (loading)
+    return (
+      <div >
+        <div className="flex items-center justify-center gap-2 text-gray-600">
+          <div className="h-5 w-5 border-2 border-gray-400 border-t-blue-500 rounded-full animate-spin"></div>
+          <span>Đang tải dữ liệu...</span>
+        </div>
+      </div>
+    );
 
 
   if (!donHang)
@@ -96,7 +98,7 @@ if (loading)
         Chi tiết đơn hàng #{donHang.ma_don}
       </h1>
 
-    
+
       <div className="grid md:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg border">
         <div className="space-y-1">
           <p>
@@ -170,20 +172,20 @@ if (loading)
             {donHang.chi_tiet_don_hang?.map((ct, i) => {
               const tuyChon = ct.json_tuy_chon
                 ? Object.entries(JSON.parse(ct.json_tuy_chon))
-                    .map(([k, v]) => `${k}: ${v}`)
-                    .join(", ")
+                  .map(([k, v]) => `${k}: ${v}`)
+                  .join(", ")
                 : null;
 
               const monThem = ct.json_mon_them
                 ? (JSON.parse(ct.json_mon_them) as {
-                    ten: string;
-                    gia_them: number;
-                  }[])
-                    .map(
-                      (m) =>
-                        `${m.ten} (+${m.gia_them.toLocaleString("vi-VN")}₫)`
-                    )
-                    .join(", ")
+                  ten: string;
+                  gia_them: number;
+                }[])
+                  .map(
+                    (m) =>
+                      `${m.ten} (+${m.gia_them.toLocaleString("vi-VN")}₫)`
+                  )
+                  .join(", ")
                 : null;
 
               return (
@@ -232,7 +234,7 @@ if (loading)
         </table>
       </div>
 
-   
+
       <div className="text-right mt-5 text-sm space-y-1">
         <p>
           <strong>Tổng tiền hàng:</strong>{" "}

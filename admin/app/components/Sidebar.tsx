@@ -1,4 +1,3 @@
-// components/Sidebar.tsx
 "use client";
 
 import { useState } from "react";
@@ -14,7 +13,6 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-white shadow-md flex flex-col h-full overflow-y-auto">
-      {/* <div className="p-4 font-bold text-xl border-b">HanFoodie Admin</div> */}
       <Link href="/" className="p-4 font-bold text-xl border-b">
         HanFoodie Admin
       </Link>
@@ -22,10 +20,8 @@ const Sidebar = () => {
       <nav className="flex-1 p-2 space-y-2">
         {/* Dashboard */}
         <div>
-          <button
-            onClick={() => toggleMenu("dashboard")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
-          >
+          <button onClick={() => toggleMenu("dashboard")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200">
             <div className="flex items-center space-x-2">
               <Home size={18} />
               <span>Dashboard</span>
@@ -52,10 +48,8 @@ const Sidebar = () => {
 
         {/* Sản phẩm */}
         <div>
-          <button
-            onClick={() => toggleMenu("san_pham")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
-          >
+          <button onClick={() => toggleMenu("san_pham")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200">
             <div className="flex items-center space-x-2">
               <Package size={18} />
               <span>Quản lý sản phẩm</span>
@@ -101,10 +95,8 @@ const Sidebar = () => {
 
         {/* Món thêm */}
         <div>
-          <button
-            onClick={() => toggleMenu("mon_them")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
-          >
+          <button onClick={() => toggleMenu("mon_them")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200">
             <div className="flex items-center space-x-2">
               <UtensilsCrossed size={18} /> {/* icon mới */}
               <span>Quản lý món thêm</span>
@@ -125,10 +117,8 @@ const Sidebar = () => {
 
         {/* Loại tùy chọn */}
         <div>
-          <button
-            onClick={() => toggleMenu("loai_tuy_chon")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
-          >
+          <button onClick={() => toggleMenu("loai_tuy_chon")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200">
             <div className="flex items-center space-x-2">
               <SlidersHorizontal size={18} /> {/* icon mới */}
               <span>Quản lý loại tùy chọn</span>
@@ -149,10 +139,8 @@ const Sidebar = () => {
 
         {/* Bài viết */}
         <div>
-          <button
-            onClick={() => toggleMenu("bai_viet")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
-          >
+          <button onClick={() => toggleMenu("bai_viet")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200">
             <div className="flex items-center space-x-2">
               <FileText size={18} />
               <span>Quản lý bài viết</span>
@@ -173,10 +161,8 @@ const Sidebar = () => {
 
         {/* Loại bài viết */}
         <div>
-          <button
-            onClick={() => toggleMenu("loai_bai_viet")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
-          >
+          <button onClick={() => toggleMenu("loai_bai_viet")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200">
             <div className="flex items-center space-x-2">
               <Tag size={18} />
               <span>Quản lý loại bài viết</span>
@@ -197,10 +183,8 @@ const Sidebar = () => {
 
         {/* Banner */}
         <div>
-          <button
-            onClick={() => toggleMenu("banner")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
-          >
+          <button onClick={() => toggleMenu("banner")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200">
             <div className="flex items-center space-x-2">
               <ImageIcon size={18} />
               <span>Quản lý banner</span>
@@ -221,10 +205,8 @@ const Sidebar = () => {
 
         {/* Ưu đãi */}
         <div>
-          <button
-            onClick={() => toggleMenu("ma_giam_gia")}
-            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200"
-          >
+          <button onClick={() => toggleMenu("ma_giam_gia")}
+            className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-200" >
             <div className="flex items-center space-x-2">
               <Gift size={18} />
               <span>Quản lý mã giảm giá</span>

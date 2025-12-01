@@ -65,7 +65,8 @@ export default function LoginForm({ onClose, onLoginSuccess }: LoginFormProps) {
         {loading ? "Đang xử lý..." : "Đăng nhập"}
       </button>
 
-      {/* {thongBao && <p className="text-center text-sm text-gray-600">{thongBao}</p>} */}
+      {thongBao && <p className="text-center text-sm text-red-500">{thongBao}</p>}
+      
     </form>
   );
 }

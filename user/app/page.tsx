@@ -52,13 +52,16 @@ export default function TrangChuPage() {
       <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
         <img
           src="/images/banner-home.jpg"
-          alt=""
-          className="w-full h-full object-cover"
-        />
+          alt="Banner"
+          onError={(e) => {
+            e.currentTarget.src = "/noimg.png";
+          }}
+          className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white">
-          <h1 className="text-3xl md:text-5xl font-bold mb-3">HanFoodie</h1>
-          <p className="text-lg md:text-2xl">Ẩm thực giao tận tay bạn</p>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">HanFoodie</h1>
+          <p className="text-base md:text-lg">Ẩm thực giao tận tay bạn</p>
         </div>
+
       </section>
 
       {/* NỘI DUNG CHÍNH */}
@@ -73,9 +76,13 @@ export default function TrangChuPage() {
         <section className="relative w-full h-[220px] md:h-[240px] overflow-hidden rounded-lg">
           <img
             src="/images/banner-home.jpg"
-            alt=""
+            alt="Banner"
+            onError={(e) => {
+              e.currentTarget.src = "/noimg.png";
+            }}
             className="w-full h-full object-cover"
           />
+
           <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">HanFoodie</h1>
             <p className="text-base md:text-lg">Ẩm thực giao tận tay bạn</p>
@@ -90,34 +97,38 @@ export default function TrangChuPage() {
             {combo.slice(0, 6).map((sp) => (
               <div
                 key={sp.id}
-                className="flex bg-white rounded-md border border-gray-200 shadow-sm hover:shadow-md overflow-hidden transition-all hover:-translate-y-1 h-[150px]"
-              >
+                className="flex bg-white rounded-md border border-gray-200 shadow-sm hover:shadow-md overflow-hidden transition-all hover:-translate-y-1 h-[150px]">
                 {/* Ảnh bên trái */}
+
+
                 <div className="w-[40%] bg-gray-100 flex items-center justify-center overflow-hidden">
-                  <img
-                    src={sp.hinh || "/noimg.png"}
-                    alt={sp.ten}
-                    className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
-                  />
+                  <Link href={`/chi_tiet/${sp.id}`} className="block">
+                    <img
+                      src={sp.hinh || "/noimg.png"}
+                      alt={sp.ten}
+                      className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105" />
+                  </Link>
+
                 </div>
 
                 {/* Nội dung bên phải */}
                 <div className="w-[60%] p-2 flex flex-col justify-between">
                   {/* Tiêu đề + mô tả */}
-                  <div>
-                    <h3
-                      className="font-semibold text-gray-800 text-[13px] leading-tight line-clamp-2 mb-[4px]"
-                      title={sp.ten}
-                    >
-                      {sp.ten}
-                    </h3>
-                    <p
-                      className="text-[11px] text-gray-600 line-clamp-2"
-                      title={sp.mo_ta}
-                    >
-                      {sp.mo_ta || "Thưởng thức hương vị tuyệt hảo từ HanFoodie."}
-                    </p>
-                  </div>
+                  <Link href={`/chi_tiet/${sp.id}`} className="block">
+
+                    <div>
+                      <h3
+                        className="font-semibold text-gray-800 text-[13px] leading-tight line-clamp-2 mb-[4px]"
+                        title={sp.ten}>
+                        {sp.ten}
+                      </h3>
+                      <p
+                        className="text-[11px] text-gray-600 line-clamp-2"
+                        title={sp.mo_ta}>
+                        {sp.mo_ta || "Thưởng thức hương vị tuyệt hảo từ HanFoodie."}
+                      </p>
+                    </div>
+                  </Link>
 
                   {/* Giá */}
                   <div className="flex items-center justify-between">
@@ -133,9 +144,6 @@ export default function TrangChuPage() {
             ))}
           </div>
         </section>
-
-
-
       </div>
     </main>
   );

@@ -39,7 +39,7 @@ export default function SanPhamHotSection({ data }: Props) {
         Sản phẩm nổi bật
       </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
         {data.map((sp) => {
           const isFavorite = favorites.includes(sp.id);
           return (

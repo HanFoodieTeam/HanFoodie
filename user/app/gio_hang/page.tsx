@@ -41,6 +41,9 @@ export default function TrangGioHang() {
   const [popupData, setPopupData] = useState<PopupData | null>(null);
   const [macDinh, setMacDinh] = useState<MacDinhProps | null>(null);
 
+  const [showThongTin, setShowThongTin] = useState(false);
+
+
   //  Lấy giỏ hàng
   const fetchCart = async () => {
     try {
@@ -180,22 +183,22 @@ export default function TrangGioHang() {
     }
   };
 
- 
-//  Đặt hàng
-const handleDatHang = () => {
-  const selected = gioHang
-    .filter((item) => selectedItems.includes(item.id))
-    .map((item) => ({
-      id_gio_hang: item.id, 
-      so_luong: item.so_luong,
-      bien_the: item.bien_the,
-      json_mon_them: item.json_mon_them,
-      json_tuy_chon: item.json_tuy_chon,
-    }));
 
-  localStorage.setItem("donHangTam", JSON.stringify(selected));
-  router.push("/dat_hang");
-};
+  //  Đặt hàng
+  const handleDatHang = () => {
+    const selected = gioHang
+      .filter((item) => selectedItems.includes(item.id))
+      .map((item) => ({
+        id_gio_hang: item.id,
+        so_luong: item.so_luong,
+        bien_the: item.bien_the,
+        json_mon_them: item.json_mon_them,
+        json_tuy_chon: item.json_tuy_chon,
+      }));
+
+    localStorage.setItem("donHangTam", JSON.stringify(selected));
+    router.push("/dat_hang");
+  };
 
   //  Loading
   if (loading)
@@ -210,16 +213,16 @@ const handleDatHang = () => {
   //  Render chính
   return (
     <div
-      className="min-h-screen  py-3"
-      style={{ "--header-h": "72px" } as React.CSSProperties}>
-      <div className=" grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+      className="min-h-screen py-3 pb-[80px]" style={{ "--header-h": "72px" } as React.CSSProperties}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+
         <div className="lg:col-span-2 min-h-[80vh] space-y-4">
           <div className="flex items-center gap-4 p-3 rounded-lg bg-white shadow-sm hover:shadow-md transition  z-20">
             <input
               type="checkbox"
               checked={selectAll}
               onChange={handleSelectAll}
-              className="w-4 h-4 accent-[#e8594f]"/>
+              className="w-4 h-4 accent-[#e8594f]" />
             <span className="text-gray-800 text-base font-medium">
               Chọn tất cả
             </span>
@@ -253,7 +256,7 @@ const handleDatHang = () => {
                     <img
                       src={sp?.hinh || "/noing.png"}
                       alt={sp?.ten || "Sản phẩm"}
-                      className="w-[90px] h-[90px] rounded-lg object-cover"/>
+                      className="w-[90px] h-[90px] rounded-lg object-cover" />
                     <div className="flex-1">
                       <h2 className="font-semibold text-[15px]">{sp?.ten}</h2>
                       <p className="text-sm text-gray-600">
@@ -324,7 +327,7 @@ const handleDatHang = () => {
           )}
         </div>
 
-        <div className="bg-white p-5 rounded-2xl shadow-sm h-fit sticky self-start top-[calc(var(--header-h)+15px)]">
+        <div className="bg-white p-5 rounded-2xl shadow-sm h-fit sticky self-start top-[calc(var(--header-h)+15px)]  md:block hidden">
           <h2 className="text-lg font-semibold mb-4">Thông tin đơn hàng</h2>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
@@ -354,18 +357,101 @@ const handleDatHang = () => {
             <p className="text-xs text-gray-500 text-right">
               Đã bao gồm VAT (nếu có)
             </p>
-            
 
             <button
               onClick={handleDatHang}
               disabled={selectedItems.length === 0}
               className={`w-full py-3 rounded-full mt-2 font-semibold transition ${selectedItems.length === 0
-                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-[#e8594f] text-white hover:bg-[#d94b42]"
+                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                : "bg-[#e8594f] text-white hover:bg-[#d94b42]"
                 }`}>
               ĐẶT HÀNG
             </button>
           </div>
+        </div>
+
+        {/* Thanh dưới giống Shopee */}
+        <div className="fixed bottom-0 left-0 w-full bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
+                flex items-center justify-between px-4 py-3 z-[999]
+                md:hidden">
+          {/* Thông tin đơn hàng dạng mở rộng trên mobile */}
+          {showThongTin && (
+            <div className="fixed bottom-[60px] left-0 w-full bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
+                  px-4 py-4 border-t z-[999] md:hidden animate-slide-up">
+
+              <h2 className="text-base font-semibold mb-3">Thông tin đơn hàng</h2>
+
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Tạm tính ({selectedItems.length} sản phẩm)</span>
+                  <span>{tongTien.toLocaleString("vi-VN")} đ</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Phí vận chuyển</span>
+                  <span className="text-green-600 font-medium">Miễn phí</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Giảm giá</span>
+                  <span>-</span>
+                </div>
+
+                <hr className="my-2 border-gray-300" />
+                <div className="flex justify-between font-semibold text-base">
+                  <span>Tổng cộng</span>
+
+                  <div className="text-right">
+                    <span className="text-red-600 block">
+                      {tongTien.toLocaleString("vi-VN")} đ
+                    </span>
+
+                    <p className="text-xs text-gray-500">
+                      Đã bao gồm VAT (nếu có)
+                    </p>
+                  </div>
+                </div>
+
+
+
+              </div>
+            </div>
+          )}
+
+
+          {/* Chọn tất cả */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={selectAll}
+              onChange={handleSelectAll}
+              className="w-4 h-4 accent-[#e8594f]"
+            />
+            <span className="text-base font-medium">Tất cả</span>
+          </div>
+
+          {/* Tổng tiền (ấn vào để mở popup) */}
+
+          <div
+            onClick={() => setShowThongTin(!showThongTin)}
+            className="text-right flex-1 mx-3"
+          >
+            <p className="text-[#e8594f] font-semibold text-lg">
+              {tongTien.toLocaleString("vi-VN")}đ
+            </p>
+            <p className="text-[12px] text-gray-500">Chi tiết ▼</p>
+          </div>
+
+          {/* Nút mua hàng */}
+
+          <button
+            onClick={handleDatHang}
+            disabled={selectedItems.length === 0}
+            className={`px-5 py-2 rounded-lg text-white font-semibold 
+      ${selectedItems.length === 0 ? "bg-gray-300" : "bg-[#e8594f]"}`}
+          >
+            Mua hàng ({selectedItems.length})
+          </button>
         </div>
 
         {/* Popup chỉnh sửa món */}

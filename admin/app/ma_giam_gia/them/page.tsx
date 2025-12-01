@@ -129,8 +129,7 @@ export default function ThemMaGiamGia() {
                     e.target.value === "percent" ? f.gia_tri_giam_toi_da ?? 0 : null,
                 }))
               }
-              className="border border-gray-300 p-2 w-full rounded"
-            >
+              className="border border-gray-300 p-2 w-full rounded">
               <option value="money">Theo tiền (VNĐ)</option>
               <option value="percent">Theo phần trăm (%)</option>
             </select>

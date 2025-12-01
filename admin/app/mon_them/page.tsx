@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
@@ -17,19 +18,27 @@ function MonThemListContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ====== Đọc tham số từ URL ======
+  //  Đọc tham số từ URL 
   const page = Number(searchParams.get("page") || 1);
   const searchQuery = searchParams.get("search") || "";
   const loai = searchParams.get("loai") || "all";
 
-  // ====== State quản lý dữ liệu ======
+  //  State quản lý dữ liệu 
   const [data, setData] = useState<IMonThem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>(searchQuery); // input tìm kiếm
   const [totalPages, setTotalPages] = useState<number>(1);
   const [confirmItem, setConfirmItem] = useState<IMonThem | null>(null);
 
-  // ====== Cập nhật URL query ======
+  // hết món 
+  const [confirmHetMon, setConfirmHetMon] = useState<IMonThem | null>(null);
+  const [confirmCoLai, setConfirmCoLai] = useState<IMonThem | null>(null);
+
+  const today = new Date().toISOString().split("T")[0];
+
+
+
+  //  Cập nhật URL query 
   const updateQuery = (updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([key, val]) => {
@@ -39,7 +48,7 @@ function MonThemListContent() {
     router.push(`/mon_them?${params.toString()}`);
   };
 
-  // ====== Gọi API lấy dữ liệu ======
+  //  Gọi API lấy dữ liệu 
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -66,12 +75,12 @@ function MonThemListContent() {
     }
   };
 
-  // ====== Gọi API mỗi khi thay đổi page, searchQuery, loai ======
+  //  Gọi API mỗi khi thay đổi page, searchQuery, loai 
   useEffect(() => {
     fetchData();
   }, [page, searchQuery, loai]);
 
-  // ====== Tự động tìm kiếm sau khi dừng gõ (debounce 0.5s) ======
+  //  Tự động tìm kiếm sau khi dừng gõ (debounce 0.5s) 
   useEffect(() => {
     const delay = setTimeout(() => {
       updateQuery({ search: search.trim(), page: "1" });
@@ -79,7 +88,7 @@ function MonThemListContent() {
     return () => clearTimeout(delay);
   }, [search]);
 
-  // ====== Xác nhận đổi trạng thái ======
+  //  Xác nhận đổi trạng thái 
   const handleToggleClick = (item: IMonThem) => setConfirmItem(item);
 
   const confirmToggle = async () => {
@@ -100,34 +109,71 @@ function MonThemListContent() {
         prev.map((m) => (m.id === id ? { ...m, trang_thai: newState } : m))
       );
     } catch (err) {
-      console.error("❌ PATCH lỗi:", err);
+      console.error(" PATCH lỗi:", err);
       alert("Không thể cập nhật trạng thái!");
     } finally {
       setConfirmItem(null);
     }
   };
 
-  const handleDelete = async (item: IMonThem) => {
-    const isConfirm = confirm(`Bạn có chắc muốn xóa món "${item.ten}" không?`);
-    if (!isConfirm) return;
+
+  const handleHetMonClick = (item: IMonThem) => {
+    const isHet = item.het_mon === today;
+    if (isHet) setConfirmCoLai(item);
+    else setConfirmHetMon(item);
+  };
+
+  const confirmHetMonSubmit = async () => {
+    if (!confirmHetMon) return;
+    const id = confirmHetMon.id;
 
     try {
-      const res = await fetch(`/api/mon_them/${item.id}`, { method: "DELETE" });
-      if (res.ok) {
-        setData((prev) => prev.filter((m) => m.id !== item.id));
-      } else {
-        alert("Xóa thất bại!");
-      }
-    } catch (err) {
-      console.error(" Lỗi khi xóa món thêm:", err);
-      alert("Không thể kết nối tới máy chủ!");
+      const res = await fetch(`/api/mon_them/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ het_mon: true }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      setData((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, het_mon: today } : m))
+      );
+    } catch {
+      alert("Không thể cập nhật hết món!");
+    } finally {
+      setConfirmHetMon(null);
+    }
+  };
+
+  const confirmCoLaiSubmit = async () => {
+    if (!confirmCoLai) return;
+    const id = confirmCoLai.id;
+
+    try {
+      const res = await fetch(`/api/mon_them/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ co_lai_mon: true }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      setData((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, het_mon: null } : m))
+      );
+    } catch {
+      alert("Không thể cập nhật mở bán!");
+    } finally {
+      setConfirmCoLai(null);
     }
   };
 
 
+
   return (
     <div>
-      {/* ====== THANH TIÊU ĐỀ + BỘ LỌC ====== */}
+      {/*  THANH TIÊU ĐỀ + BỘ LỌC  */}
       <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
         <h1 className="text-2xl font-bold text-gray-800">Quản lý Món Thêm</h1>
 
@@ -142,7 +188,7 @@ function MonThemListContent() {
                 updateQuery({ search: "", page: "1" });
               }}
                 className="absolute right-2 text-gray-500 hover:text-red-500" title="Xoá nội dung" >
-                ❌
+                ✕
               </button>
             )}
           </div>
@@ -162,18 +208,20 @@ function MonThemListContent() {
         </div>
       </div>
 
-      {/* ====== BẢNG DỮ LIỆU ====== */}
+      {/*  BẢNG DỮ LIỆU  */}
       <div className="overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-200">
-        <table className="min-w-full text-base text-left border-collapse">
+        <table className="min-w-full text-base text-left border-collapse table-fixed">
           <thead className="bg-gray-300 text-gray-700 uppercase text-base">
             <tr>
-              <th className="px-5 py-3">Tên món thêm</th>
-              <th className="px-5 py-3 text-center">Giá thêm</th>
-              <th className="px-5 py-3 text-center">Loại món</th>
-              <th className="px-5 py-3 text-center">Trạng thái</th>
-              <th className="px-5 py-3 text-center">Sửa | Xóa</th>
+              <th className="px-5 py-3 w-[180px] text-center">Hết món hôm nay</th>
+              <th className="px-5 py-3 w-[240px] truncate">Tên món thêm</th>
+              <th className="px-5 py-3 w-[120px] text-center">Giá thêm</th>
+              <th className="px-5 py-3 w-[140px] text-center">Loại món</th>
+              <th className="px-5 py-3 w-[120px] text-center">Trạng thái</th>
+              <th className="px-5 py-3 w-[160px] text-center">Sửa </th>
             </tr>
           </thead>
+
           <tbody>
             {loading ? (
               <tr>
@@ -185,64 +233,67 @@ function MonThemListContent() {
                 </td>
               </tr>
             ) : data.length === 0 ? (
-              // ================= KHÔNG CÓ DỮ LIỆU =================
+              //  KHÔNG CÓ DỮ LIỆU 
               <tr>
                 <td colSpan={5} className="text-center py-6 text-gray-500 italic text-lg">
                   Không có dữ liệu
                 </td>
               </tr>
             ) : (
-              // ================= HIỂN THỊ DỮ LIỆU =================
-              data.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-t hover:bg-gray-100 transition-all">
-                  <td className="px-5 py-4 font-semibold">{item.ten}</td>
+              //  HIỂN THỊ DỮ LIỆU 
+              data.map((item) => {
+                const isHetToday = item.het_mon === today;
+                return (
+                  <tr
+                    key={item.id}
+                    className={`border-t hover:bg-gray-100 transition ${isHetToday ? "opacity-40 bg-red-50" : ""
+                      }`}
+                  >
+                    <td className="px-5 py-4 text-center cursor-pointer text-2xl" onClick={() => handleHetMonClick(item)}>
+                      {isHetToday ? "🚫" : "🍜"}
+                    </td>
 
-                  <td className="px-5 py-4 text-center text-red-600 font-medium">
-                    {item.gia_them.toLocaleString("vi-VN")} ₫
-                  </td>
+                    <td className="px-5 py-4 font-semibold max-w-[240px] truncate whitespace-nowrap overflow-hidden">
+                      {item.ten}
+                    </td>
 
-                  <td className="px-5 py-4 text-center">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${item.loai_mon === 1
-                          ? "bg-purple-100 text-purple-700 border border-purple-300"
-                          : "bg-yellow-100 text-yellow-700 border border-yellow-300"
-                        }`} >
-                      {item.loai_mon === 1 ? "Món ăn kèm" : "Topping"}
-                    </span>
-                  </td>
+                    <td className="px-5 py-4 text-center text-red-600 font-medium">
+                      {item.gia_them.toLocaleString("vi-VN")} ₫
+                    </td>
 
-                  <td className="px-5 py-4 text-center cursor-pointer select-none text-2xl"
-                    onClick={() => handleToggleClick(item)}
-                    title="Bấm để đổi trạng thái" >
-                    {item.trang_thai ? "✅" : "❌"}
-                  </td>
+                    <td className="px-5 py-4 text-center">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${item.loai_mon === 1
+                            ? "bg-purple-100 text-purple-700 border border-purple-300"
+                            : "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                          }`}
+                      >
+                        {item.loai_mon === 1 ? "Món ăn kèm" : "Topping"}
+                      </span>
+                    </td>
 
-                  <td className="px-5 py-4 text-center">
-                    <Link
-                      href={`/mon_them/${item.id}`}
-                      className="text-blue-600 hover:text-blue-800 font-semibold"
-                    >
-                      Sửa
-                    </Link>
-                    {" | "}
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className="text-red-600 hover:text-red-800 font-semibold"
-                    >
-                      Xóa
-                    </button>
-                  </td>
-                </tr>
-              ))
+                    <td className="px-5 py-4 text-center text-2xl cursor-pointer" onClick={() => handleToggleClick(item)}>
+                      {item.trang_thai ? "✅" : "❌"}
+                    </td>
+
+                    <td className="px-5 py-4 text-center truncate whitespace-nowrap overflow-hidden">
+                      <Link href={`/mon_them/${item.id}`} className="text-blue-600 hover:text-blue-800 font-semibold">
+                        Sửa
+                      </Link>
+
+                    </td>
+
+
+                  </tr>
+                );
+              })
             )}
           </tbody>
 
         </table>
       </div>
 
-      {/* ====== PHÂN TRANG ====== */}
+      {/*  PHÂN TRANG  */}
       <div className="flex justify-center mt-6 space-x-2 text-sm">
         <button onClick={() => updateQuery({ page: "1" })} disabled={page === 1} className={`px-4 py-2 rounded-lg transition ${page === 1
           ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -256,9 +307,7 @@ function MonThemListContent() {
           const p = start + i;
           return (
             p <= totalPages && (
-              <button
-                key={p}
-                onClick={() => updateQuery({ page: String(p) })}
+              <button key={p} onClick={() => updateQuery({ page: String(p) })}
                 className={`px-4 py-2 rounded-lg transition ${p === page
                   ? "bg-blue-500 text-white font-bold scale-105"
                   : "bg-gray-200 hover:bg-gray-300"
@@ -280,7 +329,7 @@ function MonThemListContent() {
         </button>
       </div>
 
-      {/* ====== MODAL XÁC NHẬN ====== */}
+      {/*  MODAL XÁC NHẬN  */}
       {confirmItem && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 shadow-lg w-[380px]">
@@ -313,11 +362,44 @@ function MonThemListContent() {
           </div>
         </div>
       )}
+
+
+      {confirmHetMon && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-5 shadow-lg w-[340px]">
+            <h2 className="text-lg font-bold text-center mb-3 text-red-600">Hết món hôm nay?</h2>
+            <p className="text-center mb-4 text-base">
+              Món <span className="font-bold">{confirmHetMon.ten}</span> sẽ tạm ẩn trong ngày hôm nay.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button onClick={confirmHetMonSubmit} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold text-base">Xác nhận</button>
+              <button onClick={() => setConfirmHetMon(null)} className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg font-medium text-base">Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmCoLai && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-5 shadow-lg w-[340px]">
+            <h2 className="text-lg font-bold text-center mb-3 text-green-600">Mở bán lại hôm nay?</h2>
+            <p className="text-center mb-4 text-base">
+              Món <span className="font-bold">{confirmCoLai.ten}</span> sẽ được mở bán lại trong ngày hôm nay.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button onClick={confirmCoLaiSubmit} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-base">Xác nhận</button>
+              <button onClick={() => setConfirmCoLai(null)} className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg font-medium text-base">Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }
 
-// ====== Bọc Suspense để tránh lỗi build khi dùng useSearchParams ======
+//  Bọc Suspense để tránh lỗi build khi dùng useSearchParams 
 export default function MonThemList() {
   return (
     <Suspense fallback={<div className="p-4 text-lg">Đang tải...</div>}>
@@ -325,3 +407,4 @@ export default function MonThemList() {
     </Suspense>
   );
 }
+
