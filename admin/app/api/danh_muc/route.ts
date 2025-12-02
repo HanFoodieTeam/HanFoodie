@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     const page = Number(searchParams.get("page") || 1);
-    const limit = Number(searchParams.get("limit") || 10);
+    const limit = Number(searchParams.get("limit") || 7);
     const offset = (page - 1) * limit;
     const search = searchParams.get("search") || "";
     const an_hien = searchParams.get("an_hien"); // "0" hoặc "1"

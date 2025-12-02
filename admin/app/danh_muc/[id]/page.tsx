@@ -30,13 +30,19 @@ export default function SuaDanhMuc() {
       try {
         const res = await fetch(`/api/danh_muc/${id}`);
         if (!res.ok) throw new Error("Không tìm thấy danh mục!");
-        const data: IDanhMuc = await res.json();
+
+        const json = await res.json();
+
+        if (!json.success || !json.data) throw new Error("Không có dữ liệu");
+
+        const data: IDanhMuc = json.data;
 
         setForm({
           ...data,
           an_hien: !!data.an_hien,
         });
-      } catch {
+      } catch (err) {
+        console.error(err);
         alert("❌ Lỗi khi tải dữ liệu danh mục!");
         router.push("/danh_muc");
       } finally {
@@ -70,19 +76,32 @@ export default function SuaDanhMuc() {
     if (!form.ten.trim()) return setError("Tên danh mục không được để trống!");
 
     setLoading(true);
-    const res = await fetch(`/api/danh_muc/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
 
-    if (res.ok) {
-      alert("✅ Cập nhật danh mục thành công!");
-      router.push("/danh_muc");
-    } else {
-      alert("❌ Cập nhật thất bại!");
+    const payload = {
+      ...form,
+      an_hien: form.an_hien ? 1 : 0, // API dùng 0/1
+    };
+
+    try {
+      const res = await fetch(`/api/danh_muc/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        alert("✅ Cập nhật danh mục thành công!");
+        router.push("/danh_muc");
+      } else {
+        const data = await res.json();
+        alert("❌ Cập nhật thất bại! " + (data.message || ""));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Lỗi khi cập nhật danh mục!");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (initialLoading)
@@ -101,6 +120,7 @@ export default function SuaDanhMuc() {
       )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Tên danh mục */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Tên danh mục</label>
           <input
@@ -112,6 +132,7 @@ export default function SuaDanhMuc() {
           />
         </div>
 
+        {/* Slug */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Slug</label>
           <input
@@ -123,6 +144,7 @@ export default function SuaDanhMuc() {
           />
         </div>
 
+        {/* Hình ảnh */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Hình ảnh (URL)</label>
           <input
@@ -134,6 +156,7 @@ export default function SuaDanhMuc() {
           />
         </div>
 
+        {/* Thứ tự */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Thứ tự</label>
           <input
@@ -145,6 +168,7 @@ export default function SuaDanhMuc() {
           />
         </div>
 
+        {/* Trạng thái */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Trạng thái</label>
           <div className="flex gap-6 rounded p-2">
@@ -171,6 +195,7 @@ export default function SuaDanhMuc() {
           </div>
         </div>
 
+        {/* Nút lưu */}
         <div className="md:col-span-2 flex justify-end">
           <button
             disabled={loading}

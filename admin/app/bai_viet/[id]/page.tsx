@@ -8,7 +8,7 @@ interface IBaiViet {
   id: number;
   tieu_de: string;
   noi_dung: string;
-  hinh: string;
+  hinh: string | null;
   id_loai_bv: number;
   luot_xem: number;
   slug: string;
@@ -18,13 +18,14 @@ interface IBaiViet {
 
 export default function SuaBaiViet() {
   const router = useRouter();
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id;
 
   const [form, setForm] = useState<IBaiViet>({
     id: 0,
     tieu_de: "",
     noi_dung: "",
-    hinh: "",
+    hinh: null,
     id_loai_bv: 1,
     luot_xem: 0,
     slug: "",
@@ -44,11 +45,14 @@ export default function SuaBaiViet() {
       try {
         const res = await fetch(`/api/bai_viet/${id}`);
         if (!res.ok) throw new Error("Không tìm thấy bài viết!");
-        const data: IBaiViet = await res.json();
+
+        const resData = await res.json();
+        const data: IBaiViet = resData.data;
 
         setForm({
           ...data,
           an_hien: !!data.an_hien,
+          ngay_dang: data.ngay_dang.slice(0, 10), // để input date hiển thị đúng
         });
       } catch {
         alert("❌ Lỗi khi tải dữ liệu bài viết!");
@@ -72,8 +76,8 @@ export default function SuaBaiViet() {
         type === "number"
           ? Number(value)
           : type === "radio"
-            ? value === "true"
-            : value,
+          ? value === "true"
+          : value,
     }));
   };
 
@@ -85,6 +89,7 @@ export default function SuaBaiViet() {
     if (!form.noi_dung.trim()) return setError("Nội dung không được để trống!");
 
     setLoading(true);
+    setError(null);
 
     const payload = {
       tieu_de: form.tieu_de,
@@ -176,7 +181,7 @@ export default function SuaBaiViet() {
           <label className="block mb-1 font-medium text-gray-700">Hình</label>
           <input
             name="hinh"
-            value={form.hinh}
+            value={form.hinh || ""}
             onChange={handleChange}
             placeholder="URL hình ảnh"
             className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -189,7 +194,9 @@ export default function SuaBaiViet() {
           <select
             name="id_loai_bv"
             value={form.id_loai_bv}
-            onChange={(e) => setForm(f => ({ ...f, id_loai_bv: Number(e.target.value) }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, id_loai_bv: Number(e.target.value) }))
+            }
             className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value={1}>Tin tức</option>
