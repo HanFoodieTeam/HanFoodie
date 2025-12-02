@@ -37,7 +37,7 @@ export default function DatHangPage() {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [popupSuccess, setPopupSuccess] = useState<{ open: boolean; maDon?: string }>({ open: false });
+  const [popupSuccess, setPopupSuccess] = useState<{ open: boolean; maDon?: string; idDon?: number }>({ open: false, });
 
 
   const [gioHang, setGioHang] = useState<IDonHangTam[]>([]);
@@ -214,7 +214,13 @@ export default function DatHangPage() {
 
       if (res.ok && data.success) {
         localStorage.removeItem("donHangTam");
-        setPopupSuccess({ open: true, maDon: data.data?.ma_don });
+        setPopupSuccess({
+          open: true,
+          maDon: data.data?.ma_don,
+          idDon: data.data?.id ?? data.data?.id_don
+        });
+
+
       } else {
         alert(data.message || "Đặt hàng thất bại, vui lòng thử lại!");
       }
@@ -461,13 +467,9 @@ export default function DatHangPage() {
                 className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium">
                 Trang chủ
               </button>
-              {/* <button
-                onClick={() => router.push("/")}
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium">
-                Lịch sử đơn hàng
-              </button> */}
+
               <button
-                onClick={() => router.push(`/donhang/${popupSuccess.maDon}`)}
+                onClick={() => router.push(`/chi_tiet_don_hang/${popupSuccess.idDon}`)}
                 className="px-4 py-2 rounded-lg bg-[#e8594f] text-white hover:bg-[#d94b42] font-medium">
                 Xem chi tiết
               </button>

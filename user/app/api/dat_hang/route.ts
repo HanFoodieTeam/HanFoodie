@@ -261,6 +261,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             success: true,
             message: "Đặt hàng thành công!",
             data: {
+                 id: donHang.id,
                 ma_don: donHang.ma_don,
                 tong_tien_hang,
                 so_tien_giam,
