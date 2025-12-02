@@ -244,11 +244,12 @@ export interface INguoiDung {
   mat_khau: string;
   trang_thai?: boolean;
   ngay_sinh?: string | null;
-  ma_kich_hoat?: string | null;
+  token_kich_hoat?: string | null;
   vai_tro?: boolean;
-  ngay_tao?: Date | null;
+  ngay_tao?:string | null;
+  kich_hoat:boolean;
+  han_token:string | null;
 }
-
 
 
 export interface ISanPham {

@@ -88,11 +88,7 @@ export default function DonHangDetail() {
 
   return (
     <div className="p-2 mx-auto bg-white rounded-xl shadow-lg">
-      <button
-        onClick={() => router.back()}
-        className="text-blue-600 hover:underline text-sm mb-2">
-        ← Quay lại danh sách
-      </button>
+   
 
       <h1 className="text-2xl font-bold text-gray-800 mb-4">
         Chi tiết đơn hàng #{donHang.ma_don}
