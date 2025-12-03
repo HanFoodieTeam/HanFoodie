@@ -939,6 +939,8 @@
 //     </main>
 //   );
 // }
+
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -947,11 +949,11 @@ import { Star } from "lucide-react";
 import SanPhamLienQuanSection from "@/app/components/sanpham_lienquan";
 import ThemVaoGioHang from "@/app/components/themvaogiohang";
 import Header from "@/app/components/Header";
-import { IDanhGia, INguoiDung, ISanPham } from "@/app/lib/cautrucdata";
+import { IBienThe, IDanhGia, ILoaiTuyChon, IMonThem, INguoiDung, ISanPham, ITuyChon } from "@/app/lib/cautrucdata";
+import LoginForm from "@/app/components/dangnhap";
+import RegisterForm from "@/app/components/dang_ky";
 
-/* ───────────────────────────────
-🔹 Kiểu dữ liệu API chi tiết
-──────────────────────────────── */
+
 interface IHinhSanPham {
   id: number;
   hinh: string;
@@ -963,8 +965,26 @@ interface IChiTietSanPhamResponse {
   lien_quan: ISanPham[];
   hinh_phu: IHinhSanPham[];
 }
+interface ILoaiTuyChonMoRong extends ILoaiTuyChon {
+  tuy_chon?: ITuyChonMoRong[];
+}
 
-/* Expanded đánh giá */
+interface ITuyChonMoRong extends ITuyChon {
+  gia_them?: number | null;
+}
+interface ThemVaoGioHangProps {
+  data: {
+    san_pham: ISanPham;
+    bien_the?: IBienThe[];
+    mon_them?: IMonThem[];
+    tuy_chon?: ILoaiTuyChonMoRong[];
+  };
+  onClose: () => void;
+  onRequireLogin: (action: "cart" | "buy") => void;
+
+}
+
+
 interface IDanhGiaMoRong extends IDanhGia {
   nguoi_dung?: {
     id: number;
@@ -973,17 +993,13 @@ interface IDanhGiaMoRong extends IDanhGia {
   };
 }
 
-/* ───────────────────────────────
-🔹 Format tên bảo mật
-──────────────────────────────── */
+
 const formatName = (name?: string) => {
   if (!name || name.length < 2) return "***";
   return name[0] + "*****" + name[name.length - 1];
 };
 
-/* ───────────────────────────────
-🔹 Item đánh giá đơn lẻ
-──────────────────────────────── */
+
 function DanhGiaItem({ dg }: { dg: IDanhGiaMoRong }) {
   return (
     <div className="border-b border-gray-200 pb-4">
@@ -1002,9 +1018,7 @@ function DanhGiaItem({ dg }: { dg: IDanhGiaMoRong }) {
   );
 }
 
-/* ───────────────────────────────
-🔹 Trang Chi Tiết Sản Phẩm
-──────────────────────────────── */
+
 export default function ChiTietSanPhamPage() {
   const { id } = useParams<{ id: string }>();
 
@@ -1018,7 +1032,14 @@ export default function ChiTietSanPhamPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  /* ───────────────── Fetch ───────────────── */
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(null);
+  const [isLogin, setIsLogin] = useState(true);
+  const [savedCallback, setSavedCallback] = useState<(() => void) | null>(null);
+
+
+
+
   const fetchData = async () => {
     const res = await fetch(`/api/chi_tiet/${id}`);
     const json = (await res.json()) as IChiTietSanPhamResponse;
@@ -1034,7 +1055,7 @@ export default function ChiTietSanPhamPage() {
     }
   };
 
-  // 🔥 Tăng lượt xem
+  //  Tăng lượt xem
   const updateViews = async () => {
     await fetch(`/api/chi_tiet/${id}`, { method: "PUT" });
   };
@@ -1046,7 +1067,6 @@ export default function ChiTietSanPhamPage() {
     updateViews();
   }, [id, refreshFlag]);
 
-  /* ───── Loading ───── */
   if (!data) {
     return (
       <div className="p-6 text-gray-500 text-center mt-[var(--header-h)]">
@@ -1079,8 +1099,7 @@ export default function ChiTietSanPhamPage() {
 
       <div className="w-full mt-6 mb-[15px]">
         <div className="bg-white shadow-lg rounded-2xl px-10 py-10 grid grid-cols-[2fr_1fr] gap-10 relative">
-          
-          {/* Ảnh */}
+
           <div className="flex gap-6">
             <div className="flex flex-col gap-4">
               {hinh_phu.length > 0 ? (
@@ -1089,11 +1108,10 @@ export default function ChiTietSanPhamPage() {
                     key={img.id}
                     src={img.hinh}
                     onClick={() => setMainImage(img.hinh)}
-                    className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 transition ${
-                      img.hinh === mainImage
-                        ? "border-red-500 scale-105"
-                        : "border-transparent hover:border-gray-300"
-                    }`}
+                    className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 transition ${img.hinh === mainImage
+                      ? "border-red-500 scale-105"
+                      : "border-transparent hover:border-gray-300"
+                      }`}
                   />
                 ))
               ) : (
@@ -1104,11 +1122,9 @@ export default function ChiTietSanPhamPage() {
             <img
               src={mainImage}
               alt={san_pham.ten}
-              className="w-[500px] h-[400px] object-cover rounded-xl shadow-lg"
-            />
+              className="w-[500px] h-[400px] object-cover rounded-xl shadow-lg" />
           </div>
 
-          {/* Thông tin */}
           <div className="flex flex-col justify-between relative">
             <div>
               <h1 className="text-3xl font-bold text-[#6A0A0A] mb-4">
@@ -1141,15 +1157,22 @@ export default function ChiTietSanPhamPage() {
 
             <button
               onClick={() => setOpenPopup(true)}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full shadow-md mt-4"
-            >
-               Thêm vào giỏ hàng
+              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full shadow-md mt-4">
+              Thêm vào giỏ hàng
             </button>
           </div>
         </div>
 
         {openPopup && (
-          <ThemVaoGioHang data={data} onClose={() => setOpenPopup(false)} />
+          <ThemVaoGioHang
+            data={data}
+            onClose={() => setOpenPopup(false)}
+            onRequireLogin={(action) => {
+              setPendingAction(action);
+              setShowLoginPopup(true);
+            }}
+            onActionRequest={(callback) => setSavedCallback(() => callback)}
+          />
         )}
       </div>
 
@@ -1164,10 +1187,8 @@ export default function ChiTietSanPhamPage() {
               setSelectedStar(null);
               setCurrentPage(1);
             }}
-            className={`px-4 py-2 border rounded-md text-sm ${
-              selectedStar === null ? "border-red-500 text-red-500" : ""
-            }`}
-          >
+            className={`px-4 py-2 border rounded-md text-sm ${selectedStar === null ? "border-red-500 text-red-500" : ""
+              }`}>
             Tất cả ({danh_gia.length})
           </button>
 
@@ -1178,10 +1199,8 @@ export default function ChiTietSanPhamPage() {
                 setSelectedStar(sao);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-2 border rounded-md text-sm ${
-                selectedStar === sao ? "border-red-500 text-red-500" : ""
-              }`}
-            >
+              className={`px-4 py-2 border rounded-md text-sm ${selectedStar === sao ? "border-red-500 text-red-500" : ""
+                }`}>
               {sao} Sao ({danh_gia.filter((dg) => dg.sao === sao).length})
             </button>
           ))}
@@ -1204,24 +1223,57 @@ export default function ChiTietSanPhamPage() {
               <button
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-1 rounded-md border text-sm ${
-                  currentPage === i + 1
-                    ? "border-red-500 bg-red-500 text-white"
-                    : "hover:border-red-500"
-                }`}
-              >
+                className={`px-3 py-1 rounded-md border text-sm ${currentPage === i + 1
+                  ? "border-red-500 bg-red-500 text-white"
+                  : "hover:border-red-500"
+                  }`} >
                 {i + 1}
               </button>
             ))}
           </div>
         )}
       </section>
+      {showLoginPopup && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40">
+          <div className="bg-white p-5 rounded-xl shadow-lg relative w-[90%] max-w-md"
+            onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowLoginPopup(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black" >
+              ✕
+            </button>
+
+            {isLogin ? (
+              <LoginForm
+                onClose={() => setShowLoginPopup(false)}
+                onLoginSuccess={() => {
+                  setShowLoginPopup(false);
+
+                  if (savedCallback) {
+                    savedCallback();
+                    setSavedCallback(null);
+                  }
+                  setPendingAction(null);
+                }}
+
+                onSwitchToRegister={() => setIsLogin(false)} />
+            ) : (
+              <RegisterForm
+                onClose={() => setShowLoginPopup(false)}
+                onRegisterSuccess={() => {
+                  setIsLogin(true);
+                }}
+                onSwitchToLogin={() => setIsLogin(true)} />
+            )}
+
+          </div>
+        </div>
+      )}
 
       <SanPhamLienQuanSection
         data={lien_quan}
         idDanhMuc={san_pham.id_danh_muc}
-        idSanPham={san_pham.id}
-      />
+        idSanPham={san_pham.id} />
     </main>
   );
 }

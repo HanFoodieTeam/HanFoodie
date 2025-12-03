@@ -6,9 +6,10 @@ import { INguoiDung } from "@/app/lib/cautrucdata";
 interface LoginFormProps {
   onClose: () => void;
   onLoginSuccess: (nguoiDung: INguoiDung) => void;
+  onSwitchToRegister: () => void;
 }
 
-export default function LoginForm({ onClose, onLoginSuccess }: LoginFormProps) {
+export default function LoginForm({ onClose, onLoginSuccess, onSwitchToRegister }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [matKhau, setMatKhau] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,13 +32,14 @@ export default function LoginForm({ onClose, onLoginSuccess }: LoginFormProps) {
 
       const nguoiDung = {
         ...data.nguoi_dung,
-        sdt: Number(data.nguoi_dung.sdt), //  đảm bảo là number
+        sdt: Number(data.nguoi_dung.sdt), 
       };
 
       localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDung));
-      localStorage.setItem("token", data.token); //  lưu token JWT
+      localStorage.setItem("token", data.token); 
 
       setThongBao("Đăng nhập thành công!");
+      // onLoginSuccess(nguoiDung);
       onLoginSuccess(nguoiDung);
 
       setTimeout(() => onClose(), 1000);
@@ -64,11 +66,24 @@ export default function LoginForm({ onClose, onLoginSuccess }: LoginFormProps) {
         className="w-full bg-[#6A0A0A] text-white py-2 rounded-lg hover:bg-[#800000] transition">
         {loading ? "Đang xử lý..." : "Đăng nhập"}
       </button>
+      <p className="text-center text-sm">
+        Bạn chưa có tài khoản tại HanFoodie?
+        <span
+          className="text-blue-600 cursor-pointer ml-1 hover:underline"
+          onClick={(e) => {
+            e.preventDefault();
+            console.log("ĐÃ CLICK ĐĂNG nhập");
+            onSwitchToRegister?.();
+          }} >
+          Đăng ký
+        </span>
+      </p>
 
       {thongBao && <p className="text-center text-sm text-red-500">{thongBao}</p>}
-      
+
     </form>
   );
 }
+
 
 

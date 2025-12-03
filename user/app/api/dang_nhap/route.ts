@@ -58,9 +58,12 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // Trả thông tin người dùng (ẩn mật khẩu)
     const nguoiDungInfo = {
+      id: nguoiDung.getDataValue("id") as number,
       ho_ten: nguoiDung.getDataValue("ho_ten") as string,
       email: nguoiDung.getDataValue("email") as string,
       sdt: nguoiDung.getDataValue("sdt") as number,
+      vai_tro: nguoiDung.getDataValue("vai_tro") as boolean,
+      kich_hoat: nguoiDung.getDataValue("kich_hoat") as boolean,
     };
 
     return NextResponse.json({
