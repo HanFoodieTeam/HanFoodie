@@ -18,11 +18,15 @@ export default function SuaDanhMuc() {
     so_san_pham: 0,
   });
 
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Lấy dữ liệu danh mục hiện tại
+  // ------------------------------
+  // Load dữ liệu danh mục
+  // ------------------------------
   useEffect(() => {
     if (!id) return;
 
@@ -31,16 +35,12 @@ export default function SuaDanhMuc() {
         const res = await fetch(`/api/danh_muc/${id}`);
         if (!res.ok) throw new Error("Không tìm thấy danh mục!");
 
-        const json = await res.json();
+        const json: { success: boolean; data: IDanhMuc; message?: string } =
+          await res.json();
 
         if (!json.success || !json.data) throw new Error("Không có dữ liệu");
 
-        const data: IDanhMuc = json.data;
-
-        setForm({
-          ...data,
-          an_hien: !!data.an_hien,
-        });
+        setForm({ ...json.data, an_hien: !!json.data.an_hien });
       } catch (err) {
         console.error(err);
         alert("❌ Lỗi khi tải dữ liệu danh mục!");
@@ -53,48 +53,80 @@ export default function SuaDanhMuc() {
     fetchData();
   }, [id, router]);
 
-  // Thay đổi giá trị form
+  // ------------------------------
+  // Upload ảnh và preview
+  // ------------------------------
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+
+    setUploading(true);
+    setFile(f);
+
+    // Preview ảnh
+    const reader = new FileReader();
+    reader.onload = () => {
+      setForm(prev => ({ ...prev, hinh: reader.result as string }));
+      setUploading(false);
+    };
+    reader.readAsDataURL(f);
+  };
+
+  // ------------------------------
+  // Thay đổi input
+  // ------------------------------
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
-    setForm((prev) => ({
+
+    setForm(prev => ({
       ...prev,
       [name]:
         type === "number"
           ? Number(value)
           : type === "radio"
-            ? value === "true"
-            : value,
+          ? value === "true"
+          : value,
     }));
   };
 
-  // Cập nhật danh mục
+  // ------------------------------
+  // Submit FormData PUT
+  // ------------------------------
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.ten.trim()) return setError("Tên danh mục không được để trống!");
+    if (!form.ten.trim()) {
+      return setError("Tên danh mục không được để trống!");
+    }
 
     setLoading(true);
 
-    const payload = {
-      ...form,
-      an_hien: form.an_hien ? 1 : 0, // API dùng 0/1
-    };
+    const formData = new FormData();
+    formData.append("ten", form.ten ?? "");
+    formData.append("slug", form.slug ?? "");
+    formData.append("thu_tu", String(form.thu_tu ?? 0));
+    formData.append("so_san_pham", String(form.so_san_pham ?? 0));
+    formData.append("an_hien", form.an_hien ? "1" : "0");
+
+    if (file) {
+      formData.append("hinh", file);
+    }
 
     try {
       const res = await fetch(`/api/danh_muc/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
-      if (res.ok) {
+      const json: { success: boolean; message?: string } = await res.json();
+
+      if (res.ok && json.success) {
         alert("✅ Cập nhật danh mục thành công!");
         router.push("/danh_muc");
       } else {
-        const data = await res.json();
-        alert("❌ Cập nhật thất bại! " + (data.message || ""));
+        alert("❌ Cập nhật thất bại: " + json.message);
       }
     } catch (err) {
       console.error(err);
@@ -119,59 +151,69 @@ export default function SuaDanhMuc() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-5"
+      >
         {/* Tên danh mục */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Tên danh mục</label>
+          <label className="font-medium">Tên danh mục</label>
           <input
             name="ten"
             value={form.ten}
             onChange={handleChange}
-            placeholder="Nhập tên danh mục"
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border p-2 rounded w-full"
           />
         </div>
 
         {/* Slug */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Slug</label>
+          <label className="font-medium">Slug</label>
           <input
             name="slug"
             value={form.slug}
             onChange={handleChange}
-            placeholder="vd: ten-danh-muc"
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border p-2 rounded w-full"
           />
         </div>
 
-        {/* Hình ảnh */}
+        {/* Upload hình */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Hình ảnh (URL)</label>
+          <label className="font-medium">Hình ảnh</label>
           <input
-            name="hinh"
-            value={form.hinh || ""}
-            onChange={handleChange}
-            placeholder="vd: https://..."
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            type="file"
+            accept="image/*"
+            onChange={handleUpload}
+            className="border p-2 rounded w-full"
           />
+
+          {uploading && <p className="text-blue-500">Đang upload...</p>}
+
+          {form.hinh && (
+            <img
+              src={form.hinh}
+              alt="preview"
+              className="w-24 h-24 object-cover rounded border mt-2"
+            />
+          )}
         </div>
 
         {/* Thứ tự */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Thứ tự</label>
+          <label className="font-medium">Thứ tự</label>
           <input
             type="number"
             name="thu_tu"
-            value={form.thu_tu || 0}
+            value={form.thu_tu}
             onChange={handleChange}
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border p-2 rounded w-full"
           />
         </div>
 
         {/* Trạng thái */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Trạng thái</label>
-          <div className="flex gap-6 rounded p-2">
+          <label className="font-medium">Trạng thái</label>
+          <div className="flex gap-6">
             <label className="flex items-center gap-2">
               <input
                 type="radio"
@@ -180,8 +222,9 @@ export default function SuaDanhMuc() {
                 checked={form.an_hien === true}
                 onChange={handleChange}
               />
-              <span>Hiện</span>
+              Hiện
             </label>
+
             <label className="flex items-center gap-2">
               <input
                 type="radio"
@@ -190,16 +233,16 @@ export default function SuaDanhMuc() {
                 checked={form.an_hien === false}
                 onChange={handleChange}
               />
-              <span>Ẩn</span>
+              Ẩn
             </label>
           </div>
         </div>
 
-        {/* Nút lưu */}
-        <div className="md:col-span-2 flex justify-end">
+        {/* Submit */}
+        <div className="md:col-span-2 flex justify-end mt-4">
           <button
             disabled={loading}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg shadow-md disabled:opacity-50"
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg"
           >
             {loading ? "Đang lưu..." : "Cập nhật danh mục"}
           </button>

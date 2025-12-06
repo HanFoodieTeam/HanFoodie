@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 
-// Kiểu dữ liệu bài viết
 interface IBaiViet {
   id: number;
   tieu_de: string;
@@ -33,11 +32,12 @@ export default function SuaBaiViet() {
     an_hien: true,
   });
 
+  const [file, setFile] = useState<File | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Lấy dữ liệu bài viết hiện tại
   useEffect(() => {
     if (!id) return;
 
@@ -52,10 +52,10 @@ export default function SuaBaiViet() {
         setForm({
           ...data,
           an_hien: !!data.an_hien,
-          ngay_dang: data.ngay_dang.slice(0, 10), // để input date hiển thị đúng
+          ngay_dang: data.ngay_dang.slice(0, 10),
         });
       } catch {
-        alert("❌ Lỗi khi tải dữ liệu bài viết!");
+        alert(" Lỗi khi tải dữ liệu bài viết!");
         router.push("/bai_viet");
       } finally {
         setInitialLoading(false);
@@ -65,7 +65,6 @@ export default function SuaBaiViet() {
     fetchData();
   }, [id, router]);
 
-  // Thay đổi giá trị form
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -81,7 +80,6 @@ export default function SuaBaiViet() {
     }));
   };
 
-  // Cập nhật bài viết
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -91,34 +89,37 @@ export default function SuaBaiViet() {
     setLoading(true);
     setError(null);
 
-    const payload = {
-      tieu_de: form.tieu_de,
-      noi_dung: form.noi_dung,
-      hinh: form.hinh || null,
-      id_loai_bv: Number(form.id_loai_bv),
-      luot_xem: Number(form.luot_xem) || 0,
-      slug: form.slug || "",
-      ngay_dang: form.ngay_dang ? new Date(form.ngay_dang) : new Date(),
-      an_hien: form.an_hien ? 1 : 0,
-    };
+    const formData = new FormData();
+    formData.append("tieu_de", form.tieu_de);
+    formData.append("noi_dung", form.noi_dung);
+    formData.append("slug", form.slug);
+    formData.append("id_loai_bv", String(form.id_loai_bv));
+    formData.append("luot_xem", String(form.luot_xem));
+    formData.append("ngay_dang", form.ngay_dang);
+    formData.append("an_hien", form.an_hien ? "1" : "0");
+
+    if (file) {
+      formData.append("hinh", file);
+    } else {
+      formData.append("hinh", form.hinh || "");
+    }
 
     try {
       const res = await fetch(`/api/bai_viet/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       if (res.ok) {
-        alert("✅ Cập nhật bài viết thành công!");
+        alert(" Cập nhật bài viết thành công!");
         router.push("/bai_viet");
       } else {
         const data = await res.json();
-        alert("❌ Cập nhật thất bại! " + (data.message || ""));
+        alert(" Cập nhật thất bại! " + (data.message || ""));
       }
     } catch (err) {
       console.error(err);
-      alert("❌ Lỗi khi cập nhật bài viết!");
+      alert(" Lỗi khi cập nhật bài viết!");
     } finally {
       setLoading(false);
     }
@@ -140,6 +141,7 @@ export default function SuaBaiViet() {
       )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
         {/* Tiêu đề */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Tiêu đề</label>
@@ -147,8 +149,7 @@ export default function SuaBaiViet() {
             name="tieu_de"
             value={form.tieu_de}
             onChange={handleChange}
-            placeholder="VD: Món mới, Tin tức,..."
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
@@ -159,8 +160,7 @@ export default function SuaBaiViet() {
             name="slug"
             value={form.slug}
             onChange={handleChange}
-            placeholder="vd: mon-moi-tin-tuc"
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
@@ -172,20 +172,32 @@ export default function SuaBaiViet() {
             value={form.noi_dung}
             onChange={handleChange}
             rows={6}
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
-        {/* Hình */}
+        {/* Upload hình */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Hình</label>
+          <label className="block mb-1 font-medium text-gray-700">Hình ảnh</label>
+
           <input
-            name="hinh"
-            value={form.hinh || ""}
-            onChange={handleChange}
-            placeholder="URL hình ảnh"
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                setFile(e.target.files[0]);
+              }
+            }}
+            className="border p-2 rounded w-full"
           />
+
+          {form.hinh && (
+            <img
+              src={form.hinh}
+              alt="Preview"
+              className="mt-2 w-32 rounded shadow"
+            />
+          )}
         </div>
 
         {/* Loại bài viết */}
@@ -194,10 +206,8 @@ export default function SuaBaiViet() {
           <select
             name="id_loai_bv"
             value={form.id_loai_bv}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, id_loai_bv: Number(e.target.value) }))
-            }
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onChange={handleChange}
+            className="border border-gray-300 p-2 rounded w-full"
           >
             <option value={1}>Tin tức</option>
             <option value={2}>Thông báo</option>
@@ -212,14 +222,14 @@ export default function SuaBaiViet() {
             name="ngay_dang"
             value={form.ngay_dang}
             onChange={handleChange}
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border p-2 rounded w-full"
           />
         </div>
 
         {/* Trạng thái */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Trạng thái</label>
-          <div className="flex gap-6 rounded p-2">
+          <div className="flex gap-6 p-2">
             <label className="flex items-center gap-2">
               <input
                 type="radio"
@@ -230,6 +240,7 @@ export default function SuaBaiViet() {
               />
               <span>Hiện</span>
             </label>
+
             <label className="flex items-center gap-2">
               <input
                 type="radio"
@@ -243,11 +254,11 @@ export default function SuaBaiViet() {
           </div>
         </div>
 
-        {/* Nút lưu */}
+        {/* Nút Lưu */}
         <div className="md:col-span-2 flex justify-end">
           <button
             disabled={loading}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg shadow-md disabled:opacity-50"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg"
           >
             {loading ? "Đang lưu..." : "Cập nhật bài viết"}
           </button>

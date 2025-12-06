@@ -53,18 +53,18 @@ export default function LienHePage() {
             <img
               src="/logo.png"
               alt="HanFoodie Logo"
-              className="w-72 md:w-96 object-contain mb-8"
+              className="w-60 md:w-80 object-contain mb-6"
             />
-            <div className="text-white space-y-2 text-center mb-8">
+            <div className="text-white space-y-2 text-center mb-8 text-sm md:text-base">
               <p><span className="font-semibold">Địa chỉ:</span> 123 Đường Han, Quận 1, TP. HCM</p>
               <p><span className="font-semibold">Email:</span> support@hanfoodie.com</p>
               <p><span className="font-semibold">Điện thoại:</span> +84 912 345 678</p>
               <p><span className="font-semibold">Giờ làm việc:</span> 8:00 - 20:00 (T2-CN)</p>
             </div>
 
-            {/* Box chính sách & hỗ trợ */}
+            {/* Box chính sách & hỗ trợ (4 box, 2 trên 2 dưới) */}
             <div className="grid grid-cols-2 gap-4 w-full">
-              <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+              <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow hover:shadow-lg transition">
                 <Truck className="w-6 h-6 text-[#6A0A0A]" />
                 <div>
                   <h3 className="font-semibold text-[#6A0A0A] mb-1">Giao hàng nhanh</h3>
@@ -72,7 +72,7 @@ export default function LienHePage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+              <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow hover:shadow-lg transition">
                 <Shield className="w-6 h-6 text-[#6A0A0A]" />
                 <div>
                   <h3 className="font-semibold text-[#6A0A0A] mb-1">Bảo mật thông tin</h3>
@@ -80,7 +80,7 @@ export default function LienHePage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+              <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow hover:shadow-lg transition">
                 <Gift className="w-6 h-6 text-[#6A0A0A]" />
                 <div>
                   <h3 className="font-semibold text-[#6A0A0A] mb-1">Ưu đãi đặc biệt</h3>
@@ -88,7 +88,7 @@ export default function LienHePage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+              <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow hover:shadow-lg transition">
                 <Headphones className="w-6 h-6 text-[#6A0A0A]" />
                 <div>
                   <h3 className="font-semibold text-[#6A0A0A] mb-1">Hỗ trợ 24/7</h3>
@@ -101,9 +101,9 @@ export default function LienHePage() {
 
         {/* Cột phải: Form liên hệ */}
         <div className="md:w-1/2 flex flex-col items-center justify-center p-6 overflow-hidden">
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
             <h1 className="text-3xl font-bold text-[#6A0A0A] mb-4">Liên hệ với HanFoodie</h1>
-            <p className="text-gray-700 mb-6">
+            <p className="text-gray-700 mb-6 text-sm md:text-base">
               Vui lòng điền thông tin để chúng tôi hỗ trợ bạn nhanh nhất.
             </p>
 

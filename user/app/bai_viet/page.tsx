@@ -1,186 +1,112 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Calendar, ChevronDown } from "lucide-react";
-
-interface ILoaiBaiViet {
-  id: number;
-  ten_loai: string;
-  slug?: string;
-}
 
 interface IBaiViet {
   id: number;
   tieu_de: string;
-  noi_dung: string;
-  hinh: string | null;
-  luot_xem: number;
+  hinh?: string | null;
   slug: string;
-  ngay_dang: string | null;
-  an_hien: number;
-  loai_bai_viet: ILoaiBaiViet | null;
+  an_hien: boolean;
+  ngay_dang?: string | null;
 }
 
-export default function BaiVietPage() {
-  const [dsBaiViet, setDsBaiViet] = useState<IBaiViet[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loaiId, setLoaiId] = useState<number | null>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [danhSachLoai, setDanhSachLoai] = useState<{ id: number | null; ten_loai: string }[]>([]);
-  const [showAll, setShowAll] = useState(false);
+export default function BaiVietGrid() {
+  const [baiViets, setBaiViets] = useState<IBaiViet[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchBaiViet = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/bai_viet`, { cache: "no-store" });
-      if (!res.ok) throw new Error("Lỗi khi tải dữ liệu bài viết");
-
-      const json = await res.json();
-      const data: IBaiViet[] = json.success ? json.data : [];
-      setDsBaiViet(data);
-
-      // Lấy danh sách loại duy nhất
-      const loaiUnique: ILoaiBaiViet[] = Array.from(
-        new Map<number, ILoaiBaiViet>(
-          data
-            .filter((bv): bv is IBaiViet & { loai_bai_viet: ILoaiBaiViet } => bv.loai_bai_viet !== null)
-            .map(bv => [bv.loai_bai_viet.id, bv.loai_bai_viet])
-        ).values()
-      );
-
-      setDanhSachLoai([
-        { id: null, ten_loai: "Tất cả" },
-        ...loaiUnique.map(lbv => ({ id: lbv.id, ten_loai: lbv.ten_loai }))
-      ]);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const limit = 8; // tối đa 8 bài mỗi trang
 
   useEffect(() => {
-    fetchBaiViet();
-  }, []);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/bai_viet?page=${page}&limit=${limit}`);
+        const json = await res.json();
+        if (json.success) {
+          setBaiViets(json.data);
+          setTotalPages(json.pagination?.totalPages ?? 1);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredBaiViet = loaiId
-    ? dsBaiViet.filter(bv => bv.loai_bai_viet?.id === loaiId)
-    : dsBaiViet;
-
-  const displayedBaiViet = showAll ? filteredBaiViet : filteredBaiViet.slice(0, 3);
-
-  if (loading)
-    return (
-      <div className="p-6 text-center mt-[var(--header-h)] text-gray-500">
-        Đang tải bài viết...
-      </div>
-    );
+    fetchData();
+  }, [page]);
 
   return (
-    <main className="bg-white min-h-screen py-12 px-6">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
+    <div className="p-6">
+      {/* Submenu ngang */}
+      <nav className="flex gap-6 mb-6 border-b pb-2">
+        <button className="text-blue-600 font-medium hover:underline">Tất cả</button>
+        <button className="text-gray-600 hover:text-blue-600">Tin tức</button>
+        <button className="text-gray-600 hover:text-blue-600">Sự kiện</button>
+        <button className="text-gray-600 hover:text-blue-600">Khuyến mãi</button>
+      </nav>
 
-        {/* Sidebar */}
-        <aside className="md:w-1/4 flex flex-col gap-3 mb-6 md:mb-0">
-          <h2 className="text-xl font-semibold text-[#6A0A0A] mb-2">Danh mục bài viết</h2>
-
-          {/* Mobile dropdown */}
-          <div className="md:hidden relative">
-            <button
-              className="w-full px-4 py-2 border rounded-lg bg-gray-100 flex justify-between items-center"
-              onClick={() => setShowDropdown(!showDropdown)}
+      {/* Lưới bài viết */}
+      {loading ? (
+        <p className="text-center py-10">Đang tải...</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {baiViets.map((bv) => (
+            <div
+              key={bv.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
             >
-              {danhSachLoai.find(l => l.id === loaiId)?.ten_loai || "Tất cả"}
-              <ChevronDown size={20} />
-            </button>
-            {showDropdown && (
-              <div className="absolute w-full mt-1 bg-white border rounded-lg shadow-md z-10">
-                {danhSachLoai.map(loai => (
-                  <button
-                    key={loai.id ?? "all"}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-200 ${
-                      loaiId === loai.id ? "bg-[#6A0A0A] text-white" : ""
-                    }`}
-                    onClick={() => { setLoaiId(loai.id); setShowAll(false); setShowDropdown(false); }}
-                  >
-                    {loai.ten_loai}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Desktop sidebar */}
-          <div className="hidden md:flex flex-col gap-2">
-            {danhSachLoai.map(loai => (
-              <button
-                key={loai.id ?? "all"}
-                onClick={() => { setLoaiId(loai.id); setShowAll(false); }}
-                className={`px-4 py-2 rounded-lg font-medium text-left transition-colors ${
-                  loaiId === loai.id ? "bg-[#6A0A0A] text-white shadow" : "bg-gray-100 hover:bg-gray-200"
-                }`}
-              >
-                {loai.ten_loai}
-              </button>
-            ))}
-          </div>
-        </aside>
-
-        {/* Danh sách bài viết */}
-        <section className="md:w-3/4 flex flex-col gap-4">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayedBaiViet.map(bv => (
-              <Link
-                key={bv.id}
-                href={`/bai_viet/${bv.id}`}
-                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden group block"
-              >
-                {bv.hinh && (
-                  <img
-                    src={bv.hinh}
-                    alt={bv.tieu_de}
-                    className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
+              {bv.hinh && (
+                <img
+                  src={bv.hinh}
+                  alt={bv.tieu_de}
+                  className="w-full h-40 object-cover"
+                />
+              )}
+              <div className="p-4">
+                <h2 className="font-semibold text-lg mb-2">{bv.tieu_de}</h2>
+                {bv.ngay_dang && (
+                  <p className="text-sm text-gray-500">
+                    {new Date(bv.ngay_dang).toLocaleDateString()}
+                  </p>
                 )}
-                <div className="p-5 flex flex-col justify-between h-[220px]">
-                  <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-2 line-clamp-2 group-hover:text-[#6A0A0A]">
-                      {bv.tieu_de}
-                    </h3>
-                    <p className="text-gray-600 text-sm line-clamp-3 mb-3">
-                      {bv.noi_dung}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={16} />
-                      <span>{bv.ngay_dang ? new Date(bv.ngay_dang).toLocaleDateString("vi-VN") : ""}</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-gray-700">Lượt xem: {bv.luot_xem}</span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-          {/* Nút Xem thêm / Thu gọn */}
-          {filteredBaiViet.length > 3 && (
-            <button
-              className="self-center px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-              onClick={() => setShowAll(prev => !prev)}
-            >
-              {showAll ? "Thu gọn" : "Xem thêm"}
-            </button>
-          )}
-
-          {filteredBaiViet.length === 0 && (
-            <p className="col-span-full text-center text-gray-500 mt-10">Không có bài viết nào.</p>
-          )}
-        </section>
+      {/* Phân trang */}
+      <div className="flex justify-center mt-6 gap-2">
+        <button
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+          <button
+            key={num}
+            onClick={() => setPage(num)}
+            className={`px-3 py-1 border rounded ${
+              page === num ? "bg-blue-500 text-white" : ""
+            }`}
+          >
+            {num}
+          </button>
+        ))}
+        <button
+          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          disabled={page === totalPages}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+        >
+          Next
+        </button>
       </div>
-    </main>
+    </div>
   );
 }

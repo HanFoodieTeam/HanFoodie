@@ -201,13 +201,15 @@ function BaiVietListContent() {
                   <td className="px-3 py-2">{truncateContent(bv.noi_dung)}</td>
                   <td className="px-3 py-2 text-center">{bv.luot_xem}</td>
                   <td className="px-3 py-2 text-center">{formatDate(bv.ngay_dang)}</td>
-                  <td
-                    className="px-3 py-2 text-center cursor-pointer select-none text-xl"
-                    onClick={() => handleToggleClick(bv)}
-                    title="Bấm để đổi trạng thái"
-                  >
-                    {bv.an_hien ? "✅" : "❌"}
+                  <td className="px-3 py-2 text-center">
+                    <button
+                      onClick={() => handleToggleClick(bv)}
+                      title="Bấm để đổi trạng thái"
+                      className={`w-6 h-6 rounded-full border-2 border-gray-300 transition-colors ${bv.an_hien ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
+                        }`}
+                    ></button>
                   </td>
+
                   <td className="px-3 py-2 text-center">
                     <Link
                       href={`/bai_viet/${bv.id}`}
@@ -236,9 +238,8 @@ function BaiVietListContent() {
           <button
             key={p}
             onClick={() => goToPage(p)}
-            className={`px-3 py-1 rounded ${
-              p === page ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
-            }`}
+            className={`px-3 py-1 rounded ${p === page ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
+              }`}
           >
             {p}
           </button>
