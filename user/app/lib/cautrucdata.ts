@@ -234,7 +234,7 @@ export interface IMonThem {
   trang_thai?: boolean;
 }
 
-// export interface INguoiDung {
+// export interface INguoiDung {np
 //   id?: number;
 //   hinh?: string;
 //   ho_ten: string;
