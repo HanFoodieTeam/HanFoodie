@@ -1,478 +1,4 @@
-// // // // // // // // // // // // import { NextResponse } from "next/server";
-// // // // // // // // // // // // import { SanPhamModel } from "@/app/lib/models";
-
-// // // // // // // // // // // // export async function GET(req: Request, { params }: { params: { id: string } }) {
-// // // // // // // // // // // //   const id = Number(params.id);
-
-// // // // // // // // // // // //   const sp = await SanPhamModel.findByPk(id);
-
-// // // // // // // // // // // //   if (!sp) {
-// // // // // // // // // // // //     return NextResponse.json({ success: false, message: "Không tìm thấy sản phẩm" }, { status: 404 });
-// // // // // // // // // // // //   }
-
-// // // // // // // // // // // //   return NextResponse.json({ success: true, data: sp });
-// // // // // // // // // // // // }
-
-// // // // // // // // // // // // export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-// // // // // // // // // // // //   const id = Number(params.id);
-// // // // // // // // // // // //   const body = await req.json();
-
-// // // // // // // // // // // //   const sp = await SanPhamModel.findByPk(id);
-// // // // // // // // // // // //   if (!sp) {
-// // // // // // // // // // // //     return NextResponse.json({ success: false, message: "Không tìm thấy sản phẩm" }, { status: 404 });
-// // // // // // // // // // // //   }
-
-// // // // // // // // // // // //   await sp.update(body);
-
-// // // // // // // // // // // //   return NextResponse.json({ success: true, message: "Cập nhật thành công" });
-// // // // // // // // // // // // }
-// // // // // // // // // // // import { NextResponse } from "next/server";
-// // // // // // // // // // // import { SanPhamModel, BienTheModel, DanhMucModel, HinhModel } from "@/app/lib/models";
-
-// // // // // // // // // // // export async function GET(req: Request, { params }: { params: { id: string } }) {
-// // // // // // // // // // //   try {
-// // // // // // // // // // //     const id = Number(params.id);
-
-// // // // // // // // // // //     const sp = await SanPhamModel.findOne({
-// // // // // // // // // // //       where: { id },
-// // // // // // // // // // //       include: [
-// // // // // // // // // // //         { model: BienTheModel, as: "bien_the" },
-// // // // // // // // // // //         { model: DanhMucModel, as: "danh_muc", attributes: ["id", "ten", "slug"] },
-// // // // // // // // // // //         { model: HinhModel, as: "hinh_anh" },
-// // // // // // // // // // //       ],
-// // // // // // // // // // //     });
-
-// // // // // // // // // // //     if (!sp) {
-// // // // // // // // // // //       return NextResponse.json(
-// // // // // // // // // // //         { success: false, message: "Không tìm thấy sản phẩm" },
-// // // // // // // // // // //         { status: 404 }
-// // // // // // // // // // //       );
-// // // // // // // // // // //     }
-
-// // // // // // // // // // //     return NextResponse.json({ success: true, data: sp });
-// // // // // // // // // // //   } catch (error) {
-// // // // // // // // // // //     return NextResponse.json(
-// // // // // // // // // // //       { success: false, message: "Lỗi server", error },
-// // // // // // // // // // //       { status: 500 }
-// // // // // // // // // // //     );
-// // // // // // // // // // //   }
-// // // // // // // // // // // }
-// // // // // // // // // // import { NextResponse } from "next/server";
-// // // // // // // // // // import { SanPhamModel, HinhModel, BienTheModel } from "@/app/lib/models";
-// // // // // // // // // // import { ISanPham, IBienThe, IHinh } from "@/app/lib/cautrucdata";
-
-// // // // // // // // // // // 🔄 Convert file → Base64
-// // // // // // // // // // async function fileToBase64(file: File): Promise<string> {
-// // // // // // // // // //   const buffer = Buffer.from(await file.arrayBuffer());
-// // // // // // // // // //   return `data:${file.type};base64,${buffer.toString("base64")}`;
-// // // // // // // // // // }
-
-// // // // // // // // // // // ===== TYPE FORM =====
-// // // // // // // // // // interface ISanPhamForm {
-// // // // // // // // // //   ten?: string;
-// // // // // // // // // //   slug?: string;
-// // // // // // // // // //   mo_ta?: string;
-// // // // // // // // // //   tag?: string;
-// // // // // // // // // //   phong_cach?: string;
-// // // // // // // // // //   trang_thai?: "active" | "inactive";
-// // // // // // // // // //   gia_goc?: number;
-// // // // // // // // // //   hinh_chinh?: File;
-// // // // // // // // // //   hinh_phu?: File[];
-// // // // // // // // // //   hinh_anh_ids?: number[];
-// // // // // // // // // //   bien_the?: IBienThe[];
-// // // // // // // // // // }
-
-// // // // // // // // // // export async function PUT(
-// // // // // // // // // //   req: Request,
-// // // // // // // // // //   { params }: { params: { id: string } }
-// // // // // // // // // // ) {
-// // // // // // // // // //   try {
-// // // // // // // // // //     const id = Number(params.id);
-
-// // // // // // // // // //     const sp = await SanPhamModel.findByPk(id, {
-// // // // // // // // // //       include: [
-// // // // // // // // // //         { model: HinhModel, as: "hinh_anh" },
-// // // // // // // // // //         { model: BienTheModel, as: "bien_the" },
-// // // // // // // // // //       ],
-// // // // // // // // // //     });
-
-// // // // // // // // // //     if (!sp) {
-// // // // // // // // // //       return NextResponse.json(
-// // // // // // // // // //         { success: false, message: "Không tìm thấy sản phẩm" },
-// // // // // // // // // //         { status: 404 }
-// // // // // // // // // //       );
-// // // // // // // // // //     }
-
-// // // // // // // // // //     const formData = await req.formData();
-// // // // // // // // // //     const form: ISanPhamForm = {
-// // // // // // // // // //       ten: formData.get("ten") as string,
-// // // // // // // // // //       slug: formData.get("slug") as string,
-// // // // // // // // // //       mo_ta: formData.get("mo_ta") as string,
-// // // // // // // // // //       tag: formData.get("tag") as string,
-// // // // // // // // // //       phong_cach: formData.get("phong_cach") as string,
-// // // // // // // // // //       trang_thai: (formData.get("trang_thai") as "active" | "inactive") || "active",
-// // // // // // // // // //       gia_goc: formData.get("gia_goc") ? Number(formData.get("gia_goc")) : undefined,
-// // // // // // // // // //       hinh_chinh: formData.get("hinh_chinh") as File,
-// // // // // // // // // //       hinh_phu: formData.getAll("hinh_phu") as File[],
-// // // // // // // // // //       hinh_anh_ids: (formData.getAll("hinh_anh_ids") as string[]).map(Number),
-// // // // // // // // // //       bien_the: formData.get("bien_the")
-// // // // // // // // // //         ? JSON.parse(formData.get("bien_the") as string)
-// // // // // // // // // //         : [],
-// // // // // // // // // //     };
-
-// // // // // // // // // //     // ===== CẬP NHẬT THÔNG TIN =====
-// // // // // // // // // //     await sp.update({
-// // // // // // // // // //       ten: form.ten,
-// // // // // // // // // //       slug: form.slug,
-// // // // // // // // // //       mo_ta: form.mo_ta,
-// // // // // // // // // //       tag: form.tag,
-// // // // // // // // // //       phong_cach: form.phong_cach,
-// // // // // // // // // //       trang_thai: form.trang_thai,
-// // // // // // // // // //       gia_goc: form.gia_goc,
-// // // // // // // // // //     });
-
-// // // // // // // // // //     // ===== HÌNH CHÍNH =====
-// // // // // // // // // //     if (form.hinh_chinh && form.hinh_chinh.size > 0) {
-// // // // // // // // // //       const base64 = await fileToBase64(form.hinh_chinh);
-// // // // // // // // // //       await sp.update({ hinh: base64 });
-// // // // // // // // // //     }
-
-// // // // // // // // // //     // ===== HÌNH PHỤ =====
-// // // // // // // // // //     // Xóa các hình phụ đã xóa
-// // // // // // // // // //     if (form.hinh_anh_ids) {
-// // // // // // // // // //       await HinhModel.destroy({
-// // // // // // // // // //         where: {
-// // // // // // // // // //           id_san_pham: id,
-// // // // // // // // // //           id: { $notIn: form.hinh_anh_ids },
-// // // // // // // // // //         },
-// // // // // // // // // //       });
-// // // // // // // // // //     }
-
-// // // // // // // // // //     // Thêm hình phụ mới
-// // // // // // // // // //     for (const file of form.hinh_phu || []) {
-// // // // // // // // // //       if (file.size > 0) {
-// // // // // // // // // //         const base64 = await fileToBase64(file);
-// // // // // // // // // //         await HinhModel.create({
-// // // // // // // // // //           id_san_pham: id,
-// // // // // // // // // //           hinh: base64,
-// // // // // // // // // //           thu_tu: 0,
-// // // // // // // // // //         });
-// // // // // // // // // //       }
-// // // // // // // // // //     }
-
-// // // // // // // // // //     // ===== BIẾN THỂ =====
-// // // // // // // // // //     if (form.bien_the) {
-// // // // // // // // // //       await BienTheModel.destroy({ where: { id_san_pham: id } });
-// // // // // // // // // //       for (const bt of form.bien_the) {
-// // // // // // // // // //         await BienTheModel.create({
-// // // // // // // // // //           id_san_pham: id,
-// // // // // // // // // //           ten: bt.ten,
-// // // // // // // // // //           gia_them: bt.gia_them,
-// // // // // // // // // //           trang_thai: bt.trang_thai ? 1 : 0,
-// // // // // // // // // //         });
-// // // // // // // // // //       }
-// // // // // // // // // //     }
-
-// // // // // // // // // //     return NextResponse.json({
-// // // // // // // // // //       success: true,
-// // // // // // // // // //       message: "Cập nhật sản phẩm thành công",
-// // // // // // // // // //     });
-// // // // // // // // // //   } catch (error) {
-// // // // // // // // // //     console.error("❌ Lỗi PUT /api/san_pham/[id]:", error);
-// // // // // // // // // //     return NextResponse.json(
-// // // // // // // // // //       { success: false, message: "Lỗi server khi cập nhật sản phẩm", error },
-// // // // // // // // // //       { status: 500 }
-// // // // // // // // // //     );
-// // // // // // // // // //   }
-// // // // // // // // // // }
-// // // // // // // // // import { NextResponse } from "next/server";
-// // // // // // // // // import { SanPhamModel, HinhModel, BienTheModel, DanhMucModel } from "@/app/lib/models";
-// // // // // // // // // import { ISanPham, IBienThe, IDanhMuc, IHinh } from "@/app/lib/cautrucdata";
-
-// // // // // // // // // interface Params {
-// // // // // // // // //   params: { id: string };
-// // // // // // // // // }
-
-// // // // // // // // // // ================= GET chi tiết sản phẩm =================
-// // // // // // // // // export async function GET(req: Request, { params }: Params) {
-// // // // // // // // //   try {
-// // // // // // // // //     const id = Number(params.id);
-
-// // // // // // // // //     const sp = await SanPhamModel.findOne({
-// // // // // // // // //       where: { id },
-// // // // // // // // //       include: [
-// // // // // // // // //         { model: BienTheModel, as: "bien_the" },
-// // // // // // // // //         { model: DanhMucModel, as: "danh_muc", attributes: ["id", "ten", "slug"] },
-// // // // // // // // //         { model: HinhModel, as: "hinh_anh" },
-// // // // // // // // //       ],
-// // // // // // // // //     });
-
-// // // // // // // // //     if (!sp) {
-// // // // // // // // //       return NextResponse.json(
-// // // // // // // // //         { success: false, message: "Không tìm thấy sản phẩm" },
-// // // // // // // // //         { status: 404 }
-// // // // // // // // //       );
-// // // // // // // // //     }
-
-// // // // // // // // //     const data: ISanPham & {
-// // // // // // // // //       bien_the: IBienThe[];
-// // // // // // // // //       danh_muc: IDanhMuc | null;
-// // // // // // // // //       hinh_anh: IHinh[];
-// // // // // // // // //     } = {
-// // // // // // // // //       id: sp.id,
-// // // // // // // // //       ten: sp.ten,
-// // // // // // // // //       slug: sp.slug,
-// // // // // // // // //       mo_ta: sp.mo_ta,
-// // // // // // // // //       gia_goc: sp.gia_goc,
-// // // // // // // // //       hinh: sp.hinh,
-// // // // // // // // //       tag: sp.tag,
-// // // // // // // // //       phong_cach: sp.phong_cach,
-// // // // // // // // //       luot_xem: sp.luot_xem,
-// // // // // // // // //       trang_thai: sp.trang_thai,
-// // // // // // // // //       id_danh_muc: sp.id_danh_muc,
-// // // // // // // // //       danh_muc: sp.danh_muc ?? null,
-// // // // // // // // //       bien_the: sp.bien_the ?? [],
-// // // // // // // // //       hinh_anh: sp.hinh_anh ?? [],
-// // // // // // // // //     };
-
-// // // // // // // // //     return NextResponse.json({ success: true, data });
-// // // // // // // // //   } catch (error) {
-// // // // // // // // //     console.error("❌ Lỗi GET /san_pham/[id]:", error);
-// // // // // // // // //     return NextResponse.json(
-// // // // // // // // //       { success: false, message: "Lỗi server", error },
-// // // // // // // // //       { status: 500 }
-// // // // // // // // //     );
-// // // // // // // // //   }
-// // // // // // // // // }
-
-// // // // // // // // // // ================= PUT cập nhật sản phẩm =================
-// // // // // // // // // export async function PUT(req: Request, { params }: Params) {
-// // // // // // // // //   try {
-// // // // // // // // //     const id = Number(params.id);
-// // // // // // // // //     const body = await req.json();
-
-// // // // // // // // //     const sp = await SanPhamModel.findByPk(id);
-// // // // // // // // //     if (!sp) {
-// // // // // // // // //       return NextResponse.json(
-// // // // // // // // //         { success: false, message: "Không tìm thấy sản phẩm" },
-// // // // // // // // //         { status: 404 }
-// // // // // // // // //       );
-// // // // // // // // //     }
-
-// // // // // // // // //     // Cập nhật thông tin cơ bản
-// // // // // // // // //     await sp.update({
-// // // // // // // // //       ten: body.ten,
-// // // // // // // // //       slug: body.slug,
-// // // // // // // // //       mo_ta: body.mo_ta,
-// // // // // // // // //       gia_goc: body.gia_goc,
-// // // // // // // // //       tag: body.tag,
-// // // // // // // // //       phong_cach: body.phong_cach,
-// // // // // // // // //       luot_xem: body.luot_xem,
-// // // // // // // // //       trang_thai: body.trang_thai,
-// // // // // // // // //     });
-
-// // // // // // // // //     // Cập nhật biến thể
-// // // // // // // // //     if (Array.isArray(body.bien_the)) {
-// // // // // // // // //       await BienTheModel.destroy({ where: { id_san_pham: id } });
-// // // // // // // // //       for (const bt of body.bien_the) {
-// // // // // // // // //         await BienTheModel.create({
-// // // // // // // // //           id_san_pham: id,
-// // // // // // // // //           ten: bt.ten,
-// // // // // // // // //           gia_them: bt.gia_them,
-// // // // // // // // //           trang_thai: bt.trang_thai ? 1 : 0,
-// // // // // // // // //         });
-// // // // // // // // //       }
-// // // // // // // // //     }
-
-// // // // // // // // //     // Cập nhật hình phụ
-// // // // // // // // //     if (Array.isArray(body.hinh_anh)) {
-// // // // // // // // //       await HinhModel.destroy({ where: { id_san_pham: id } });
-// // // // // // // // //       for (const h of body.hinh_anh) {
-// // // // // // // // //         await HinhModel.create({
-// // // // // // // // //           id_san_pham: id,
-// // // // // // // // //           hinh: h.hinh,
-// // // // // // // // //           thu_tu: h.thu_tu ?? 0,
-// // // // // // // // //         });
-// // // // // // // // //       }
-// // // // // // // // //     }
-
-// // // // // // // // //     return NextResponse.json({ success: true, message: "Cập nhật thành công" });
-// // // // // // // // //   } catch (error) {
-// // // // // // // // //     console.error("❌ Lỗi PUT /san_pham/[id]:", error);
-// // // // // // // // //     return NextResponse.json(
-// // // // // // // // //       { success: false, message: "Lỗi server khi cập nhật", error },
-// // // // // // // // //       { status: 500 }
-// // // // // // // // //     );
-// // // // // // // // //   }
-// // // // // // // // // }
-// // // // // // // // import { NextResponse } from "next/server";
-// // // // // // // // import { SanPhamModel, BienTheModel, DanhMucModel, HinhModel } from "@/app/lib/models";
-// // // // // // // // import { ISanPham, IBienThe, IDanhMuc, IHinh } from "@/app/lib/cautrucdata";
-
-// // // // // // // // export async function GET(
-// // // // // // // //   req: Request,
-// // // // // // // //   { params }: { params: { id: string } }
-// // // // // // // // ) {
-// // // // // // // //   try {
-// // // // // // // //     const id = Number(params.id);
-// // // // // // // //     if (isNaN(id)) {
-// // // // // // // //       return NextResponse.json(
-// // // // // // // //         { success: false, message: "ID không hợp lệ" },
-// // // // // // // //         { status: 400 }
-// // // // // // // //       );
-// // // // // // // //     }
-
-// // // // // // // //     const sp = await SanPhamModel.findOne({
-// // // // // // // //       where: { id },
-// // // // // // // //       include: [
-// // // // // // // //         { model: BienTheModel, as: "bien_the" },
-// // // // // // // //         { model: DanhMucModel, as: "danh_muc", attributes: ["id", "ten", "slug"] },
-// // // // // // // //         { model: HinhModel, as: "hinh_anh" },
-// // // // // // // //       ],
-// // // // // // // //     });
-
-// // // // // // // //     if (!sp) {
-// // // // // // // //       return NextResponse.json(
-// // // // // // // //         { success: false, message: "Không tìm thấy sản phẩm" },
-// // // // // // // //         { status: 404 }
-// // // // // // // //       );
-// // // // // // // //     }
-
-// // // // // // // //     const spPlain = sp.get({ plain: true });
-
-// // // // // // // //     const data: ISanPham & {
-// // // // // // // //       bien_the: IBienThe[];
-// // // // // // // //       danh_muc: IDanhMuc | null;
-// // // // // // // //       hinh_anh: IHinh[];
-// // // // // // // //     } = {
-// // // // // // // //       id: spPlain.id,
-// // // // // // // //       ten: spPlain.ten,
-// // // // // // // //       slug: spPlain.slug,
-// // // // // // // //       mo_ta: spPlain.mo_ta,
-// // // // // // // //       gia_goc: spPlain.gia_goc,
-// // // // // // // //       hinh: spPlain.hinh,
-// // // // // // // //       tag: spPlain.tag,
-// // // // // // // //       phong_cach: spPlain.phong_cach,
-// // // // // // // //       luot_xem: spPlain.luot_xem,
-// // // // // // // //       trang_thai: spPlain.trang_thai,
-// // // // // // // //       an_hien: spPlain.an_hien, // 🔹 thêm property này
-// // // // // // // //       id_danh_muc: spPlain.id_danh_muc,
-// // // // // // // //       danh_muc: spPlain.danh_muc ?? null,
-// // // // // // // //       bien_the: spPlain.bien_the ?? [],
-// // // // // // // //       hinh_anh: spPlain.hinh_anh ?? [],
-// // // // // // // //     };
-
-// // // // // // // //     return NextResponse.json({ success: true, data });
-
-// // // // // // // //   } catch (error) {
-// // // // // // // //     console.error("❌ Lỗi GET sản phẩm:", error);
-// // // // // // // //     return NextResponse.json(
-// // // // // // // //       { success: false, message: "Lỗi server", error },
-// // // // // // // //       { status: 500 }
-// // // // // // // //     );
-// // // // // // // //   }
-// // // // // // // // }
-// // // // // // // import { NextResponse } from "next/server";
-// // // // // // // import { SanPhamModel, BienTheModel, HinhModel } from "@/app/lib/models";
-// // // // // // // import { ISanPham, IBienThe, IHinh } from "@/app/lib/cautrucdata";
-
-// // // // // // // // 🔄 Convert file → Base64
-// // // // // // // async function fileToBase64(file: File): Promise<string> {
-// // // // // // //   const buffer = Buffer.from(await file.arrayBuffer());
-// // // // // // //   return `data:${file.type};base64,${buffer.toString("base64")}`;
-// // // // // // // }
-
-// // // // // // // export async function PUT(req: Request) {
-// // // // // // //   try {
-// // // // // // //     const form = await req.formData();
-
-// // // // // // //     const id = Number(form.get("id"));
-// // // // // // //     if (isNaN(id)) {
-// // // // // // //       return NextResponse.json(
-// // // // // // //         { success: false, message: "ID sản phẩm không hợp lệ" },
-// // // // // // //         { status: 400 }
-// // // // // // //       );
-// // // // // // //     }
-
-// // // // // // //     const sp = await SanPhamModel.findByPk(id);
-// // // // // // //     if (!sp) {
-// // // // // // //       return NextResponse.json(
-// // // // // // //         { success: false, message: "Sản phẩm không tồn tại" },
-// // // // // // //         { status: 404 }
-// // // // // // //       );
-// // // // // // //     }
-
-// // // // // // //     // 🔹 Cập nhật các trường cơ bản
-// // // // // // //     const ten = form.get("ten") as string;
-// // // // // // //     const slug = form.get("slug") as string;
-// // // // // // //     const mo_ta = (form.get("mo_ta") as string) || "";
-// // // // // // //     const gia_goc = Number(form.get("gia_goc"));
-// // // // // // //     const tag = (form.get("tag") as string) || "";
-// // // // // // //     const phong_cach = (form.get("phong_cach") as string) || "";
-// // // // // // //     const luot_xem = Number(form.get("luot_xem")) || 0;
-// // // // // // //     const trang_thai = (form.get("trang_thai") as string) || "inactive";
-// // // // // // //     const an_hien = form.get("an_hien") === "true";
-// // // // // // //     const id_danh_muc = Number(form.get("id_danh_muc"));
-
-// // // // // // //     await sp.update({
-// // // // // // //       ten,
-// // // // // // //       slug,
-// // // // // // //       mo_ta,
-// // // // // // //       gia_goc,
-// // // // // // //       tag,
-// // // // // // //       phong_cach,
-// // // // // // //       luot_xem,
-// // // // // // //       trang_thai,
-// // // // // // //       an_hien,
-// // // // // // //       id_danh_muc,
-// // // // // // //     });
-
-// // // // // // //     // 🔹 Cập nhật hình chính
-// // // // // // //     const hinh_chinh = form.get("hinh_chinh");
-// // // // // // //     if (hinh_chinh instanceof File && hinh_chinh.size > 0) {
-// // // // // // //       const base64 = await fileToBase64(hinh_chinh);
-// // // // // // //       await sp.update({ hinh: base64 });
-// // // // // // //     }
-
-// // // // // // //     // 🔹 Cập nhật hình phụ
-// // // // // // //     const hinh_phu_files = form.getAll("hinh_phu");
-// // // // // // //     for (const file of hinh_phu_files) {
-// // // // // // //       if (file instanceof File && file.size > 0) {
-// // // // // // //         const base64 = await fileToBase64(file);
-// // // // // // //         await HinhModel.create({
-// // // // // // //           id_san_pham: id,
-// // // // // // //           hinh: base64,
-// // // // // // //           thu_tu: 0,
-// // // // // // //         });
-// // // // // // //       }
-// // // // // // //     }
-
-// // // // // // //     // 🔹 Cập nhật biến thể
-// // // // // // //     const bien_the_raw = form.get("bien_the") as string;
-// // // // // // //     const bien_the_list: IBienThe[] = JSON.parse(bien_the_raw || "[]");
-
-// // // // // // //     // Xoá biến thể cũ để tránh trùng lặp
-// // // // // // //     await BienTheModel.destroy({ where: { id_san_pham: id } });
-
-// // // // // // //     for (const bt of bien_the_list) {
-// // // // // // //       await BienTheModel.create({
-// // // // // // //         id_san_pham: id,
-// // // // // // //         ten: bt.ten,
-// // // // // // //         gia_them: bt.gia_them || 0,
-// // // // // // //         trang_thai: bt.trang_thai ? 1 : 0,
-// // // // // // //       });
-// // // // // // //     }
-
-// // // // // // //     return NextResponse.json({ success: true, message: "Cập nhật thành công" });
-// // // // // // //   } catch (error) {
-// // // // // // //     console.error("❌ Lỗi PUT sản phẩm:", error);
-// // // // // // //     return NextResponse.json(
-// // // // // // //       { success: false, message: "Lỗi server khi cập nhật sản phẩm", error },
-// // // // // // //       { status: 500 }
-// // // // // // //     );
-// // // // // // //   }
-// // // // // // // }
-// // // // // // import { NextResponse } from "next/server";
+// // // // // // import { NextRequest, NextResponse } from "next/server";
 // // // // // // import { SanPhamModel, BienTheModel, HinhModel } from "@/app/lib/models";
 // // // // // // import { IBienThe } from "@/app/lib/cautrucdata";
 
@@ -482,48 +8,77 @@
 // // // // // //   return `data:${file.type};base64,${buffer.toString("base64")}`;
 // // // // // // }
 
-
-// // // // // // // ===== GET SAN PHAM =====
-// // // // // // export async function GET(_req: Request, { params }: { params: { id: string } }) {
+// // // // // // // ===================== GET =====================
+// // // // // // export async function GET(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
 // // // // // //   try {
-// // // // // //     const id = Number(params.id);
+// // // // // //     const { id } = await context.params; // <-- lấy params đúng chuẩn Next.js 15
 
-// // // // // //     if (isNaN(id)) {
-// // // // // //       return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
+// // // // // //     const numId = Number(id);
+// // // // // //     if (isNaN(numId)) {
+// // // // // //       return NextResponse.json(
+// // // // // //         { success: false, message: "ID không hợp lệ" },
+// // // // // //         { status: 400 }
+// // // // // //       );
 // // // // // //     }
 
-// // // // // //     const sp = await SanPhamModel.findByPk(id, {
+// // // // // //     const sp = await SanPhamModel.findByPk(numId, {
 // // // // // //       include: [
 // // // // // //         { model: BienTheModel, as: "bien_the" },
 // // // // // //         { model: HinhModel, as: "hinh_anh" },
-// // // // // //       ]
+// // // // // //       ],
 // // // // // //     });
 
-// // // // // //     if (!sp) {
-// // // // // //       return NextResponse.json({ success: false, message: "Không tìm thấy sản phẩm" }, { status: 404 });
-// // // // // //     }
+// // // // // //     if (!sp)
+// // // // // //       return NextResponse.json(
+// // // // // //         { success: false, message: "Không tìm thấy sản phẩm" },
+// // // // // //         { status: 404 }
+// // // // // //       );
 
-// // // // // //     return NextResponse.json({ success: true, data: sp });
+// // // // // //     const data = {
+// // // // // //       id: sp.get("id"),
+// // // // // //       ten: sp.get("ten"),
+// // // // // //       slug: sp.get("slug"),
+// // // // // //       mo_ta: sp.get("mo_ta"),
+// // // // // //       gia_goc: sp.get("gia_goc"),
+// // // // // //       tag: sp.get("tag"),
+// // // // // //       phong_cach: sp.get("phong_cach"),
+// // // // // //       luot_xem: sp.get("luot_xem"),
+// // // // // //       trang_thai: sp.get("trang_thai"),
+// // // // // //       an_hien: sp.get("an_hien"),
+// // // // // //       id_danh_muc: sp.get("id_danh_muc"),
+// // // // // //       hinh: sp.get("hinh"),
+// // // // // //       bien_the: sp.get("bien_the"),
+// // // // // //       hinh_anh: sp.get("hinh_anh"),
+// // // // // //     };
 
+// // // // // //     return NextResponse.json({ success: true, data });
 // // // // // //   } catch (error) {
-// // // // // //     console.error("❌ GET Error:", error);
-// // // // // //     return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
+// // // // // //     console.error("❌ GET sản phẩm lỗi:", error);
+// // // // // //     return NextResponse.json(
+// // // // // //       { success: false, message: "Lỗi server" },
+// // // // // //       { status: 500 }
+// // // // // //     );
 // // // // // //   }
 // // // // // // }
-
-
-
-// // // // // // // ===== UPDATE SAN PHAM =====
-// // // // // // export async function PUT(req: Request, { params }: { params: { id: string } }) {
+// // // // // // export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
 // // // // // //   try {
-// // // // // //     const id = Number(params.id);
+// // // // // //     const { id } = await context.params;
+// // // // // //     const numId = Number(id);
+// // // // // //     if (isNaN(numId))
+// // // // // //       return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
 
 // // // // // //     const form = await req.formData();
-
-// // // // // //     const sp = await SanPhamModel.findByPk(id);
+// // // // // //     const sp = await SanPhamModel.findByPk(numId);
 // // // // // //     if (!sp) return NextResponse.json({ success: false, message: "Sản phẩm không tồn tại" });
 
-// // // // // //     await sp.update({
+// // // // // //     // Update các field cơ bản + hình (sử dụng sp.set)
+// // // // // //     const mainImg = form.get("hinh_chinh");
+// // // // // //     let hinhStr = sp.get("hinh") as string; // giữ hình cũ nếu không gửi hình mới
+// // // // // //     if (mainImg instanceof File && mainImg.size > 0) {
+// // // // // //       hinhStr = await fileToBase64(mainImg);
+// // // // // //     }
+
+// // // // // //     sp.set({
 // // // // // //       ten: String(form.get("ten") || ""),
 // // // // // //       slug: String(form.get("slug") || ""),
 // // // // // //       mo_ta: String(form.get("mo_ta") || ""),
@@ -534,20 +89,16 @@
 // // // // // //       trang_thai: String(form.get("trang_thai") || "inactive"),
 // // // // // //       an_hien: form.get("an_hien") === "true",
 // // // // // //       id_danh_muc: Number(form.get("id_danh_muc") || 0),
+// // // // // //       hinh: hinhStr, // update hình chính
 // // // // // //     });
+// // // // // //     await sp.save();
 
-// // // // // //     // Hình chính
-// // // // // //     const mainImg = form.get("hinh_chinh");
-// // // // // //     if (mainImg instanceof File && mainImg.size > 0) {
-// // // // // //       await sp.update({ hinh: await fileToBase64(mainImg) });
-// // // // // //     }
-
-// // // // // //     // Hình phụ mới
+// // // // // //     // Hình phụ
 // // // // // //     const extraImages = form.getAll("hinh_phu");
 // // // // // //     for (const f of extraImages) {
 // // // // // //       if (f instanceof File && f.size > 0) {
 // // // // // //         await HinhModel.create({
-// // // // // //           id_san_pham: id,
+// // // // // //           id_san_pham: numId,
 // // // // // //           hinh: await fileToBase64(f),
 // // // // // //           thu_tu: 0,
 // // // // // //         });
@@ -555,680 +106,932 @@
 // // // // // //     }
 
 // // // // // //     // Biến thể
-// // // // // //     const bt = JSON.parse(String(form.get("bien_the") || "[]")) as IBienThe[];
-
-// // // // // //     await BienTheModel.destroy({ where: { id_san_pham: id } });
-
-// // // // // //     for (const item of bt) {
-// // // // // //       await BienTheModel.create({
-// // // // // //         id_san_pham: id,
-// // // // // //         ten: item.ten,
-// // // // // //         gia_them: item.gia_them || 0,
-// // // // // //         trang_thai: item.trang_thai ? 1 : 0,
-// // // // // //       });
+// // // // // //     const variants: IBienThe[] = JSON.parse(String(form.get("bien_the") || "[]"));
+// // // // // //     for (const v of variants) {
+// // // // // //       if (v.id) {
+// // // // // //         await BienTheModel.update(
+// // // // // //           { ten: v.ten, gia_them: v.gia_them || 0, trang_thai: v.trang_thai ? 1 : 0 },
+// // // // // //           { where: { id: v.id } }
+// // // // // //         );
+// // // // // //       } else {
+// // // // // //         await BienTheModel.create({
+// // // // // //           id_san_pham: numId,
+// // // // // //           ten: v.ten,
+// // // // // //           gia_them: v.gia_them || 0,
+// // // // // //           trang_thai: v.trang_thai ? 1 : 0,
+// // // // // //         });
+// // // // // //       }
 // // // // // //     }
 
-// // // // // //     return NextResponse.json({ success: true });
-
+// // // // // //     return NextResponse.json({ success: true, message: "Cập nhật sản phẩm thành công" });
 // // // // // //   } catch (error) {
-// // // // // //     console.error("❌ PUT Error:", error);
-// // // // // //     return NextResponse.json({ success: false, message: "Lỗi cập nhật" }, { status: 500 });
+// // // // // //     console.error("❌ PUT sản phẩm lỗi:", error);
+// // // // // //     return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
 // // // // // //   }
 // // // // // // }
 // // // // // import { NextResponse } from "next/server";
-// // // // // import { SanPhamModel, BienTheModel, HinhModel } from "@/app/lib/models";
-// // // // // import { IBienThe } from "@/app/lib/cautrucdata";
+// // // // // import { SanPhamModel } from "@/app/lib/models";
+// // // // // import { ISanPham } from "@/app/lib/cautrucdata";
 
-// // // // // // Convert file → Base64
-// // // // // async function fileToBase64(file: File): Promise<string> {
-// // // // //   const buffer = Buffer.from(await file.arrayBuffer());
-// // // // //   return `data:${file.type};base64,${buffer.toString("base64")}`;
+// // // // // interface IParams {
+// // // // //   params: { id: string };
 // // // // // }
 
-
-// // // // // // ================= GET =================
-// // // // // export async function GET(_req: Request, { params }: { params: { id: string } }) {
+// // // // // // GET BY ID
+// // // // // export async function GET(_: Request, { params }: IParams) {
 // // // // //   try {
-// // // // //     const id = Number(params.id);
-// // // // //     if (isNaN(id)) return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
+// // // // //     const data: ISanPham | null = await SanPhamModel.findById(params.id).lean();
 
-// // // // //     const sp = await SanPhamModel.findByPk(id, {
-// // // // //       include: [
-// // // // //         { model: BienTheModel, as: "bien_the" },
-// // // // //         { model: HinhModel, as: "hinh_anh" },
-// // // // //       ],
-// // // // //     });
+// // // // //     if (!data)
+// // // // //       return NextResponse.json(
+// // // // //         { success: false, message: "Không tìm thấy sản phẩm" },
+// // // // //         { status: 404 }
+// // // // //       );
 
-// // // // //     if (!sp) return NextResponse.json({ success: false, message: "Không tìm thấy sản phẩm" }, { status: 404 });
-
-// // // // //     return NextResponse.json({ success: true, data: sp });
-
-// // // // //   } catch (error) {
-// // // // //     console.error("❌ GET Error:", error);
-// // // // //     return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
+// // // // //     return NextResponse.json({ success: true, data });
+// // // // //   } catch (err) {
+// // // // //     return NextResponse.json(
+// // // // //       { success: false, message: "Lỗi server" },
+// // // // //       { status: 500 }
+// // // // //     );
 // // // // //   }
 // // // // // }
 
-
-
-// // // // // // ================= PUT =================
-// // // // // export async function PUT(req: Request, { params }: { params: { id: string } }) {
+// // // // // // UPDATE
+// // // // // export async function PUT(req: Request, { params }: IParams) {
 // // // // //   try {
-// // // // //     const id = Number(params.id);
-// // // // //     const form = await req.formData();
+// // // // //     const body: Partial<ISanPham> = await req.json();
 
-// // // // //     const sp = await SanPhamModel.findByPk(id);
-// // // // //     if (!sp) return NextResponse.json({ success: false, message: "Sản phẩm không tồn tại" });
+// // // // //     const updated = await SanPhamModel.findByIdAndUpdate(params.id, body, {
+// // // // //       new: true,
+// // // // //     }).lean<ISanPham>();
 
-// // // // //     // ---- Cập nhật thông tin ----
-// // // // //     await sp.update({
-// // // // //       ten: String(form.get("ten") ?? ""),
-// // // // //       slug: String(form.get("slug") ?? ""),
-// // // // //       mo_ta: String(form.get("mo_ta") ?? ""),
-// // // // //       gia_goc: Number(form.get("gia_goc") ?? 0),
-// // // // //       tag: String(form.get("tag") ?? ""),
-// // // // //       phong_cach: String(form.get("phong_cach") ?? ""),
-// // // // //       an_hien: form.get("an_hien") === "true",
-// // // // //       trang_thai: String(form.get("trang_thai") ?? "inactive"),
-// // // // //       id_danh_muc: Number(form.get("id_danh_muc") ?? 0),
-// // // // //     });
+// // // // //     if (!updated)
+// // // // //       return NextResponse.json(
+// // // // //         { success: false, message: "Không tìm thấy sản phẩm" },
+// // // // //         { status: 404 }
+// // // // //       );
 
-// // // // //     // ---- Cập nhật hình chính ----
-// // // // //     const mainImg = form.get("hinh_chinh");
-// // // // //     if (mainImg instanceof File && mainImg.size > 0) {
-// // // // //       await sp.update({ hinh: await fileToBase64(mainImg) });
-// // // // //     }
+// // // // //     return NextResponse.json({ success: true, data: updated });
+// // // // //   } catch (err) {
+// // // // //     return NextResponse.json(
+// // // // //       { success: false, message: "Lỗi cập nhật sản phẩm" },
+// // // // //       { status: 500 }
+// // // // //     );
+// // // // //   }
+// // // // // }
 
-// // // // //     // ---- Thêm ảnh phụ ----
-// // // // //     const extraImages = form.getAll("hinh_phu");
-// // // // //     for (const img of extraImages) {
-// // // // //       if (img instanceof File && img.size > 0) {
-// // // // //         await HinhModel.create({
-// // // // //           id_san_pham: id,
-// // // // //           hinh: await fileToBase64(img),
-// // // // //           thu_tu: 0,
-// // // // //         });
-// // // // //       }
-// // // // //     }
+// // // // // // DELETE
+// // // // // export async function DELETE(_: Request, { params }: IParams) {
+// // // // //   try {
+// // // // //     const deleted = await SanPhamModel.findByIdAndDelete(params.id).lean();
 
-// // // // //     // ---- Cập nhật biến thể ----
-// // // // //     const bienThe = JSON.parse(String(form.get("bien_the") || "[]")) as IBienThe[];
+// // // // //     if (!deleted)
+// // // // //       return NextResponse.json(
+// // // // //         { success: false, message: "Không tìm thấy sản phẩm" },
+// // // // //         { status: 404 }
+// // // // //       );
 
-// // // // //     await BienTheModel.destroy({ where: { id_san_pham: id } });
-
-// // // // //     for (const item of bienThe) {
-// // // // //       await BienTheModel.create({
-// // // // //         id_san_pham: id,
-// // // // //         ten: item.ten,
-// // // // //         gia_them: item.gia_them ?? 0,
-// // // // //         trang_thai: item.trang_thai ? 1 : 0,
-// // // // //       });
-// // // // //     }
-
-// // // // //     return NextResponse.json({ success: true, message: "Cập nhật thành công" });
-
-// // // // //   } catch (error) {
-// // // // //     console.error("❌ PUT Error:", error);
-// // // // //     return NextResponse.json({ success: false, message: "Lỗi cập nhật" }, { status: 500 });
+// // // // //     return NextResponse.json({ success: true });
+// // // // //   } catch (err) {
+// // // // //     return NextResponse.json(
+// // // // //       { success: false, message: "Lỗi xóa sản phẩm" },
+// // // // //       { status: 500 }
+// // // // //     );
 // // // // //   }
 // // // // // }
 // // // // import { NextResponse } from "next/server";
-// // // // import { SanPhamModel, BienTheModel, HinhModel } from "@/app/lib/models";
-// // // // import { IBienThe } from "@/app/lib/cautrucdata";
+// // // // import { v2 as cloudinary } from "cloudinary";
+// // // // import {
+// // // //   SanPhamModel,
+// // // //   DanhMucModel,
+// // // //   BienTheModel,
+// // // //   HinhModel,
+// // // // } from "@/app/lib/models";
 
-// // // // // Convert file to Base64
-// // // // async function fileToBase64(file: Blob): Promise<string> {
-// // // //   const arrayBuffer = await file.arrayBuffer();
-// // // //   return `data:${file.type};base64,${Buffer.from(arrayBuffer).toString("base64")}`;
+// // // // // ==================== CLOUDINARY CONFIG ====================
+// // // // cloudinary.config({
+// // // //   cloud_name: process.env.CLOUDINARY_CLOUD!,
+// // // //   api_key: process.env.CLOUDINARY_KEY!,
+// // // //   api_secret: process.env.CLOUDINARY_SECRET!,
+// // // // });
+
+// // // // // Upload 1 file lên Cloudinary
+// // // // async function uploadToCloudinary(file: File): Promise<string> {
+// // // //   const buffer = Buffer.from(await file.arrayBuffer());
+// // // //   const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+// // // //   const uploaded = await cloudinary.uploader.upload(base64, {
+// // // //     folder: "san_pham",
+// // // //   });
+
+// // // //   return uploaded.secure_url;
 // // // // }
 
-// // // // export async function GET(_req: Request, context: any) {
+// // // // // ==================== GET CHI TIẾT SẢN PHẨM ====================
+// // // // export async function GET(
+// // // //   req: Request,
+// // // //   { params }: { params: { id: string } }
+// // // // ) {
 // // // //   try {
-// // // //     const params = await context.params;
 // // // //     const id = Number(params.id);
 
-// // // //     const sp = await SanPhamModel.findByPk(id, {
+// // // //     const sanPhamDb = await SanPhamModel.findOne({
+// // // //       where: { id },
 // // // //       include: [
-// // // //         { model: BienTheModel, as: "bien_the" },
+// // // //         { model: DanhMucModel, as: "danh_muc" },
 // // // //         { model: HinhModel, as: "hinh_anh" },
+// // // //         { model: BienTheModel, as: "bien_the" },
 // // // //       ],
 // // // //     });
 
-// // // //     if (!sp) return NextResponse.json({ success: false, message: "Không tìm thấy sản phẩm" });
+// // // //     if (!sanPhamDb) {
+// // // //       return NextResponse.json(
+// // // //         { success: false, message: "Không tìm thấy sản phẩm" },
+// // // //         { status: 404 }
+// // // //       );
+// // // //     }
 
-// // // //     return NextResponse.json({ success: true, data: sp });
-// // // //   } catch (err) {
-// // // //     console.log("GET Error:", err);
-// // // //     return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
+// // // //     return NextResponse.json({
+// // // //       success: true,
+// // // //       data: sanPhamDb.toJSON(),
+// // // //     });
+// // // //   } catch (error) {
+// // // //     console.error("❌ Lỗi GET chi tiết:", error);
+// // // //     return NextResponse.json(
+// // // //       { success: false, message: "Không lấy được chi tiết sản phẩm" },
+// // // //       { status: 500 }
+// // // //     );
 // // // //   }
 // // // // }
 
-
-// // // // export async function PUT(req: Request, context: any) {
+// // // // // ==================== POST: THÊM SẢN PHẨM ====================
+// // // // export async function POST(
+// // // //   req: Request,
+// // // //   { params }: { params: { id: string } }
+// // // // ) {
 // // // //   try {
-// // // //     const params = await context.params;
+// // // //     const form = await req.formData();
+
+// // // //     // ====== HÌNH CHÍNH ======
+// // // //     const hinhChinhFile = form.get("hinh") as File | null;
+// // // //     const hinhChinhUrl = hinhChinhFile
+// // // //       ? await uploadToCloudinary(hinhChinhFile)
+// // // //       : null;
+
+// // // //     // ====== TẠO SẢN PHẨM ======
+// // // //     const sanPham = await SanPhamModel.create({
+// // // //       ten: form.get("ten"),
+// // // //       slug: form.get("slug"),
+// // // //       gia_goc: Number(form.get("gia_goc")),
+// // // //       mo_ta: form.get("mo_ta"),
+// // // //       an_hien: form.get("an_hien") === "true",
+// // // //       tag: form.get("tag"),
+// // // //       phong_cach: form.get("phong_cach"),
+// // // //       trang_thai: form.get("trang_thai"),
+// // // //       id_danh_muc: Number(form.get("id_danh_muc")),
+// // // //       hinh: hinhChinhUrl,
+// // // //     });
+
+// // // //     const idSanPham = sanPham.dataValues.id;
+
+// // // //     // ====== HÌNH PHỤ (MẢNG) ======
+// // // //     const hinhPhu = form.getAll("hinh_phu") as File[];
+
+// // // //     for (let i = 0; i < hinhPhu.length; i++) {
+// // // //       const file = hinhPhu[i];
+// // // //       const url = await uploadToCloudinary(file);
+
+// // // //       await HinhModel.create({
+// // // //         hinh: url,
+// // // //         thu_tu: i + 1,
+// // // //         id_san_pham: idSanPham,
+// // // //       });
+// // // //     }
+
+// // // //     // ====== BIẾN THỂ ======
+// // // //     const bienTheList = JSON.parse(form.get("bien_the") as string) as {
+// // // //       ten: string;
+// // // //       trang_thai: number;
+// // // //       gia_them: number | null;
+// // // //     }[];
+
+// // // //     for (const bt of bienTheList) {
+// // // //       await BienTheModel.create({
+// // // //         ten: bt.ten,
+// // // //         trang_thai: bt.trang_thai,
+// // // //         gia_them: bt.gia_them,
+// // // //         id_san_pham: idSanPham,
+// // // //       });
+// // // //     }
+
+// // // //     return NextResponse.json({
+// // // //       success: true,
+// // // //       message: "Thêm sản phẩm thành công",
+// // // //     });
+// // // //   } catch (error) {
+// // // //     console.error("❌ Lỗi POST:", error);
+// // // //     return NextResponse.json(
+// // // //       { success: false, message: "Không thêm được sản phẩm" },
+// // // //       { status: 500 }
+// // // //     );
+// // // //   }
+// // // // }
+
+// // // // // ==================== PUT: CẬP NHẬT SẢN PHẨM ====================
+// // // // export async function PUT(
+// // // //   req: Request,
+// // // //   { params }: { params: { id: string } }
+// // // // ) {
+// // // //   try {
 // // // //     const id = Number(params.id);
 
 // // // //     const form = await req.formData();
-// // // //     const sp = await SanPhamModel.findByPk(id);
 
-// // // //     if (!sp) return NextResponse.json({ success: false, message: "Sản phẩm không tồn tại" });
+// // // //     // ====== XỬ LÝ HÌNH CHÍNH ======
+// // // //     let hinhChinhUrl = form.get("hinh") as string | null;
 
+// // // //     const hinhChinhFile = form.get("hinh_file") as File | null;
+// // // //     if (hinhChinhFile) {
+// // // //       hinhChinhUrl = await uploadToCloudinary(hinhChinhFile);
+// // // //     }
 
-// // // //     // Update sản phẩm
-// // // //     await sp.update({
-// // // //       ten: String(form.get("ten") ?? ""),
-// // // //       slug: String(form.get("slug") ?? ""),
-// // // //       mo_ta: String(form.get("mo_ta") ?? ""),
-// // // //       gia_goc: Number(form.get("gia_goc") ?? 0),
-// // // //       tag: String(form.get("tag") ?? ""),
-// // // //       phong_cach: String(form.get("phong_cach") ?? ""),
-// // // //       an_hien: form.get("an_hien") === "true",
-// // // //       trang_thai: String(form.get("trang_thai") ?? "inactive"),
-// // // //       id_danh_muc: Number(form.get("id_danh_muc") ?? 0),
+// // // //     // ====== UPDATE SẢN PHẨM ======
+// // // //     await SanPhamModel.update(
+// // // //       {
+// // // //         ten: form.get("ten"),
+// // // //         slug: form.get("slug"),
+// // // //         gia_goc: Number(form.get("gia_goc")),
+// // // //         mo_ta: form.get("mo_ta"),
+// // // //         an_hien: form.get("an_hien") === "true",
+// // // //         tag: form.get("tag"),
+// // // //         phong_cach: form.get("phong_cach"),
+// // // //         trang_thai: form.get("trang_thai"),
+// // // //         id_danh_muc: Number(form.get("id_danh_muc")),
+// // // //         hinh: hinhChinhUrl,
+// // // //       },
+// // // //       { where: { id } }
+// // // //     );
+
+// // // //     // ====== XÓA HÌNH PHỤ CŨ ======
+// // // //     await HinhModel.destroy({ where: { id_san_pham: id } });
+
+// // // //     // ====== THÊM HÌNH PHỤ MỚI ======
+// // // //     const hinhPhuFiles = form.getAll("hinh_phu") as File[];
+
+// // // //     for (let i = 0; i < hinhPhuFiles.length; i++) {
+// // // //       const file = hinhPhuFiles[i];
+// // // //       const url = await uploadToCloudinary(file);
+
+// // // //       await HinhModel.create({
+// // // //         hinh: url,
+// // // //         thu_tu: i + 1,
+// // // //         id_san_pham: id,
+// // // //       });
+// // // //     }
+
+// // // //     // ====== XÓA BIẾN THỂ CŨ ======
+// // // //     await BienTheModel.destroy({ where: { id_san_pham: id } });
+
+// // // //     // ====== THÊM BIẾN THỂ MỚI ======
+// // // //     const bienThe = JSON.parse(form.get("bien_the") as string) as {
+// // // //       ten: string;
+// // // //       trang_thai: number;
+// // // //       gia_them: number | null;
+// // // //     }[];
+
+// // // //     for (const bt of bienThe) {
+// // // //       await BienTheModel.create({
+// // // //         ten: bt.ten,
+// // // //         gia_them: bt.gia_them,
+// // // //         trang_thai: bt.trang_thai,
+// // // //         id_san_pham: id,
+// // // //       });
+// // // //     }
+
+// // // //     return NextResponse.json({
+// // // //       success: true,
+// // // //       message: "Cập nhật sản phẩm thành công",
 // // // //     });
-
-
-// // // //     // Cập nhật hình chính nếu có
-// // // //     const mainImg = form.get("hinh_chinh");
-// // // //     if (mainImg instanceof Blob && mainImg.size > 0) {
-// // // //       await sp.update({ hinh: await fileToBase64(mainImg) });
-// // // //     }
-
-
-// // // //     // Thêm hình phụ mới
-// // // //     const extraImages = form.getAll("hinh_phu");
-// // // //     for (const img of extraImages) {
-// // // //       if (img instanceof Blob && img.size > 0) {
-// // // //         await HinhModel.create({
-// // // //           id_san_pham: id,
-// // // //           hinh: await fileToBase64(img),
-// // // //           thu_tu: 0,
-// // // //         });
-// // // //       }
-// // // //     }
-
-
-// // // //     // ---- UPDATE biến thể thay vì xóa ----
-
-// // // //     const rawData = form.get("bien_the");
-// // // //     const bienTheData: IBienThe[] = rawData ? JSON.parse(String(rawData)) : [];
-
-// // // //     const oldBienThe = await BienTheModel.findAll({ where: { id_san_pham: id } });
-
-// // // //     // update hoặc tạo mới
-// // // //     for (const item of bienTheData) {
-// // // //       const exists = oldBienThe.find(v => v.ten === item.ten);
-
-// // // //       if (exists) {
-// // // //         // update biến thể có dữ liệu liên kết
-// // // //         await exists.update({
-// // // //           gia_them: item.gia_them ?? exists.gia_them,
-// // // //           trang_thai: item.trang_thai ? 1 : 0,
-// // // //         });
-// // // //       } else {
-// // // //         // biến thể mới
-// // // //         await BienTheModel.create({
-// // // //           id_san_pham: id,
-// // // //           ten: item.ten,
-// // // //           gia_them: item.gia_them ?? 0,
-// // // //           trang_thai: item.trang_thai ? 1 : 0,
-// // // //         });
-// // // //       }
-// // // //     }
-
-// // // //     // Biến thể bị xóa trong UI → chuyển trạng thái inactive
-// // // //     for (const old of oldBienThe) {
-// // // //       if (!bienTheData.some(v => v.ten === old.ten)) {
-// // // //         await old.update({ trang_thai: 0 });
-// // // //       }
-// // // //     }
-
-// // // //     return NextResponse.json({ success: true, message: "Cập nhật thành công!" });
-
-// // // //   } catch (err) {
-// // // //     console.log("❌ PUT Error:", err);
-// // // //     return NextResponse.json({ success: false, message: "Lỗi cập nhật" }, { status: 500 });
+// // // //   } catch (error) {
+// // // //     console.error("❌ Lỗi PUT:", error);
+// // // //     return NextResponse.json(
+// // // //       { success: false, message: "Không cập nhật được sản phẩm" },
+// // // //       { status: 500 }
+// // // //     );
 // // // //   }
 // // // // }
 // // // import { NextResponse } from "next/server";
-// // // import { SanPhamModel, BienTheModel, HinhModel } from "@/app/lib/models";
-// // // import { IBienThe } from "@/app/lib/cautrucdata";
+// // // import { v2 as cloudinary } from "cloudinary";
+// // // import {
+// // //   SanPhamModel,
+// // //   DanhMucModel,
+// // //   BienTheModel,
+// // //   HinhModel,
+// // // } from "@/app/lib/models";
 
-// // // // Convert file → Base64
-// // // async function fileToBase64(file: File): Promise<string> {
+// // // cloudinary.config({
+// // //   cloud_name: process.env.CLOUDINARY_CLOUD!,
+// // //   api_key: process.env.CLOUDINARY_KEY!,
+// // //   api_secret: process.env.CLOUDINARY_SECRET!,
+// // // });
+
+// // // // Upload file lên Cloudinary
+// // // async function uploadToCloudinary(file: File): Promise<string> {
 // // //   const buffer = Buffer.from(await file.arrayBuffer());
-// // //   return `data:${file.type};base64,${buffer.toString("base64")}`;
+// // //   const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+// // //   const uploaded = await cloudinary.uploader.upload(base64, {
+// // //     folder: "san_pham",
+// // //   });
+
+// // //   return uploaded.secure_url;
 // // // }
 
-
-// // // // ===== GET SAN PHAM =====
-// // // export async function GET(_req: Request, { params }: { params: { id: string } }) {
+// // // export async function GET(
+// // //   req: Request,
+// // //   { params }: { params: { id: string } }
+// // // ) {
 // // //   try {
 // // //     const id = Number(params.id);
 
-// // //     if (isNaN(id)) {
-// // //       return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
-// // //     }
-
-// // //     const sp = await SanPhamModel.findByPk(id, {
+// // //     const sanPhamDb = await SanPhamModel.findOne({
+// // //       where: { id },
 // // //       include: [
-// // //         { model: BienTheModel, as: "bien_the" },
+// // //         { model: DanhMucModel, as: "danh_muc" },
 // // //         { model: HinhModel, as: "hinh_anh" },
-// // //       ]
+// // //         { model: BienTheModel, as: "bien_the" },
+// // //       ],
 // // //     });
 
-// // //     if (!sp) {
-// // //       return NextResponse.json({ success: false, message: "Không tìm thấy sản phẩm" }, { status: 404 });
+// // //     if (!sanPhamDb) {
+// // //       return NextResponse.json(
+// // //         { success: false, message: "Không tìm thấy sản phẩm" },
+// // //         { status: 404 }
+// // //       );
 // // //     }
 
-// // //     return NextResponse.json({ success: true, data: sp });
-
+// // //     return NextResponse.json({
+// // //       success: true,
+// // //       data: sanPhamDb.toJSON(),
+// // //     });
 // // //   } catch (error) {
-// // //     return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
+// // //     console.error("❌ GET lỗi:", error);
+// // //     return NextResponse.json(
+// // //       { success: false, message: "Lỗi server" },
+// // //       { status: 500 }
+// // //     );
 // // //   }
 // // // }
 
-
-// // // // ===== UPDATE SAN PHAM =====
 // // // export async function PUT(req: Request, { params }: { params: { id: string } }) {
 // // //   try {
 // // //     const id = Number(params.id);
 // // //     const form = await req.formData();
 
-// // //     const sp = await SanPhamModel.findByPk(id);
-// // //     if (!sp) return NextResponse.json({ success: false, message: "Sản phẩm không tồn tại" });
+// // //     // ==== HÌNH CHÍNH ====
+// // //     let hinhChinhUrl = form.get("hinh") as string | null;
 
-// // //     await sp.update({
-// // //       ten: String(form.get("ten")),
-// // //       slug: String(form.get("slug")),
-// // //       mo_ta: String(form.get("mo_ta") || ""),
-// // //       gia_goc: Number(form.get("gia_goc") || 0),
-// // //       tag: String(form.get("tag") || ""),
-// // //       phong_cach: String(form.get("phong_cach") || ""),
-// // //       luot_xem: Number(form.get("luot_xem") || 0),
-// // //       trang_thai: String(form.get("trang_thai") || "inactive"),
-// // //       an_hien: form.get("an_hien") === "true",
-// // //       id_danh_muc: Number(form.get("id_danh_muc") || 0),
-// // //     });
-
-// // //     // Hình chính
-// // //     const mainImg = form.get("hinh_chinh");
-// // //     if (mainImg instanceof File && mainImg.size > 0) {
-// // //       const imgBase64 = await fileToBase64(mainImg);
-// // //       await sp.update({ hinh: imgBase64 });
+// // //     const hinhChinhFile = form.get("hinh_file") as File | null;
+// // //     if (hinhChinhFile) {
+// // //       hinhChinhUrl = await uploadToCloudinary(hinhChinhFile);
 // // //     }
 
-// // //     // Hình phụ
-// // //     const extraImages = form.getAll("hinh_phu");
-// // //     for (const f of extraImages) {
-// // //       if (f instanceof File && f.size > 0) {
-// // //         await HinhModel.create({
-// // //           id_san_pham: id,
-// // //           hinh: await fileToBase64(f),
-// // //           thu_tu: 0,
-// // //         });
-// // //       }
-// // //     }
+// // //     // ==== UPDATE SẢN PHẨM ====
+// // //     await SanPhamModel.update(
+// // //       {
+// // //         ten: form.get("ten"),
+// // //         slug: form.get("slug"),
+// // //         gia_goc: Number(form.get("gia_goc")),
+// // //         mo_ta: form.get("mo_ta"),
+// // //         an_hien: form.get("an_hien") === "true",
+// // //         tag: form.get("tag"),
+// // //         phong_cach: form.get("phong_cach"),
+// // //         trang_thai: form.get("trang_thai"),
+// // //         id_danh_muc: Number(form.get("id_danh_muc")),
+// // //         hinh: hinhChinhUrl,
+// // //       },
+// // //       { where: { id } }
+// // //     );
 
-// // //     // Cập nhật biến thể
-// // //     const variants = JSON.parse(String(form.get("bien_the") || "[]")) as IBienThe[];
+// // //     // ==== HÌNH PHỤ ====
+// // //     await HinhModel.destroy({ where: { id_san_pham: id } });
 
-// // //     await BienTheModel.destroy({ where: { id_san_pham: id } });
+// // //     const hinhPhuFiles = form.getAll("hinh_phu") as File[];
 
-// // //     for (const v of variants) {
-// // //       await BienTheModel.create({
+// // //     for (let i = 0; i < hinhPhuFiles.length; i++) {
+// // //       const file = hinhPhuFiles[i];
+// // //       const url = await uploadToCloudinary(file);
+
+// // //       await HinhModel.create({
+// // //         hinh: url,
+// // //         thu_tu: i + 1,
 // // //         id_san_pham: id,
-// // //         ten: v.ten,
-// // //         gia_them: v.gia_them || 0,
-// // //         trang_thai: v.trang_thai ? 1 : 0,
 // // //       });
 // // //     }
 
-// // //     return NextResponse.json({ success: true });
+// // //     // ==== BIẾN THỂ ====
+// // //     await BienTheModel.destroy({ where: { id_san_pham: id } });
 
-// // //   } catch {
-// // //     return NextResponse.json({ success: false, message: "Lỗi cập nhật" }, { status: 500 });
+// // //     const bienTheList = JSON.parse(form.get("bien_the") as string) as {
+// // //       ten: string;
+// // //       trang_thai: boolean;
+// // //       gia_them?: number | null;
+// // //     }[];
+
+// // //     for (const bt of bienTheList) {
+// // //       await BienTheModel.create({
+// // //         ten: bt.ten,
+// // //         trang_thai: bt.trang_thai,
+// // //         gia_them: bt.gia_them ?? null,
+// // //         id_san_pham: id,
+// // //       });
+// // //     }
+
+// // //     return NextResponse.json({
+// // //       success: true,
+// // //       message: "Cập nhật sản phẩm thành công",
+// // //     });
+// // //   } catch (error) {
+// // //     console.error("❌ PUT lỗi:", error);
+// // //     return NextResponse.json(
+// // //       { success: false, message: "Không cập nhật được sản phẩm" },
+// // //       { status: 500 }
+// // //     );
 // // //   }
 // // // }
 // // import { NextResponse } from "next/server";
-// // import { SanPhamModel, BienTheModel, HinhModel } from "@/app/lib/models";
-// // import { IBienThe } from "@/app/lib/cautrucdata";
+// // import { v2 as cloudinary } from "cloudinary";
+// // import "dotenv/config"; // ⬅ FIX bắt buộc để ENV hoạt động trong Route
 
-// // // Convert Blob → Base64
-// // async function fileToBase64(file: Blob): Promise<string> {
-// //   const buffer = Buffer.from(await file.arrayBuffer());
-// //   return `data:${(file as any).type};base64,${buffer.toString("base64")}`;
+// // import {
+// //   SanPhamModel,
+// //   DanhMucModel,
+// //   BienTheModel,
+// //   HinhModel,
+// // } from "@/app/lib/models";
+
+// // // =======================
+// // // KIỂM TRA ENV BẮT BUỘC (FIX Unknown API key)
+// // // =======================
+// // if (
+// //   !process.env.CLOUDINARY_CLOUD ||
+// //   !process.env.CLOUDINARY_KEY ||
+// //   !process.env.CLOUDINARY_SECRET
+// // ) {
+// //   console.error("❌ Lỗi ENV Cloudinary: Thiếu CLOUDINARY_* trong .env.local");
 // // }
 
-// // // ===== GET SAN PHAM =====
-// // export async function GET(_req: Request, { params }: { params: { id: string } }) {
-// //   try {
-// //     const id = Number(params.id);
-// //     if (isNaN(id)) return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
+// // cloudinary.config({
+// //   cloud_name: process.env.CLOUDINARY_CLOUD,
+// //   api_key: process.env.CLOUDINARY_KEY,
+// //   api_secret: process.env.CLOUDINARY_SECRET,
+// // });
 
-// //     const sp = await SanPhamModel.findByPk(id, {
+// // // =======================
+// // // Hàm upload base64 lên Cloudinary
+// // // =======================
+// // async function uploadToCloudinary(file: File): Promise<string> {
+// //   const buffer = Buffer.from(await file.arrayBuffer());
+// //   const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+// //   const uploaded = await cloudinary.uploader.upload(base64, {
+// //     folder: "san_pham",
+// //   });
+
+// //   return uploaded.secure_url;
+// // }
+
+// // // =======================
+// // // GET SẢN PHẨM
+// // // =======================
+// // export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+// //   try {
+// //     const { id } = await params; // ⬅ FIX Next.js 15
+// //     const productId = Number(id);
+
+// //     const sanPhamDb = await SanPhamModel.findOne({
+// //       where: { id: productId },
 // //       include: [
-// //         { model: BienTheModel, as: "bien_the" },
+// //         { model: DanhMucModel, as: "danh_muc" },
 // //         { model: HinhModel, as: "hinh_anh" },
-// //       ]
+// //         { model: BienTheModel, as: "bien_the" },
+// //       ],
 // //     });
 
-// //     if (!sp) return NextResponse.json({ success: false, message: "Không tìm thấy sản phẩm" }, { status: 404 });
+// //     if (!sanPhamDb) {
+// //       return NextResponse.json(
+// //         { success: false, message: "Không tìm thấy sản phẩm" },
+// //         { status: 404 }
+// //       );
+// //     }
 
-// //     return NextResponse.json({ success: true, data: sp });
+// //     return NextResponse.json({ success: true, data: sanPhamDb.toJSON() });
 // //   } catch (error) {
-// //     console.error("GET /api/san_pham error:", error);
+// //     console.error("❌ GET lỗi:", error);
 // //     return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
 // //   }
 // // }
 
-// // // ===== UPDATE SAN PHAM =====
-// // export async function PUT(req: Request, { params }: { params: { id: string } }) {
+// // // =======================
+// // // PUT UPDATE SẢN PHẨM
+// // // =======================
+// // export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
 // //   try {
-// //     const id = Number(params.id);
-// //     if (isNaN(id)) return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
+// //     const { id } = await params; // ⬅ FIX Next.js 15
+// //     const productId = Number(id);
 
 // //     const form = await req.formData();
-// //     const sp = await SanPhamModel.findByPk(id);
-// //     if (!sp) return NextResponse.json({ success: false, message: "Sản phẩm không tồn tại" });
 
-// //     // Cập nhật thông tin sản phẩm
-// //     await sp.update({
-// //       ten: String(form.get("ten") || sp.ten),
-// //       slug: String(form.get("slug") || sp.slug),
-// //       mo_ta: String(form.get("mo_ta") || ""),
-// //       gia_goc: Number(form.get("gia_goc") || 0),
-// //       tag: String(form.get("tag") || ""),
-// //       phong_cach: String(form.get("phong_cach") || ""),
-// //       luot_xem: Number(form.get("luot_xem") || 0),
-// //       trang_thai: String(form.get("trang_thai") || "inactive"),
-// //       an_hien: form.get("an_hien") === "true" || form.get("an_hien") === "1",
-// //       id_danh_muc: Number(form.get("id_danh_muc") || 0),
-// //     });
+// //     // 🔹 HÌNH CHÍNH
+// //     let hinhChinhUrl = form.get("hinh") as string | null;
 
-// //     // Hình chính
-// //     const mainImg = form.get("hinh_chinh") as Blob | null;
-// //     if (mainImg && mainImg.size > 0) {
-// //       const imgBase64 = await fileToBase64(mainImg);
-// //       await sp.update({ hinh: imgBase64 });
+// //     const hinhChinhFile = form.get("hinh_file") as File | null;
+// //     if (hinhChinhFile && hinhChinhFile.size > 0) {
+// //       hinhChinhUrl = await uploadToCloudinary(hinhChinhFile);
 // //     }
 
-// //     // Hình phụ
-// //     const extraImages = form.getAll("hinh_phu") as Blob[];
-// //     for (const f of extraImages) {
-// //       if (f && f.size > 0) {
+// //     // 🔹 UPDATE SẢN PHẨM
+// //     await SanPhamModel.update(
+// //       {
+// //         ten: form.get("ten"),
+// //         slug: form.get("slug"),
+// //         gia_goc: Number(form.get("gia_goc")),
+// //         mo_ta: form.get("mo_ta"),
+// //         an_hien: form.get("an_hien") === "true",
+// //         tag: form.get("tag"),
+// //         phong_cach: form.get("phong_cach"),
+// //         trang_thai: form.get("trang_thai"),
+// //         id_danh_muc: Number(form.get("id_danh_muc")),
+// //         hinh: hinhChinhUrl,
+// //       },
+// //       { where: { id: productId } }
+// //     );
+
+// //     // 🔹 HÌNH PHỤ
+// //     await HinhModel.destroy({ where: { id_san_pham: productId } });
+
+// //     const hinhPhuFiles = form.getAll("hinh_phu") as File[];
+
+// //     for (let i = 0; i < hinhPhuFiles.length; i++) {
+// //       const file = hinhPhuFiles[i];
+
+// //       if (file && file.size > 0) {
+// //         const url = await uploadToCloudinary(file);
+
 // //         await HinhModel.create({
-// //           id_san_pham: id,
-// //           hinh: await fileToBase64(f),
-// //           thu_tu: 0,
+// //           hinh: url,
+// //           thu_tu: i + 1,
+// //           id_san_pham: productId,
 // //         });
 // //       }
 // //     }
 
-// //     // Biến thể
-// //     const variants = JSON.parse(String(form.get("bien_the") || "[]")) as IBienThe[];
-// //     await BienTheModel.destroy({ where: { id_san_pham: id } });
-// //     for (const v of variants) {
+// //     // 🔹 BIẾN THỂ
+// //     await BienTheModel.destroy({ where: { id_san_pham: productId } });
+
+// //     const bienTheList = JSON.parse(form.get("bien_the") as string);
+
+// //     for (const bt of bienTheList) {
 // //       await BienTheModel.create({
-// //         id_san_pham: id,
-// //         ten: v.ten,
-// //         gia_them: v.gia_them || 0,
-// //         trang_thai: v.trang_thai ? 1 : 0,
+// //         ten: bt.ten,
+// //         trang_thai: bt.trang_thai,
+// //         gia_them: bt.gia_them ?? null,
+// //         id_san_pham: productId,
 // //       });
 // //     }
 
-// //     return NextResponse.json({ success: true });
+// //     return NextResponse.json({
+// //       success: true,
+// //       message: "Cập nhật sản phẩm thành công",
+// //     });
 // //   } catch (error) {
-// //     console.error("PUT /api/san_pham error:", error);
-// //     return NextResponse.json({ success: false, message: "Lỗi cập nhật" }, { status: 500 });
+// //     console.error("❌ PUT lỗi:", error);
+// //     return NextResponse.json(
+// //       { success: false, message: String(error) },
+// //       { status: 500 }
+// //     );
 // //   }
 // // }
 // import { NextResponse } from "next/server";
-// import { SanPhamModel, BienTheModel, HinhModel } from "@/app/lib/models";
-// import { IBienThe } from "@/app/lib/cautrucdata";
+// import { v2 as cloudinary } from "cloudinary";
+// import "dotenv/config";
 
-// // Convert file → Base64
-// async function fileToBase64(file: File): Promise<string> {
-//   const buffer = Buffer.from(await file.arrayBuffer());
-//   return `data:${file.type};base64,${buffer.toString("base64")}`;
+// import {
+//   SanPhamModel,
+//   DanhMucModel,
+//   BienTheModel,
+//   HinhModel,
+// } from "@/app/lib/models";
+
+// if (
+//   !process.env.CLOUDINARY_CLOUD ||
+//   !process.env.CLOUDINARY_KEY ||
+//   !process.env.CLOUDINARY_SECRET
+// ) {
+//   console.error("❌ Thiếu Cloudinary ENV");
 // }
 
-// // ===== GET SAN PHAM =====
-// export async function GET(_req: Request, { params }: { params: { id: string } }) {
-//   try {
-//     const id = Number(params.id);
-//     if (isNaN(id)) {
-//       return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
-//     }
+// cloudinary.config({
+//   cloud_name: process.env.CLOUDINARY_CLOUD,
+//   api_key: process.env.CLOUDINARY_KEY,
+//   api_secret: process.env.CLOUDINARY_SECRET,
+// });
 
-//     const sp = await SanPhamModel.findByPk(id, {
+// // ===================================
+// // Hàm upload file → Cloudinary
+// // ===================================
+// async function uploadCloud(file: File): Promise<string> {
+//   const buffer = Buffer.from(await file.arrayBuffer());
+//   const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+//   const uploaded = await cloudinary.uploader.upload(base64, {
+//     folder: "san_pham",
+//   });
+
+//   return uploaded.secure_url;
+// }
+
+// // ===================================
+// // GET — Lấy chi tiết sản phẩm
+// // ===================================
+// export async function GET(
+//   req: Request,
+//   { params }: { params: Promise<{ id: string }> }
+// ) {
+//   try {
+//     const { id } = await params;
+
+//     const sp = await SanPhamModel.findOne({
+//       where: { id },
 //       include: [
-//         { model: BienTheModel, as: "bien_the" },
+//         { model: DanhMucModel, as: "danh_muc" },
 //         { model: HinhModel, as: "hinh_anh" },
+//         { model: BienTheModel, as: "bien_the" },
 //       ],
 //     });
 
-//     if (!sp) return NextResponse.json({ success: false, message: "Không tìm thấy sản phẩm" }, { status: 404 });
+//     if (!sp) {
+//       return NextResponse.json(
+//         { success: false, message: "Không tìm thấy sản phẩm" },
+//         { status: 404 }
+//       );
+//     }
 
-//     // Lấy dữ liệu ra object
-//     const data = {
-//       id: sp.get("id"),
-//       ten: sp.get("ten"),
-//       slug: sp.get("slug"),
-//       mo_ta: sp.get("mo_ta"),
-//       gia_goc: sp.get("gia_goc"),
-//       tag: sp.get("tag"),
-//       phong_cach: sp.get("phong_cach"),
-//       luot_xem: sp.get("luot_xem"),
-//       trang_thai: sp.get("trang_thai"),
-//       an_hien: sp.get("an_hien"),
-//       id_danh_muc: sp.get("id_danh_muc"),
-//       hinh: sp.get("hinh"),
-//       bien_the: sp.get("bien_the"),
-//       hinh_anh: sp.get("hinh_anh"),
-//     };
-
-//     return NextResponse.json({ success: true, data });
-
-//   } catch (error) {
-//     console.error(error);
-//     return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
+//     return NextResponse.json({ success: true, data: sp });
+//   } catch (err) {
+//     console.error("GET ERROR:", err);
+//     return NextResponse.json(
+//       { success: false, message: "Lỗi server" },
+//       { status: 500 }
+//     );
 //   }
 // }
 
-// // ===== UPDATE SAN PHAM =====
-// export async function PUT(req: Request, { params }: { params: { id: string } }) {
+// // ===================================
+// // PUT — Update sản phẩm
+// // ===================================
+// export async function PUT(
+//   req: Request,
+//   { params }: { params: Promise<{ id: string }> }
+// ) {
 //   try {
-//     const id = Number(params.id);
+//     const { id } = await params;
+//     const productId = Number(id);
+
 //     const form = await req.formData();
 
-//     const sp = await SanPhamModel.findByPk(id);
-//     if (!sp) return NextResponse.json({ success: false, message: "Sản phẩm không tồn tại" });
+//     // ------------------ Hình chính ------------------
+//     let hinhChinh = form.get("hinh") as string | null;
+//     const fileChinh = form.get("hinh_file") as File | null;
 
-//     // Cập nhật các trường chính
-//     sp.set({
-//       ten: String(form.get("ten") || ""),
-//       slug: String(form.get("slug") || ""),
-//       mo_ta: String(form.get("mo_ta") || ""),
-//       gia_goc: Number(form.get("gia_goc") || 0),
-//       tag: String(form.get("tag") || ""),
-//       phong_cach: String(form.get("phong_cach") || ""),
-//       luot_xem: Number(form.get("luot_xem") || 0),
-//       trang_thai: String(form.get("trang_thai") || "inactive"),
-//       an_hien: form.get("an_hien") === "true",
-//       id_danh_muc: Number(form.get("id_danh_muc") || 0),
-//     });
-
-//     await sp.save();
-
-//     // Hình chính
-//     const mainImg = form.get("hinh_chinh");
-//     if (mainImg instanceof File && mainImg.size > 0) {
-//       const imgBase64 = await fileToBase64(mainImg);
-//       sp.set({ hinh: imgBase64 });
-//       await sp.save();
+//     if (fileChinh && fileChinh.size > 0) {
+//       hinhChinh = await uploadCloud(fileChinh);
 //     }
 
-//     // Hình phụ
-//     const extraImages = form.getAll("hinh_phu");
-//     for (const f of extraImages) {
-//       if (f instanceof File && f.size > 0) {
+//     // ------------------ Update sản phẩm ------------------
+//     await SanPhamModel.update(
+//       {
+//         ten: form.get("ten"),
+//         slug: form.get("slug"),
+//         gia_goc: Number(form.get("gia_goc")),
+//         mo_ta: form.get("mo_ta"),
+//         phong_cach: form.get("phong_cach"),
+//         tag: form.get("tag"),
+//         id_danh_muc: Number(form.get("id_danh_muc")),
+//         hinh: hinhChinh,
+//       },
+//       { where: { id: productId } }
+//     );
+
+//     // ------------------ Hình phụ ------------------
+//     await HinhModel.destroy({ where: { id_san_pham: productId } });
+
+//     const listHinh = form.getAll("hinh_phu") as File[];
+
+//     for (let i = 0; i < listHinh.length; i++) {
+//       const f = listHinh[i];
+//       if (f && f.size > 0) {
+//         const url = await uploadCloud(f);
 //         await HinhModel.create({
-//           id_san_pham: id,
-//           hinh: await fileToBase64(f),
-//           thu_tu: 0,
+//           hinh: url,
+//           thu_tu: i + 1,
+//           id_san_pham: productId,
 //         });
 //       }
 //     }
 
-//     // Biến thể
-//     const variants = JSON.parse(String(form.get("bien_the") || "[]")) as IBienThe[];
-//     await BienTheModel.destroy({ where: { id_san_pham: id } });
-//     for (const v of variants) {
+//     // ------------------ Biến thể ------------------
+//     await BienTheModel.destroy({ where: { id_san_pham: productId } });
+
+//     const bienTheList = JSON.parse(form.get("bien_the") as string);
+
+//     for (const bt of bienTheList) {
 //       await BienTheModel.create({
-//         id_san_pham: id,
-//         ten: v.ten,
-//         gia_them: v.gia_them || 0,
-//         trang_thai: v.trang_thai ? 1 : 0,
+//         ten: bt.ten,
+//         trang_thai: bt.trang_thai,
+//         gia_them: bt.gia_them ?? null,
+//         id_san_pham: productId,
 //       });
 //     }
 
-//     return NextResponse.json({ success: true });
-
-//   } catch (error) {
-//     console.error(error);
-//     return NextResponse.json({ success: false, message: "Lỗi cập nhật" }, { status: 500 });
+//     return NextResponse.json({
+//       success: true,
+//       message: "Cập nhật thành công",
+//     });
+//   } catch (err) {
+//     console.error("PUT ERROR:", err);
+//     return NextResponse.json(
+//       { success: false, message: String(err) },
+//       { status: 500 }
+//     );
 //   }
 // }
-import { NextRequest, NextResponse } from "next/server";
-import { SanPhamModel, BienTheModel, HinhModel } from "@/app/lib/models";
-import { IBienThe } from "@/app/lib/cautrucdata";
+import { NextResponse } from "next/server";
+import { v2 as cloudinary } from "cloudinary";
+import "dotenv/config";
+import { config } from "dotenv";
 
-// Convert file → Base64
-async function fileToBase64(file: File): Promise<string> {
+import {
+  SanPhamModel,
+  DanhMucModel,
+  BienTheModel,
+  HinhModel,
+} from "@/app/lib/models";
+
+// =======================================
+// 🔧 Cloudinary Config (ĐÃ SỬA ENV)
+// =======================================
+config(); // load .env
+
+console.log("Cloudinary config:", {
+  cloud_name: process.env.CLOUDINARY_CLOUD,
+  key: process.env.CLOUDINARY_KEY,
+  secret: process.env.CLOUDINARY_SECRET,
+});
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD!,
+  api_key: process.env.CLOUDINARY_KEY!,
+  api_secret: process.env.CLOUDINARY_SECRET!,
+});
+
+// =======================================
+// 📤 Hàm upload file → Cloudinary
+// =======================================
+async function uploadCloud(file: File): Promise<string> {
   const buffer = Buffer.from(await file.arrayBuffer());
-  return `data:${file.type};base64,${buffer.toString("base64")}`;
+  const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+  try {
+    const uploaded = await cloudinary.uploader.upload(base64, {
+      folder: "san_pham",
+    });
+    return uploaded.secure_url;
+  } catch (err: any) {
+    console.error("❌ Upload Cloudinary lỗi:", err);
+    throw new Error("Cloudinary upload failed");
+  }
 }
 
-// ===================== GET =====================
-export async function GET(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
+// =======================================
+// 📌 GET — Lấy chi tiết sản phẩm
+// =======================================
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { id } = await context.params; // <-- lấy params đúng chuẩn Next.js 15
+    const id = Number(params.id);
 
-    const numId = Number(id);
-    if (isNaN(numId)) {
-      return NextResponse.json(
-        { success: false, message: "ID không hợp lệ" },
-        { status: 400 }
-      );
-    }
-
-    const sp = await SanPhamModel.findByPk(numId, {
+    const sp = await SanPhamModel.findOne({
+      where: { id },
       include: [
-        { model: BienTheModel, as: "bien_the" },
+        { model: DanhMucModel, as: "danh_muc" },
         { model: HinhModel, as: "hinh_anh" },
+        { model: BienTheModel, as: "bien_the" },
       ],
     });
 
-    if (!sp)
+    if (!sp) {
       return NextResponse.json(
-        { success: false, message: "Không tìm thấy sản phẩm" },
+        { success: false, message: "Sản phẩm không tồn tại" },
         { status: 404 }
       );
+    }
 
-    const data = {
-      id: sp.get("id"),
-      ten: sp.get("ten"),
-      slug: sp.get("slug"),
-      mo_ta: sp.get("mo_ta"),
-      gia_goc: sp.get("gia_goc"),
-      tag: sp.get("tag"),
-      phong_cach: sp.get("phong_cach"),
-      luot_xem: sp.get("luot_xem"),
-      trang_thai: sp.get("trang_thai"),
-      an_hien: sp.get("an_hien"),
-      id_danh_muc: sp.get("id_danh_muc"),
-      hinh: sp.get("hinh"),
-      bien_the: sp.get("bien_the"),
-      hinh_anh: sp.get("hinh_anh"),
-    };
-
-    return NextResponse.json({ success: true, data });
-  } catch (error) {
-    console.error("❌ GET sản phẩm lỗi:", error);
+    return NextResponse.json({ success: true, data: sp });
+  } catch (err) {
+    console.error("GET ERROR:", err);
     return NextResponse.json(
       { success: false, message: "Lỗi server" },
       { status: 500 }
     );
   }
 }
-export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+
+// =======================================
+// ✏️ PUT — Cập nhật sản phẩm
+// =======================================
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { id } = await context.params;
-    const numId = Number(id);
-    if (isNaN(numId))
-      return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
-
+    const productId = Number(params.id);
     const form = await req.formData();
-    const sp = await SanPhamModel.findByPk(numId);
-    if (!sp) return NextResponse.json({ success: false, message: "Sản phẩm không tồn tại" });
 
-    // Update các field cơ bản + hình (sử dụng sp.set)
-    const mainImg = form.get("hinh_chinh");
-    let hinhStr = sp.get("hinh") as string; // giữ hình cũ nếu không gửi hình mới
-    if (mainImg instanceof File && mainImg.size > 0) {
-      hinhStr = await fileToBase64(mainImg);
+    // =============================
+    // 1️⃣ Xử lý hình chính
+    // =============================
+    let hinhChinh = form.get("hinh") as string | null;
+    const fileChinh = form.get("hinh_file") as File | null;
+
+    if (fileChinh && fileChinh.size > 0) {
+      hinhChinh = await uploadCloud(fileChinh);
     }
 
-    sp.set({
-      ten: String(form.get("ten") || ""),
-      slug: String(form.get("slug") || ""),
-      mo_ta: String(form.get("mo_ta") || ""),
-      gia_goc: Number(form.get("gia_goc") || 0),
-      tag: String(form.get("tag") || ""),
-      phong_cach: String(form.get("phong_cach") || ""),
-      luot_xem: Number(form.get("luot_xem") || 0),
-      trang_thai: String(form.get("trang_thai") || "inactive"),
-      an_hien: form.get("an_hien") === "true",
-      id_danh_muc: Number(form.get("id_danh_muc") || 0),
-      hinh: hinhStr, // update hình chính
-    });
-    await sp.save();
+    // =============================
+    // 2️⃣ Update bảng sản phẩm
+    // =============================
+    await SanPhamModel.update(
+      {
+        ten: form.get("ten"),
+        slug: form.get("slug"),
+        gia_goc: Number(form.get("gia_goc")),
+        mo_ta: form.get("mo_ta"),
+        phong_cach: form.get("phong_cach"),
+        tag: form.get("tag"),
+        id_danh_muc: Number(form.get("id_danh_muc")),
+        hinh: hinhChinh,
+      },
+      { where: { id: productId } }
+    );
 
-    // Hình phụ
-    const extraImages = form.getAll("hinh_phu");
-    for (const f of extraImages) {
-      if (f instanceof File && f.size > 0) {
+    // =============================
+    // 3️⃣ Xử lý hình phụ
+    // =============================
+    await HinhModel.destroy({ where: { id_san_pham: productId } });
+
+    const listHinh = form.getAll("hinh_phu") as File[];
+
+    for (let i = 0; i < listHinh.length; i++) {
+      const f = listHinh[i];
+      if (f && f.size > 0) {
+        const url = await uploadCloud(f);
         await HinhModel.create({
-          id_san_pham: numId,
-          hinh: await fileToBase64(f),
-          thu_tu: 0,
+          hinh: url,
+          thu_tu: i + 1,
+          id_san_pham: productId,
         });
       }
     }
 
-    // Biến thể
-    const variants: IBienThe[] = JSON.parse(String(form.get("bien_the") || "[]"));
-    for (const v of variants) {
-      if (v.id) {
-        await BienTheModel.update(
-          { ten: v.ten, gia_them: v.gia_them || 0, trang_thai: v.trang_thai ? 1 : 0 },
-          { where: { id: v.id } }
-        );
-      } else {
-        await BienTheModel.create({
-          id_san_pham: numId,
-          ten: v.ten,
-          gia_them: v.gia_them || 0,
-          trang_thai: v.trang_thai ? 1 : 0,
-        });
-      }
+    // =============================
+    // 4️⃣ Xử lý biến thể
+    // =============================
+    await BienTheModel.destroy({ where: { id_san_pham: productId } });
+
+    const bienTheList = JSON.parse(form.get("bien_the") as string);
+
+    for (const bt of bienTheList) {
+      await BienTheModel.create({
+        ten: bt.ten,
+        trang_thai: bt.trang_thai,
+        gia_them: bt.gia_them ?? null,
+        id_san_pham: productId,
+      });
     }
 
-    return NextResponse.json({ success: true, message: "Cập nhật sản phẩm thành công" });
-  } catch (error) {
-    console.error("❌ PUT sản phẩm lỗi:", error);
-    return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
+    return NextResponse.json({
+      success: true,
+      message: "Cập nhật sản phẩm thành công",
+    });
+  } catch (err: any) {
+    console.error("PUT ERROR:", err);
+    return NextResponse.json(
+      { success: false, message: err.message || "Lỗi cập nhật" },
+      { status: 500 }
+    );
   }
 }

@@ -673,7 +673,9 @@ function SanPhamListContent() {
   const [confirmItem, setConfirmItem] = useState<ISanPham | null>(null);
 
   // ---- Helper hiển thị ảnh an toàn ----
-  const safeImage = (src: string | null | undefined) => src ?? "/no-image.png";
+const safeImage = (src: string | null | undefined) =>
+  src ? encodeURI(src.trim()) : "/no-image.png";
+
 
   // ---- Cập nhật URL ----
   const updateQuery = (updates: Record<string, string | undefined>) => {
