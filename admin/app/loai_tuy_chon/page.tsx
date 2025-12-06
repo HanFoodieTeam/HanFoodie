@@ -3,28 +3,34 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { IBaiViet } from "@/app/lib/cautrucdata";
 
-interface IBaiVietResponse {
+interface ILoaiTuChon {
+  id: number;
+  ten: string;
+  thu_tu: number | null;
+  an_hien: boolean;
+}
+
+interface ILoaiTuChonResponse {
   success: boolean;
-  data: IBaiViet[];
+  data: ILoaiTuChon[];
   totalPages: number;
   totalItems: number;
   currentPage: number;
 }
 
-function BaiVietListContent() {
+function LoaiTuChonListContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const page = Number(searchParams.get("page") || 1);
   const searchQuery = searchParams.get("search") || "";
 
-  const [data, setData] = useState<IBaiViet[]>([]);
+  const [data, setData] = useState<ILoaiTuChon[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>(searchQuery);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [confirmItem, setConfirmItem] = useState<IBaiViet | null>(null);
+  const [confirmItem, setConfirmItem] = useState<ILoaiTuChon | null>(null);
 
   const updateQuery = (updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -32,7 +38,7 @@ function BaiVietListContent() {
       if (val && val !== "") params.set(key, val);
       else params.delete(key);
     });
-    router.push(`/bai_viet?${params.toString()}`);
+    router.push(`/loai_tuy_chon?${params.toString()}`);
   };
 
   const fetchData = async () => {
@@ -40,12 +46,11 @@ function BaiVietListContent() {
       setLoading(true);
       const qs = new URLSearchParams({
         page: String(page),
-        limit: "6",
         search: searchQuery,
       });
 
-      const res = await fetch(`/api/bai_viet?${qs.toString()}`);
-      const json: IBaiVietResponse = await res.json();
+      const res = await fetch(`/api/loai_tuy_chon?${qs.toString()}`);
+      const json: ILoaiTuChonResponse = await res.json();
 
       if (json.success) {
         setData(json.data);
@@ -54,7 +59,7 @@ function BaiVietListContent() {
         setData([]);
       }
     } catch (err) {
-      console.error("Lỗi khi tải danh sách bài viết:", err);
+      console.error("Lỗi khi tải danh sách loại tùy chọn:", err);
       setData([]);
     } finally {
       setLoading(false);
@@ -72,7 +77,7 @@ function BaiVietListContent() {
     return () => clearTimeout(delay);
   }, [search]);
 
-  const handleToggleClick = (item: IBaiViet) => setConfirmItem(item);
+  const handleToggleClick = (item: ILoaiTuChon) => setConfirmItem(item);
 
   const confirmToggle = async () => {
     if (!confirmItem) return;
@@ -80,7 +85,7 @@ function BaiVietListContent() {
     const newState = !confirmItem.an_hien;
 
     try {
-      const res = await fetch(`/api/bai_viet/${id}`, {
+      const res = await fetch(`/api/loai_tuy_chon/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ an_hien: newState }),
@@ -89,7 +94,7 @@ function BaiVietListContent() {
       if (!res.ok) throw new Error("Lỗi cập nhật trạng thái");
 
       setData((prev) =>
-        prev.map((bv) => (bv.id === id ? { ...bv, an_hien: newState } : bv))
+        prev.map((item) => (item.id === id ? { ...item, an_hien: newState } : item))
       );
     } catch (err) {
       console.error("❌ PATCH lỗi:", err);
@@ -104,27 +109,17 @@ function BaiVietListContent() {
     updateQuery({ page: String(p) });
   };
 
-  const truncateContent = (text: string, length = 80) =>
-    text.length > length ? text.slice(0, length) + "..." : text;
-
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "-";
-    return date.toLocaleDateString("vi-VN");
-  };
-
   return (
     <div>
       {/* Thanh tiêu đề + tìm kiếm */}
       <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
-        <h1 className="text-2xl font-bold text-gray-800">Quản lý Bài Viết</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Quản lý Loại Tùy Chọn</h1>
 
         <div className="flex gap-2 flex-wrap items-center">
           <div className="flex items-center border border-gray-400 rounded-lg px-3 py-1.5 bg-white relative">
             <input
               type="text"
-              placeholder="Tìm theo tiêu đề..."
+              placeholder="Tìm theo tên..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="outline-none w-64 text-sm"
@@ -144,10 +139,10 @@ function BaiVietListContent() {
           </div>
 
           <Link
-            href="/bai_viet/them"
+            href="/loai_tuy_chon/them"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg shadow text-sm"
           >
-            Thêm Bài Viết
+            Thêm Loại
           </Link>
         </div>
       </div>
@@ -157,62 +152,46 @@ function BaiVietListContent() {
         <table className="min-w-full text-sm text-left border-collapse">
           <thead className="bg-gray-300 text-gray-700 uppercase text-sm text-center">
             <tr>
-              <th className="px-3 py-2 w-16 text-center">HÌNH</th>
-              <th className="px-3 py-2 text-center">TIÊU ĐỀ</th>
-              <th className="px-3 py-2 text-center">NỘI DUNG</th>
-              <th className="px-3 py-2 text-center">LƯỢT XEM</th>
-              <th className="px-3 py-2 text-center">NGÀY ĐĂNG</th>
-              <th className="px-3 py-2 text-center">ẨN/HIỆN</th>
-              <th className="px-3 py-2 text-center">SỬA</th>
+              <th className="px-3 py-2">STT</th>
+              <th className="px-3 py-2">Tên</th>
+              <th className="px-3 py-2">Thứ tự</th>
+              <th className="px-3 py-2">Ẩn/Hiện</th>
+              <th className="px-3 py-2">Sửa</th>
             </tr>
           </thead>
-
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="py-6 text-center text-gray-500">
+                <td colSpan={5} className="py-6 text-center text-gray-500">
                   Đang tải dữ liệu...
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-6 text-center text-gray-500 italic">
+                <td colSpan={5} className="text-center py-4 text-gray-500 italic">
                   Không có dữ liệu
                 </td>
               </tr>
             ) : (
-              data.map((bv) => (
-                <tr key={bv.id} className="border-t hover:bg-gray-100 transition-all">
-                  <td className="px-3 py-2">
-                    {bv.hinh ? (
-                      <img
-                        src={bv.hinh}
-                        alt={bv.tieu_de}
-                        className="w-12 h-12 object-cover rounded-lg mx-auto border border-gray-200 shadow-sm"
-                        onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.png"; }}
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto flex items-center justify-center text-gray-400 text-xs border border-gray-300">
-                        Chưa có
-                      </div>
-                    )}
+              data.map((item, index) => (
+                <tr key={item.id} className="border-t hover:bg-gray-100 transition-all text-center">
+                  <td className="px-3 py-2">{(page - 1) * 10 + index + 1}</td>
+                  <td className="px-3 py-2 font-medium">{item.ten}</td>
+                  <td className="px-3 py-2">{item.thu_tu ?? "-"}</td>
+                  <td
+                    className="px-3 py-2 text-center cursor-pointer select-none"
+                    onClick={() => handleToggleClick(item)}
+                    title="Bấm để đổi trạng thái"
+                  >
+                    <span
+                      className={`inline-block w-5 h-5 rounded-full border-2 border-gray-300 transition-colors ${
+                        item.an_hien ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
+                      }`}
+                    ></span>
                   </td>
-                  <td className="px-3 py-2 font-medium">{bv.tieu_de}</td>
-                  <td className="px-3 py-2">{truncateContent(bv.noi_dung)}</td>
-                  <td className="px-3 py-2 text-center">{bv.luot_xem}</td>
-                  <td className="px-3 py-2 text-center">{formatDate(bv.ngay_dang)}</td>
-                  <td className="px-3 py-2 text-center">
-                    <button
-                      onClick={() => handleToggleClick(bv)}
-                      title="Bấm để đổi trạng thái"
-                      className={`w-6 h-6 rounded-full border-2 border-gray-300 transition-colors ${bv.an_hien ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
-                        }`}
-                    ></button>
-                  </td>
-
                   <td className="px-3 py-2 text-center">
                     <Link
-                      href={`/bai_viet/${bv.id}`}
+                      href={`/loai_tuy_chon/${item.id}`}
                       className="text-blue-600 hover:text-blue-800 font-medium"
                     >
                       Sửa
@@ -265,8 +244,8 @@ function BaiVietListContent() {
               <span className="text-red-600 font-semibold">
                 {confirmItem.an_hien ? "ẩn" : "hiển thị"}
               </span>{" "}
-              bài viết{" "}
-              <span className="font-semibold text-gray-700">{confirmItem.tieu_de}</span>{" "}
+              loại{" "}
+              <span className="font-semibold text-gray-700">{confirmItem.ten}</span>{" "}
               không?
             </p>
             <div className="flex justify-center space-x-4">
@@ -290,10 +269,10 @@ function BaiVietListContent() {
   );
 }
 
-export default function BaiVietList() {
+export default function LoaiTuChonList() {
   return (
     <Suspense fallback={<div className="p-4 text-lg">Đang tải...</div>}>
-      <BaiVietListContent />
+      <LoaiTuChonListContent />
     </Suspense>
   );
 }
