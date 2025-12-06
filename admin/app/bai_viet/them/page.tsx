@@ -2,15 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { IBaiViet } from "@/app/lib/cautrucdata";
 
 export default function ThemBaiViet() {
   const router = useRouter();
-  const [form, setForm] = useState<IBaiViet>({
-    id: 0,
+  const [form, setForm] = useState({
     tieu_de: "",
     noi_dung: "",
-    hinh: "",
     id_loai_bv: 1,
     luot_xem: 0,
     slug: "",
@@ -18,6 +15,7 @@ export default function ThemBaiViet() {
     an_hien: true,
   });
 
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,9 +29,16 @@ export default function ThemBaiViet() {
         type === "number"
           ? Number(value)
           : type === "radio"
-            ? value === "true"
-            : value,
+          ? value === "true"
+          : value,
     }));
+  };
+
+  // 📌 Lấy file upload
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,22 +48,24 @@ export default function ThemBaiViet() {
 
     setLoading(true);
 
-    const payload = {
-      tieu_de: form.tieu_de,
-      noi_dung: form.noi_dung,
-      hinh: form.hinh || null,
-      id_loai_bv: Number(form.id_loai_bv),
-      luot_xem: Number(form.luot_xem) || 0,
-      slug: form.slug || "",
-      ngay_dang: form.ngay_dang ? new Date(form.ngay_dang) : new Date(),
-      an_hien: form.an_hien ? 1 : 0,
-    };
+    // 📌 Dùng FormData
+    const formData = new FormData();
+    formData.append("tieu_de", form.tieu_de);
+    formData.append("noi_dung", form.noi_dung);
+    formData.append("id_loai_bv", String(form.id_loai_bv));
+    formData.append("luot_xem", String(form.luot_xem));
+    formData.append("slug", form.slug);
+    formData.append("ngay_dang", form.ngay_dang);
+    formData.append("an_hien", form.an_hien ? "1" : "0");
+
+    if (file) {
+      formData.append("hinh", file);
+    }
 
     try {
       const res = await fetch("/api/bai_viet", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: formData, // ❗ KHÔNG ĐƯỢC SET headers
       });
 
       if (res.ok) {
@@ -89,6 +96,7 @@ export default function ThemBaiViet() {
       )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
         {/* Tiêu đề */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Tiêu đề</label>
@@ -96,8 +104,7 @@ export default function ThemBaiViet() {
             name="tieu_de"
             value={form.tieu_de}
             onChange={handleChange}
-            placeholder="Nhập tiêu đề"
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
@@ -108,8 +115,7 @@ export default function ThemBaiViet() {
             name="slug"
             value={form.slug}
             onChange={handleChange}
-            placeholder="vd: tieu-de-bai-viet"
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
@@ -121,20 +127,18 @@ export default function ThemBaiViet() {
             value={form.noi_dung}
             onChange={handleChange}
             rows={6}
-            placeholder="Nhập nội dung bài viết"
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
-        {/* Hình */}
+        {/* Upload ảnh */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Hình ảnh (URL)</label>
+          <label className="block mb-1 font-medium text-gray-700">Upload hình ảnh</label>
           <input
-            name="hinh"
-            value={form.hinh || ""}
-            onChange={handleChange}
-            placeholder="vd: https://..."
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
@@ -144,8 +148,8 @@ export default function ThemBaiViet() {
           <select
             name="id_loai_bv"
             value={form.id_loai_bv}
-            onChange={e => setForm(f => ({ ...f, id_loai_bv: Number(e.target.value) }))}
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onChange={handleChange}
+            className="border border-gray-300 p-2 rounded w-full"
           >
             <option value={1}>Tin tức</option>
             <option value={2}>Khuyến mãi</option>
@@ -158,16 +162,16 @@ export default function ThemBaiViet() {
           <input
             type="date"
             name="ngay_dang"
-            value={form.ngay_dang || new Date().toISOString().slice(0, 10)}
+            value={form.ngay_dang}
             onChange={handleChange}
-            className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
         {/* Trạng thái */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Trạng thái</label>
-          <div className="flex gap-6 rounded p-2">
+          <div className="flex gap-6 p-2">
             <label className="flex items-center gap-2">
               <input
                 type="radio"
@@ -178,6 +182,7 @@ export default function ThemBaiViet() {
               />
               <span>Hiện</span>
             </label>
+
             <label className="flex items-center gap-2">
               <input
                 type="radio"

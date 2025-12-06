@@ -146,16 +146,18 @@ function DanhMucListContent() {
         <table className="min-w-full text-sm text-left border-collapse">
           <thead className="bg-gray-300 text-gray-700 uppercase text-sm text-center">
             <tr>
-              <th className="px-3 py-2-text-center">HÌNH</th>
-              <th className="px-3 py-2-text-center">TÊN</th>
-              <th className="px-3 py-2 text-center">ẨN/HIỆN</th>
-              <th className="px-3 py-2 text-center">SỬA</th>
+              <th className="px-3 py-2">STT</th>
+              <th className="px-3 py-2">HÌNH</th>
+              <th className="px-3 py-2">TÊN</th>
+              <th className="px-3 py-2">THỨ TỰ</th>
+              <th className="px-3 py-2">ẨN/HIỆN</th>
+              <th className="px-3 py-2">SỬA</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={4} className="py-6 text-center">
+                <td colSpan={6} className="py-6 text-center">
                   <div className="flex items-center justify-center gap-2 text-gray-600">
                     <div className="h-5 w-5 border-2 border-gray-400 border-t-blue-500 rounded-full animate-spin"></div>
                     <span>Đang tải dữ liệu...</span>
@@ -164,44 +166,52 @@ function DanhMucListContent() {
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center py-4 text-gray-500 italic">
+                <td colSpan={6} className="text-center py-4 text-gray-500 italic">
                   Không có dữ liệu
                 </td>
               </tr>
             ) : (
-              data.map((dm) => (
-                <tr key={dm.id} className="border-t hover:bg-gray-100 transition-all">
-                  <td className="px-3 py-2">
-                    {dm.hinh ? (
-                      <img
-                        src={dm.hinh}
-                        alt={dm.ten}
-                        className="w-12 h-12 object-cover rounded-lg mx-auto"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto flex items-center justify-center text-gray-400 text-xs">
-                        Chưa có
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-3 py-2 font-medium">{dm.ten}</td>
-                  <td
-                    className="px-3 py-2 text-center cursor-pointer select-none text-xl"
-                    onClick={() => handleToggleClick(dm)}
-                    title="Bấm để đổi trạng thái"
-                  >
-                    {dm.an_hien ? "✅" : "❌"}
-                  </td>
-                  <td className="px-3 py-2 text-center">
-                    <Link
-                      href={`/danh_muc/${dm.id}`}
-                      className="text-blue-600 hover:text-blue-800 font-medium"
+              <>
+                {data.map((dm, index) => (
+                  <tr key={dm.id} className="border-t hover:bg-gray-100 transition-all">
+                    <td className="px-3 py-2 text-center">{(page - 1) * 10 + index + 1}</td>
+                    <td className="px-3 py-2">
+                      {dm.hinh ? (
+                        <img
+                          src={dm.hinh}
+                          alt={dm.ten}
+                          className="w-12 h-12 object-cover rounded-lg mx-auto"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto flex items-center justify-center text-gray-400 text-xs">
+                          Chưa có
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 font-medium">{dm.ten}</td>
+                    <td className="px-3 py-2 text-center">{dm.thu_tu}</td>
+                    <td
+                      className="px-3 py-2 text-center cursor-pointer select-none"
+                      onClick={() => handleToggleClick(dm)}
+                      title="Bấm để đổi trạng thái"
                     >
-                      Sửa
-                    </Link>
-                  </td>
-                </tr>
-              ))
+                      <span
+                        className={`inline-block w-5 h-5 rounded-full border-2 border-gray-300 transition-colors ${dm.an_hien ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
+                          }`}
+                      ></span>
+                    </td>
+
+                    <td className="px-3 py-2 text-center">
+                      <Link
+                        href={`/danh_muc/${dm.id}`}
+                        className="text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        Sửa
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </>
             )}
           </tbody>
         </table>
@@ -220,9 +230,8 @@ function DanhMucListContent() {
           <button
             key={p}
             onClick={() => goToPage(p)}
-            className={`px-3 py-1 rounded ${
-              p === page ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
-            }`}
+            className={`px-3 py-1 rounded ${p === page ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
+              }`}
           >
             {p}
           </button>
