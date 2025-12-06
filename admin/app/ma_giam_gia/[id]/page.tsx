@@ -169,9 +169,7 @@ export default function SuaMaGiamGia() {
         <div className="flex gap-4">
           <div className="w-1/2">
             <p className="text-lg">Loại giảm giá</p>
-            <select
-              name="loai_giam_gia"
-              value={form.loai_giam_gia ? "percent" : "money"}
+            <select name="loai_giam_gia" value={form.loai_giam_gia ? "percent" : "money"}
               onChange={(e) =>
                 setForm((f) => ({
                   ...f,
@@ -180,8 +178,7 @@ export default function SuaMaGiamGia() {
                     e.target.value === "percent" ? f.gia_tri_giam_toi_da ?? 0 : null,
                 }))
               }
-              className="border border-gray-300 p-2 w-full rounded"
-            >
+              className="border border-gray-300 p-2 w-full rounded" >
               <option value="money">Theo tiền (VNĐ)</option>
               <option value="percent">Theo phần trăm (%)</option>
             </select>

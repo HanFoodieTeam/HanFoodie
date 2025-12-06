@@ -31,6 +31,18 @@ export interface IBienThe {
 
 }
 
+export interface IOrderEmail {
+  logoUrl: string;
+  hoTen: string;
+  maDon: string;
+  ngayDat: string;
+  phuongThucThanhToan: string;
+  sanPhamListHtml: string;
+  tongTienHang: number;
+  giamGia: number;
+  tongThanhToan: number;
+  urlDonHang: string;
+}
 export interface IChiTietDonHang {
   id: number;
   don_gia: number;
@@ -40,7 +52,6 @@ export interface IChiTietDonHang {
   id_don_hang: number;
   id_bien_the?: number | null;
   thanh_tien: number;
-
   ten_san_pham?: string;
 }
 
@@ -223,23 +234,39 @@ export interface IMonThem {
   trang_thai?: boolean;
 }
 
+// export interface INguoiDung {
+//   id?: number;
+//   hinh?: string;
+//   ho_ten: string;
+//   sdt?: number | null;
+//   email: string;
+//   tep_khach?: string | null;
+//   mat_khau: string;
+//   trang_thai?: boolean;
+//   ngay_sinh?: string | null;
+//   token_kich_hoat?: string | null;
+//   vai_tro?: boolean;
+//   ngay_tao?:string |Date| null;
+//   kich_hoat:boolean;
+//   han_token:string | null;
+// }
+
 export interface INguoiDung {
   id?: number;
-  hinh?: string;
+  hinh?: string | null;
   ho_ten: string;
   sdt?: number | null;
   email: string;
   tep_khach?: string | null;
   mat_khau: string;
-  trang_thai?: boolean;
-  ngay_sinh?: string | null;
+  trang_thai?: boolean | number;
+  ngay_sinh?: string | Date | null;  // DATEONLY -> string hoặc Date
   token_kich_hoat?: string | null;
-  vai_tro?: boolean;
-  ngay_tao?:string | null;
-  kich_hoat:boolean;
-  han_token:string | null;
+  vai_tro?: boolean | number;
+  ngay_tao?: Date | string | null;   // DATE -> Date
+  kich_hoat?: boolean | number;
+  han_token?: Date | string | null;  // DATE -> Date
 }
-
 
 
 export interface ISanPham {
