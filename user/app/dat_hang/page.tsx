@@ -8,6 +8,7 @@ import Link from "next/link";
 import { IDiaChi, IMaGiamGia } from "@/app/lib/cautrucdata";
 import PopupDiaChi from "../components/PopupDiaChi";
 import PopupMaGiamGia from "../components/Popupmagiamgia";
+import PopupXacThuc from "../components/popup_xac_thuc";
 
 interface IDonHangTam {
   id: number;
@@ -52,20 +53,19 @@ export default function DatHangPage() {
   const [maGiamChon, setMaGiamChon] = useState<IMaGiamGia | null>(null);
 
   const [ghiChu, setGhiChu] = useState<string>("");
+  const [showVerifyPopup, setShowVerifyPopup] = useState(false);
 
-
-  //  Lấy dữ liệu người dùng & giỏ hàng từ localStorage
   useEffect(() => {
     const dataCart = localStorage.getItem("donHangTam");
     const dataUser = localStorage.getItem("nguoi_dung");
 
-    if (dataCart) setGioHang(JSON.parse(dataCart));
-    else router.push("/giohang");
+    if (!dataCart) return;
+    setGioHang(JSON.parse(dataCart));
 
     if (dataUser) setNguoiDung(JSON.parse(dataUser));
-  }, [router]);
+  }, []);
 
-  //  Lấy địa chỉ mặc định từ API
+
   useEffect(() => {
     const fetchDiaChi = async () => {
       try {
@@ -112,28 +112,23 @@ export default function DatHangPage() {
   }, [tongTien, maGiamChon]);
 
 
-  //  Tính phí ship và giảm giá
   const phiShip = 0;
 
   let giamGia = 0;
   if (maGiamChon) {
     if (maGiamChon.loai_giam_gia) {
-      //  Giảm theo phần trăm
       const giamTheoPhanTram = (tongTien * maGiamChon.gia_tri_giam) / 100;
       giamGia = maGiamChon.gia_tri_giam_toi_da
         ? Math.min(giamTheoPhanTram, maGiamChon.gia_tri_giam_toi_da)
         : giamTheoPhanTram;
     } else {
-      //  Giảm theo số tiền cố định
       giamGia = maGiamChon.gia_tri_giam;
     }
   }
-  //  Tổng cộng cuối cùng
   const tongCong = tongTien + phiShip - giamGia;
 
 
 
-  //  Cập nhật số lượng
   const handleQuantityChange = (id: number, newQty: number) => {
     if (newQty < 1) return;
     const updated = gioHang.map((item) =>
@@ -143,7 +138,6 @@ export default function DatHangPage() {
     localStorage.setItem("donHangTam", JSON.stringify(updated));
   };
 
-  //  Xóa sản phẩm
   const handleRemoveItem = (id: number) => {
     if (!confirm("Xóa sản phẩm này khỏi đơn hàng?")) return;
     const updated = gioHang.filter((item) => item.id !== id);
@@ -152,9 +146,8 @@ export default function DatHangPage() {
   };
 
 
-  //  Xác nhận đặt hàng
   const handleXacNhan = async () => {
-    if (isLoading) return; //  Ngăn nhấn nhiều lần
+    if (isLoading) return; 
     setIsLoading(true);
 
     const token = localStorage.getItem("token");
@@ -209,6 +202,11 @@ export default function DatHangPage() {
         },
         body: JSON.stringify(body),
       });
+
+      if (res.status === 403) {
+        setShowVerifyPopup(true);
+        return;
+      }
 
       const data = await res.json();
 
@@ -311,23 +309,6 @@ export default function DatHangPage() {
                     ) : null}
 
                     <div className="flex items-center gap-3 mt-2">
-                      {/* <button
-                        onClick={() => handleQuantityChange(item.id, item.so_luong - 1)}
-                        className="px-3 py-1 border rounded-md">
-                        -
-                      </button> */}
-                      <span className="text-sm text-gray-600"> Số lượng: {item.so_luong}</span>
-                      {/* <button
-                        onClick={() => handleQuantityChange(item.id, item.so_luong + 1)}
-                        className="px-3 py-1 border rounded-md">
-                        +
-                      </button> */}
-
-                      {/* <button
-                        onClick={() => handleRemoveItem(item.id)}
-                        className="text-red-500 text-sm hover:underline">
-                        Xóa
-                      </button> */}
                     </div>
                   </div>
 
@@ -451,7 +432,6 @@ export default function DatHangPage() {
         </div>
       </div>
 
-      {/* Popup hiển */}
       {popupSuccess.open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg p-6 text-center max-w-sm w-full">
@@ -478,8 +458,12 @@ export default function DatHangPage() {
         </div>
       )}
 
+      {showVerifyPopup && (
+        <PopupXacThuc
+          email={JSON.parse(localStorage.getItem("nguoi_dung")!).email}
+          onClose={() => setShowVerifyPopup(false)} />
+      )}
 
-      {/* mã giảm giá  */}
       <PopupMaGiamGia
         open={showMaGiam}
         onClose={() => setShowMaGiam(false)}
@@ -488,8 +472,6 @@ export default function DatHangPage() {
           console.log("Mã đã chọn:", ma, ma.id);
         }}
         tongTien={tongTien} />
-
-      {/* Popup chọn địa chỉ */}
       <PopupDiaChi
         open={showPopup}
         onClose={() => setShowPopup(false)}

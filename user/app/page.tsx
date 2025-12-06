@@ -49,20 +49,14 @@ export default function TrangChuPage() {
     // bg-gray-50
     <main className="">
       {/* BANNER CHÍNH */}
-      <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
-        <img
-          src="/images/banner-home.jpg"
-          alt="Banner"
-          onError={(e) => {
-            e.currentTarget.src = "/noimg.png";
-          }}
-          className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">HanFoodie</h1>
-          <p className="text-base md:text-lg">Ẩm thực giao tận tay bạn</p>
-        </div>
 
-      </section>
+<section className="relative w-full flex justify-center bg-[#F7EDED]">
+  <img
+    src="/banner_chinh.png"
+    alt="Banner Hàn Quốc"
+    className="w-[960px] h-[400px] object-contain"
+  />
+</section>
 
       {/* NỘI DUNG CHÍNH */}
       <div className=" py-10 space-y-4 ">

@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel, BienTheModel, SanPhamModel } from "@/app/lib/models";
+import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel, BienTheModel, SanPhamModel, NguoiDungModel } from "@/app/lib/models";
 import { db } from "@/app/lib/database";
 import { Transaction } from "sequelize";
 import { getUserFromToken } from "@/app/lib/auth";
@@ -16,6 +16,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         if (!user) {
             return NextResponse.json({ success: false, message: "Không xác thực được người dùng" }, { status: 401 });
         }
+        // Kiểm tra người dùng đã kích hoạt hay chưa
+        const userDB = await NguoiDungModel.findByPk(user.id);
+        if (!userDB || userDB.getDataValue("kich_hoat") !== 1) {
+            return NextResponse.json(
+                { success: false, message: "Tài khoản chưa được kích hoạt" },
+                { status: 403 }
+            );
+        }
+
 
         const id_nguoi_dung = user.id;
         const body = await req.json();
@@ -261,7 +270,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             success: true,
             message: "Đặt hàng thành công!",
             data: {
-                 id: donHang.id,
+                id: donHang.id,
                 ma_don: donHang.ma_don,
                 tong_tien_hang,
                 so_tien_giam,
