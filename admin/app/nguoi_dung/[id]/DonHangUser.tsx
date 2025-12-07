@@ -362,14 +362,14 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
 
               return (
                 <div key={item.id} className="flex gap-3 items-center border-b border-gray-200 last:border-0 pb-3 last:pb-0">
-                  {/* <Image
-                    src={product?.hinh ?? "/no-img.jpg"}
+                  <Image
+                    src={(product?.hinh || "/no-img.jpg").trim()}
                     alt={product?.ten ?? ""}
                     width={56}
                     height={56}
                     className="rounded-lg object-cover"
-                  /> */}
-                   <img src={product?.hinh ?? "/no-img.jpg"} alt={product?.ten ?? ""} className="w-14 h-14 rounded-lg object-cover"/>
+                  />
+                 
 
                   <div className="flex-1">
                     <p className="font-semibold">{product?.ten}</p>

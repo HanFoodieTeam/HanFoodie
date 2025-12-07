@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Star, Search, ArrowDownUp } from "lucide-react";
 import type { IThongKeDanhGia } from "@/app/lib/cautrucdata";
 import Link from "next/link";
+import Image from "next/image";
 
 function DanhGiaTable() {
   const router = useRouter();
@@ -204,8 +205,10 @@ function DanhGiaTable() {
                 <tr key={sp.san_pham_id} onClick={() => router.push(`/danh_gia/${sp.san_pham_id}`)}
                   className="border-b hover:bg-gray-100 transition-colors cursor-pointer">
                   <td className="px-5 py-2">
-                    <Link href={`/danh_gia/${sp.san_pham_id}`}  onClick={(e) => e.stopPropagation()}  >
-                      <img src={sp.hinh || "/no-image.png"} alt={sp.ten} className="w-16 h-16 rounded-lg object-cover border"/>
+                    <Link href={`/danh_gia/${sp.san_pham_id}`} onClick={(e) => e.stopPropagation()}  >
+                      <Image src={(sp?.hinh || "/noing.png").trim()} alt={sp?.ten || "Sản phẩm"} width={90} height={90} className="rounded-lg object-cover" />
+
+
                     </Link>
                   </td>
 
@@ -217,10 +220,10 @@ function DanhGiaTable() {
 
                   <td className="px-5 py-2 text-center">
                     <div className="flex items-center justify-center gap-1 text-yellow-600 font-semibold text-[16px]">
-                      {sp.tong_danh_gia > 0 ? ( <>
-                          {sp.trung_binh.toFixed(1)}
-                          <Star size={18} className="text-yellow-500 fill-yellow-500" />
-                          <span className="text-sm text-gray-600">({sp.tong_danh_gia})</span> </>
+                      {sp.tong_danh_gia > 0 ? (<>
+                        {sp.trung_binh.toFixed(1)}
+                        <Star size={18} className="text-yellow-500 fill-yellow-500" />
+                        <span className="text-sm text-gray-600">({sp.tong_danh_gia})</span> </>
                       ) : (
                         <span className="text-gray-400">–</span>
                       )}
