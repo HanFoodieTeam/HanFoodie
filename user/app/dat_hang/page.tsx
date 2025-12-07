@@ -9,6 +9,10 @@ import { IDiaChi, IMaGiamGia } from "@/app/lib/cautrucdata";
 import PopupDiaChi from "../components/PopupDiaChi";
 import PopupMaGiamGia from "../components/Popupmagiamgia";
 import PopupXacThuc from "../components/popup_xac_thuc";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
 
 interface IDonHangTam {
   id: number;
@@ -42,7 +46,7 @@ export default function DatHangPage() {
 
 
   const [gioHang, setGioHang] = useState<IDonHangTam[]>([]);
-  const [phuongThuc, setPhuongThuc] = useState<"cod" | "momo">("cod");
+  const [phuongThuc, setPhuongThuc] = useState<"cod" | "vnpay">("cod");
   const [diaChi, setDiaChi] = useState<IDiaChi | null>(null);
   const [nguoiDung, setNguoiDung] = useState<INguoiDungLocal | null>(null);
   const [loadingDiaChi, setLoadingDiaChi] = useState(true);
@@ -145,9 +149,26 @@ export default function DatHangPage() {
     localStorage.setItem("donHangTam", JSON.stringify(updated));
   };
 
+const searchParams = useSearchParams();
+const status = searchParams.get("status");
+const idDon = searchParams.get("id");
+const maDon = searchParams.get("maDon");
+
+useEffect(() => {
+  if (status === "success" && idDon && maDon) {
+    setPopupSuccess({
+      open: true,
+      idDon: Number(idDon),
+      maDon: maDon
+    });
+
+    // Xóa param khỏi URL để reload không mở lại popup
+    window.history.replaceState({}, "", "/dat_hang");
+  }
+}, [status, idDon, maDon]);
 
   const handleXacNhan = async () => {
-    if (isLoading) return; 
+    if (isLoading) return;
     setIsLoading(true);
 
     const token = localStorage.getItem("token");
@@ -193,6 +214,26 @@ export default function DatHangPage() {
         }))
 
       };
+      if (phuongThuc === "vnpay") {
+        const res = await fetch("/api/dat_hang_vnpay", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          window.location.href = data.url;
+          return;
+        }
+
+        alert("Không thể tạo đơn thanh toán VNPay!");
+        return;
+      }
+
 
       const res = await fetch("/api/dat_hang", {
         method: "POST",
@@ -280,15 +321,21 @@ export default function DatHangPage() {
               const monThemSum =
                 item.json_mon_them?.reduce((s, m) => s + (m.gia_them ?? 0), 0) ?? 0;
               const tong = (giaGoc + giaThem + monThemSum) * item.so_luong;
+              const imageSrc = sp?.hinh?.trim() || "/noing.png";
 
               return (
                 <div
                   key={`${item.id_gio_hang ?? item.id ?? item.bien_the?.id ?? Math.random()}`}
                   className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition">
-                  <img
-                    src={sp?.hinh || "/noing.png"}
+
+                  <Image
+                    src={imageSrc}
                     alt={sp?.ten || "Sản phẩm"}
-                    className="w-[90px] h-[90px] rounded-xl object-cover" />
+                    width={90}
+                    height={90}
+                    className="rounded-lg object-cover"
+                  />
+
                   <div className="flex-1">
                     <h2 className="font-semibold text-[15px]">{sp?.ten}</h2>
                     <p className="text-sm text-gray-600">{item.bien_the?.ten}</p>
@@ -349,13 +396,13 @@ export default function DatHangPage() {
 
             {/* MoMo */}
             <div
-              onClick={() => setPhuongThuc("momo")}
-              className={`flex items-center gap-3 border rounded-xl p-3 cursor-pointer transition ${phuongThuc === "momo"
+              onClick={() => setPhuongThuc("vnpay")}
+              className={`flex items-center gap-3 border rounded-xl p-3 cursor-pointer transition ${phuongThuc === "vnpay"
                 ? "border-[#e8594f] bg-[#fff5f4]"
                 : "border-gray-200"
                 }`}>
               <Wallet className="text-[#e8594f]" size={18} />
-              <span>Ví MoMo</span>
+              <span>VnPay</span>
             </div>
 
             {/* Tổng đơn */}
@@ -432,6 +479,12 @@ export default function DatHangPage() {
         </div>
       </div>
 
+
+
+
+
+
+<Suspense fallback={null}>
       {popupSuccess.open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg p-6 text-center max-w-sm w-full">
@@ -457,6 +510,7 @@ export default function DatHangPage() {
           </div>
         </div>
       )}
+      </Suspense>
 
       {showVerifyPopup && (
         <PopupXacThuc

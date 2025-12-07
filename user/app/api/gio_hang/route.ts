@@ -34,8 +34,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         json_tuy_chon?: string | object | null;
       };
 
-
-      //  Parse an toàn: chỉ parse khi là string
       const parsed_mon_them =
         typeof plain.json_mon_them === "string" && plain.json_mon_them.trim() !== ""
           ? JSON.parse(plain.json_mon_them)
@@ -71,7 +69,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    //  Nhận dữ liệu body từ client
     const body: IGioHang = await req.json();
     const { id_bien_the, so_luong, json_mon_them, json_tuy_chon } =
       body;
@@ -83,7 +80,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Lưu vào DB (chưa có thanh_tien)
     const item = await GioHangModel.create({
       id_nguoi_dung: user.id,
       id_bien_the,

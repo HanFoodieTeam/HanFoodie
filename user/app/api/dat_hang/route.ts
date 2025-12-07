@@ -182,6 +182,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         }
         await t.commit();
 
+        
+
 
         // Lấy thông tin gửi email 
         const sanPhamListHtml: string = (
@@ -247,7 +249,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
         const urlDonHang = `${baseUrl}/chi_tiet_don_hang/${donHang.id}`;
         const logoUrl = `${baseUrl}/logOut.png`;
-
+        // gửi email khi cod  
+if (phuong_thuc_thanh_toan === true) {
         await sendMail(
             user.email,
             "Đặt hàng thành công - HanFoodie",
@@ -264,6 +267,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 urlDonHang
             })
         );
+    }
 
 
         return NextResponse.json({

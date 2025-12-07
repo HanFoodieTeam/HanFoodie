@@ -13,6 +13,7 @@ import {
 import { useCart } from "../context/giohangcontext";
 import PopupSuaGioHang from "../components/popupsuagiohang";
 import PopupXacThuc from "../components/popup_xac_thuc";
+import Image from "next/image";
 
 interface PopupData {
   san_pham: ISanPham;
@@ -199,7 +200,7 @@ export default function TrangGioHang() {
         json_mon_them: item.json_mon_them,
         json_tuy_chon: item.json_tuy_chon,
       }));
-      // kiểm tra nếu người dùng kích hoạt rồi mới lưu đơn hàng tạm
+    // kiểm tra nếu người dùng kích hoạt rồi mới lưu đơn hàng tạm
     const userData = localStorage.getItem("nguoi_dung");
     const user = userData ? JSON.parse(userData) : null;
 
@@ -239,7 +240,6 @@ export default function TrangGioHang() {
             </span>
           </div>
 
-          {/* Danh sách sản phẩm */}
           {gioHang.length > 0 ? (
             <div className="space-y-3">
               {gioHang.map((item) => {
@@ -258,11 +258,21 @@ export default function TrangGioHang() {
                 return (
                   <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition">
                     <input type="checkbox" checked={checked} onChange={() => toggleSelect(item.id)} className="w-4 h-4 accent-[#e8594f]" />
-                    <img
+                    {/* <img
                       src={sp?.hinh || "/noing.png"}
                       alt={sp?.ten || "Sản phẩm"}
-                      className="w-[90px] h-[90px] rounded-lg object-cover" />
+                      className="w-[90px] h-[100px] rounded-lg object-cover" /> */}
+
+
+                    <Image
+                      src={sp?.hinh?.trim() || "/noing.png"}
+                      alt={sp?.ten || "Sản phẩm"}
+                      width={900}
+                      height={100}
+                      className="rounded-lg object-cover !w-[80px] !h-[100px]" />
+
                     <div className="flex-1">
+
                       <h2 className="font-semibold text-[15px]">{sp?.ten}</h2>
                       <p className="text-sm text-gray-600">
                         {item.bien_the?.ten}
@@ -282,8 +292,6 @@ export default function TrangGioHang() {
                           {item.json_mon_them.map((m) => m.ten).join(", ")}
                         </p>
                       ) : null}
-
-
 
                       <button onClick={() => handleEdit(item)} className="text-[#e8594f] text-sm font-medium mt-1 hover:underline">
                         Chỉnh sửa món
@@ -365,11 +373,9 @@ export default function TrangGioHang() {
           </div>
         </div>
 
-        {/* Thanh dưới giống Shopee */}
         <div className="fixed bottom-0 left-0 w-full bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
                 flex items-center justify-between px-4 py-3 z-[999]
                 md:hidden">
-          {/* Thông tin đơn hàng dạng mở rộng trên mobile */}
           {showThongTin && (
             <div className="fixed bottom-[60px] left-0 w-full bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
                   px-4 py-4 border-t z-[999] md:hidden animate-slide-up">
@@ -406,8 +412,6 @@ export default function TrangGioHang() {
                     </p>
                   </div>
                 </div>
-
-
 
               </div>
             </div>
