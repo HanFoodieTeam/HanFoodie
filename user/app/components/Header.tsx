@@ -276,9 +276,14 @@ export default function Header() {
               <X className="w-5 h-5" />
             </button>
             <LoginForm
-              onClose={() => setShowLogin(false)}
-              onLoginSuccess={(nguoiDungMoi) => setNguoiDung(nguoiDungMoi)}
-            />
+  onClose={() => setShowLogin(false)}
+  onLoginSuccess={(nguoiDungMoi) => setNguoiDung(nguoiDungMoi)}
+  onSwitchToRegister={() => {
+    setShowLogin(false);
+    setShowRegister(true);
+  }}
+/>
+
           </div>
         </div>
       )}
@@ -300,13 +305,17 @@ export default function Header() {
               <X className="w-5 h-5" />
             </button>
             <RegisterForm
-              onClose={() => setShowRegister(false)}
-              onRegisterSuccess={(nguoiDungMoi) => {
-                localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
-                setNguoiDung(nguoiDungMoi);
-                // setShowRegister(false);
-              }}
-            />
+  onClose={() => setShowRegister(false)}
+  onRegisterSuccess={(nguoiDungMoi) => {
+    localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
+    setNguoiDung(nguoiDungMoi);
+  }}
+  onSwitchToLogin={() => {
+    setShowRegister(false);
+    setShowLogin(true);
+  }}
+/>
+
           </div>
         </div>
       )}

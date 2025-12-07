@@ -232,10 +232,10 @@ export interface INguoiDung {
   tep_khach?: string | null;
   mat_khau: string;
   trang_thai?: boolean;
-  ngay_sinh?: string | null;
+  ngay_sinh?: string | null | Date;
   token_kich_hoat?: string | null;
   vai_tro?: boolean;
-  ngay_tao?:string | null;
+  ngay_tao?:string | null | Date;
   kich_hoat:boolean;
   han_token:string | null;
 }

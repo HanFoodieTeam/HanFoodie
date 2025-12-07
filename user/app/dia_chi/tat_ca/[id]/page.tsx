@@ -658,7 +658,7 @@ export default function DiaChiPage() {
     return <p className="p-8 text-center text-gray-600">Đang tải thông tin...</p>;
 
   return (
-    <UserLayout user={user}>
+    <UserLayout >
       <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
         {/* Tiêu đề + nút thêm ngang hàng */}
         <div className="flex items-center justify-between mb-6">
