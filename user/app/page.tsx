@@ -140,7 +140,6 @@ export default function TrangChuPage() {
         </div>
       </main>
 
-      <Footer />
     </>
     
   );
