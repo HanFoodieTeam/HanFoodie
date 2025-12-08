@@ -38,7 +38,6 @@ function MonThemListContent() {
 
 
 
-  //  Cập nhật URL query 
   const updateQuery = (updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([key, val]) => {
@@ -48,7 +47,6 @@ function MonThemListContent() {
     router.push(`/mon_them?${params.toString()}`);
   };
 
-  //  Gọi API lấy dữ liệu 
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -75,12 +73,10 @@ function MonThemListContent() {
     }
   };
 
-  //  Gọi API mỗi khi thay đổi page, searchQuery, loai 
   useEffect(() => {
     fetchData();
   }, [page, searchQuery, loai]);
 
-  //  Tự động tìm kiếm sau khi dừng gõ (debounce 0.5s) 
   useEffect(() => {
     const delay = setTimeout(() => {
       updateQuery({ search: search.trim(), page: "1" });

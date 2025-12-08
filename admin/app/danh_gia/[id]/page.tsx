@@ -2,7 +2,6 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { Star } from "lucide-react";
 import { IDanhGia } from "@/app/lib/cautrucdata";
 import Image from "next/image";
