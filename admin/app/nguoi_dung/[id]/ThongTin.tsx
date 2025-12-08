@@ -56,6 +56,7 @@
 "use client";
 
 import { INguoiDung } from "@/app/lib/cautrucdata";
+import Image from "next/image";
 
 export default function ThongTin({ user }: { user: INguoiDung }) {
 
@@ -68,6 +69,7 @@ export default function ThongTin({ user }: { user: INguoiDung }) {
     if (a.mac_dinh === b.mac_dinh) return 0;
     return a.mac_dinh ? -1 : 1;
   });
+const imageSrc = avatarUrl?.trim() || "/default-avatar.png";
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
@@ -77,8 +79,8 @@ export default function ThongTin({ user }: { user: INguoiDung }) {
 
         {/* Avatar + tên */}
         <div className="flex items-center gap-4">
-          <img src={avatarUrl} alt="Avatar" className="w-22 h-22 rounded-full object-cover border"/>
-          <div>
+<Image src={imageSrc} alt="Avatar" width={88}    height={88}   className="rounded-full object-cover border"/>         
+ <div>
             <h2 className="text-xl font-semibold">{user.ho_ten}</h2>
             <p className="text-sm text-gray-500">
               Tạo lúc: {new Date(user.ngay_tao!).toLocaleDateString("vi-VN")}

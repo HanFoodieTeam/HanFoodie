@@ -5,6 +5,7 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { IDanhGia } from "@/app/lib/cautrucdata";
+import Image from "next/image";
 
 function DanhGiaChiTiet() {
   const { id } = useParams();
@@ -181,7 +182,7 @@ function DanhGiaChiTiet() {
                   key={dg.id}
                   className="border-b hover:bg-gray-50 transition-colors">
                   <td className="px-5 py-3 text-center">
-                    <img src={dg.hinh || "/no-image.png"} alt="" className="w-16 h-16 rounded-lg object-cover border"/>
+                    <Image src={(dg?.hinh || "/noing.png").trim()} alt="" width={90} height={90} className="rounded-lg object-cover" />
                   </td>
 
                   <td className="px-5 py-3 text-center">

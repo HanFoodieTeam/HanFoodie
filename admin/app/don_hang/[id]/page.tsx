@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { IDonHang, TrangThaiDonHang } from "@/app/lib/cautrucdata";
+import Image from "next/image";
 
 const trangThaiLabels: Record<TrangThaiDonHang, string> = {
   cho_xac_nhan: "Chờ xác nhận",
@@ -188,11 +189,8 @@ export default function DonHangDetail() {
                 <tr key={i} className="border-t hover:bg-gray-50">
                   <td className="px-3 py-2">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={ct.bien_the?.san_pham?.hinh ?? "/no-image.png"}
-                        alt={ct.bien_the?.san_pham?.ten ?? "Sản phẩm"}
-                        className="w-12 h-12 object-cover rounded border"
-                      />
+<Image src={(ct.bien_the?.san_pham?.hinh || "/noing.png").trim()} alt="" width={48} height={48} className="rounded-lg object-cover"/>
+
                       <div>
                         <p className="font-medium text-gray-800">
                           {ct.bien_the?.san_pham?.ten ?? "Sản phẩm"}

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import { ISanPham } from "../lib/cautrucdata";
 import { number } from "framer-motion";
+import Image from "next/image";
 
 interface Props {
   data: ISanPham[];
@@ -49,12 +50,9 @@ export default function SanPhamHotSection({ data }: Props) {
             >
               {/* Ảnh sản phẩm */}
               <div className="relative">
-                <img
-                  src={sp.hinh || "/noimg.png"}
-                  alt={sp.ten}
-                  className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                />
 
+                <Image src={sp.hinh?.trim() || "/noimg.png"} alt="" width={300} height={192}
+                  className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105" />
                 {/* Nút trái tim yêu thích */}
                 <button
                   onClick={() => toggleFavorite(sp.id)}
@@ -63,8 +61,8 @@ export default function SanPhamHotSection({ data }: Props) {
                   <Heart
                     size={20}
                     className={`transition-colors ${isFavorite
-                        ? "fill-red-500 text-red-500"
-                        : "text-gray-200 hover:text-red-400"
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-200 hover:text-red-400"
                       }`}
                   />
                 </button>

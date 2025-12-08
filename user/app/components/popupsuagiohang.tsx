@@ -185,7 +185,8 @@ export default function PopupSuaGioHang({
             {/* Ảnh sản phẩm */}
             <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
               <Image
-                src={san_pham.hinh || "/noimg.png"} alt={san_pham.ten} width={80} height={80} className="object-cover"/>
+                src={(san_pham.hinh || "/noimg.png").trim()}
+                 alt={san_pham.ten} width={80} height={80} className="object-cover"/>
             </div>
 
             {/* Tên & mô tả */}

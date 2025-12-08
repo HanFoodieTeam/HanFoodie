@@ -120,6 +120,7 @@ export interface IDiaChi {
 // }
 
 export type TrangThaiDonHang =
+  | "cho_thanh_toan"
   | "cho_xac_nhan"
   | "da_xac_nhan"
   | "dang_giao"
