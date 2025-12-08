@@ -19,7 +19,7 @@ export default function RootLayout({
         <CartProvider>
           <Header />
           <main className="pt-[72px]">
-            <div className="max-w-[80%] max-[950px]:max-w-[100%] mx-auto px-4">
+            <div className="w-[80%] max-w-[1200px] mx-auto px-4">
               {children}
             </div>
           </main>

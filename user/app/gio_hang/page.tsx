@@ -12,6 +12,7 @@ import {
 } from "../lib/cautrucdata";
 import { useCart } from "../context/giohangcontext";
 import PopupSuaGioHang from "../components/popupsuagiohang";
+import PopupXacThuc from "../components/popup_xac_thuc";
 
 interface PopupData {
   san_pham: ISanPham;
@@ -42,6 +43,9 @@ export default function TrangGioHang() {
   const [macDinh, setMacDinh] = useState<MacDinhProps | null>(null);
 
   const [showThongTin, setShowThongTin] = useState(false);
+
+  const [showVerifyPopup, setShowVerifyPopup] = useState(false);
+
 
 
   //  Lấy giỏ hàng
@@ -195,7 +199,14 @@ export default function TrangGioHang() {
         json_mon_them: item.json_mon_them,
         json_tuy_chon: item.json_tuy_chon,
       }));
+      // kiểm tra nếu người dùng kích hoạt rồi mới lưu đơn hàng tạm
+    const userData = localStorage.getItem("nguoi_dung");
+    const user = userData ? JSON.parse(userData) : null;
 
+    if (user.kich_hoat === 0 || user.kich_hoat === false) {
+      setShowVerifyPopup(true);
+      return;
+    }
     localStorage.setItem("donHangTam", JSON.stringify(selected));
     router.push("/dat_hang");
   };
@@ -245,14 +256,8 @@ export default function TrangGioHang() {
                 const checked = selectedItems.includes(item.id);
 
                 return (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-4 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggleSelect(item.id)}
-                      className="w-4 h-4 accent-[#e8594f]" />
+                  <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition">
+                    <input type="checkbox" checked={checked} onChange={() => toggleSelect(item.id)} className="w-4 h-4 accent-[#e8594f]" />
                     <img
                       src={sp?.hinh || "/noing.png"}
                       alt={sp?.ten || "Sản phẩm"}
@@ -280,33 +285,23 @@ export default function TrangGioHang() {
 
 
 
-                      <button
-                        onClick={() => handleEdit(item)}
-                        className="text-[#e8594f] text-sm font-medium mt-1 hover:underline">
+                      <button onClick={() => handleEdit(item)} className="text-[#e8594f] text-sm font-medium mt-1 hover:underline">
                         Chỉnh sửa món
                       </button>
                     </div>
 
                     <div className="flex flex-col items-end gap-2 justify-between h-full">
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="text-gray-400 hover:text-red-600">
+                      <button onClick={() => removeItem(item.id)} className="text-gray-400 hover:text-red-600">
                         <Trash2 size={18} />
                       </button>
 
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, (item.so_luong ?? 1) - 1)
-                          }
+                        <button onClick={() => updateQuantity(item.id, (item.so_luong ?? 1) - 1)}
                           className="px-3 text-gray-700 rounded">
                           <Minus size={14} />
                         </button>
                         <span>{item.so_luong ?? 1}</span>
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, (item.so_luong ?? 1) + 1)
-                          }
+                        <button onClick={() => updateQuantity(item.id, (item.so_luong ?? 1) + 1)}
                           className="px-3 text-gray-700 rounded">
                           <Plus size={14} />
                         </button>
@@ -425,8 +420,7 @@ export default function TrangGioHang() {
               type="checkbox"
               checked={selectAll}
               onChange={handleSelectAll}
-              className="w-4 h-4 accent-[#e8594f]"
-            />
+              className="w-4 h-4 accent-[#e8594f]" />
             <span className="text-base font-medium">Tất cả</span>
           </div>
 
@@ -434,8 +428,7 @@ export default function TrangGioHang() {
 
           <div
             onClick={() => setShowThongTin(!showThongTin)}
-            className="text-right flex-1 mx-3"
-          >
+            className="text-right flex-1 mx-3">
             <p className="text-[#e8594f] font-semibold text-lg">
               {tongTien.toLocaleString("vi-VN")}đ
             </p>
@@ -448,11 +441,16 @@ export default function TrangGioHang() {
             onClick={handleDatHang}
             disabled={selectedItems.length === 0}
             className={`px-5 py-2 rounded-lg text-white font-semibold 
-      ${selectedItems.length === 0 ? "bg-gray-300" : "bg-[#e8594f]"}`}
-          >
+          ${selectedItems.length === 0 ? "bg-gray-300" : "bg-[#e8594f]"}`}>
             Mua hàng ({selectedItems.length})
           </button>
         </div>
+
+        {showVerifyPopup && (
+          <PopupXacThuc
+            email={JSON.parse(localStorage.getItem("nguoi_dung")!).email}
+            onClose={() => setShowVerifyPopup(false)} />
+        )}
 
         {/* Popup chỉnh sửa món */}
         {showPopup && popupData && macDinh && (

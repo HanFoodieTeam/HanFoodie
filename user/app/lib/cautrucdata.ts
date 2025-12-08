@@ -234,21 +234,39 @@ export interface IMonThem {
   trang_thai?: boolean;
 }
 
+// export interface INguoiDung {np
+//   id?: number;
+//   hinh?: string;
+//   ho_ten: string;
+//   sdt?: number | null;
+//   email: string;
+//   tep_khach?: string | null;
+//   mat_khau: string;
+//   trang_thai?: boolean;
+//   ngay_sinh?: string | null;
+//   token_kich_hoat?: string | null;
+//   vai_tro?: boolean;
+//   ngay_tao?:string |Date| null;
+//   kich_hoat:boolean;
+//   han_token:string | null;
+// }
+
 export interface INguoiDung {
   id?: number;
-  hinh?: string;
+  hinh?: string | null;
   ho_ten: string;
   sdt?: number | null;
   email: string;
   tep_khach?: string | null;
   mat_khau: string;
-  trang_thai?: boolean;
-  ngay_sinh?: string | null;
-  ma_kich_hoat?: string | null;
-  vai_tro?: boolean;
-  ngay_tao?: Date | null;
+  trang_thai?: boolean | number;
+  ngay_sinh?: string | Date | null;  // DATEONLY -> string hoặc Date
+  token_kich_hoat?: string | null;
+  vai_tro?: boolean | number;
+  ngay_tao?: Date | string | null;   // DATE -> Date
+  kich_hoat?: boolean | number;
+  han_token?: Date | string | null;  // DATE -> Date
 }
-
 
 
 export interface ISanPham {

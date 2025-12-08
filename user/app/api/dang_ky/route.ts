@@ -58,9 +58,12 @@ export async function POST(req: Request) {
       vai_tro: false,
       trang_thai: true,
       ngay_tao: new Date(),
+      kich_hoat: false,
+      token_kich_hoat:null,
+      han_token:null,
     });
 
-    // ✅ Tạo token JWT ngay sau khi đăng ký
+    //  Tạo token JWT ngay sau khi đăng ký
     const secret = process.env.JWT_SECRET || "HanFoodieSecretKey123!";
     const token = jwt.sign(
       {
@@ -84,6 +87,7 @@ export async function POST(req: Request) {
           email: nguoiDungMoi.email,
           sdt: nguoiDungMoi.sdt,
           vai_tro: nguoiDungMoi.vai_tro,
+          kich_hoat: nguoiDungMoi.kich_hoat
         },
       },
       { status: 201 }
