@@ -1,7 +1,10 @@
-"use client"
-
-import ResetPasswordForm from "./ResetPasswordForm";
+import ResetPasswordForm from './ResetPasswordForm';
+import { Suspense } from 'react';
 
 export default function Page() {
-  return <ResetPasswordForm />;
+  return (
+    <Suspense fallback={<p>Loading form...</p>}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
 }

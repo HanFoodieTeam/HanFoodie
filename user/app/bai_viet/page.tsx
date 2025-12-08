@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface IBaiViet {
   id: number;
@@ -48,7 +49,7 @@ export default function BaiVietGrid() {
     fetchLoai();
   }, []);
 
-  // Lấy bài viết (lọc theo loại nếu có)
+  // Lấy bài viết
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -78,80 +79,85 @@ export default function BaiVietGrid() {
   };
 
   return (
-    <div className="p-6">
-      {/* Submenu ngang dạng ô (box) với underline animation */}
-      <nav className="mb-6 border-b relative">
+    <div className="p-6 max-w-7xl mx-auto">
+      {/* Submenu ngang */}
+      {/* Nav danh mục */}
+      <nav className="mb-8 border-b border-gray-300 relative">
         <div className="flex relative">
           {/* Indicator */}
           <div
-            className="absolute bottom-0 h-1 bg-[#6A0A0A] transition-all duration-300"
+            className="absolute bottom-0 h-1 bg-[#6A0A0A] transition-all duration-300 rounded"
             style={{
-              width:
-                activeLoai === null
-                  ? "calc(100% / " + (loaiList.length + 1) + ")"
-                  : "calc(100% / " + (loaiList.length + 1) + ")",
-              left:
-                activeLoai === null
-                  ? "0"
-                  : `${loaiList.findIndex((l) => l.id === activeLoai) + 1}00% / ${
-                      loaiList.length + 1
-                    }`,
+              width: `${100 / (loaiList.length + 1)}%`,
+              left: `${activeLoai === null
+                  ? 0
+                  : ((loaiList.findIndex((l) => l.id === activeLoai) + 1) *
+                    100) /
+                  (loaiList.length + 1)
+                }%`,
             }}
           />
 
-          {/* Tất cả */}
+          {/* Button Tất cả */}
           <button
             onClick={() => handleSelectLoai(null)}
-            className={`px-4 py-2 text-sm font-medium flex-1 text-center transition ${
-              activeLoai === null
-                ? "bg-[#6A0A0A] text-white"
-                : "text-gray-700 hover:bg-[#6a0a0a22]"
-            }`}
+            className={`flex-1 py-3 text-center text-sm font-medium transition-colors ${activeLoai === null
+                ? "bg-[#6A0A0A] text-white font-semibold"
+                : "bg-transparent text-gray-700 hover:text-[#6A0A0A]"
+              }`}
           >
             Tất cả
           </button>
 
-          {loaiList.map((loai) => (
-            <button
-              key={loai.id}
-              onClick={() => handleSelectLoai(loai.id)}
-              className={`px-4 py-2 text-sm font-medium flex-1 text-center transition ${
-                activeLoai === loai.id
-                  ? "bg-[#6A0A0A] text-white"
-                  : "text-gray-700 hover:bg-[#6a0a0a22]"
-              }`}
-            >
-              {loai.ten_loai}
-            </button>
-          ))}
+          {/* Các loại bài viết */}
+          {loaiList.map((loai) => {
+            const isActive = activeLoai === loai.id;
+            return (
+              <button
+                key={loai.id}
+                onClick={() => handleSelectLoai(loai.id)}
+                className={`flex-1 py-3 text-center text-sm font-medium transition-colors ${isActive
+                    ? "bg-[#6A0A0A] text-white font-semibold"
+                    : "bg-transparent text-gray-700 hover:text-[#6A0A0A]"
+                  }`}
+              >
+                {loai.ten_loai}
+              </button>
+            );
+          })}
         </div>
       </nav>
 
+
+
       {/* Lưới bài viết */}
       {loading ? (
-        <p className="text-center py-10">Đang tải...</p>
+        <p className="text-center py-10 text-gray-500">Đang tải...</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {baiViets.map((bv) => (
             <Link
               key={bv.id}
               href={`/bai_viet/${bv.id}`}
-              className="block bg-white shadow-md overflow-hidden hover:shadow-lg transition group"
+              className="block bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 group"
             >
               {bv.hinh ? (
-                <img
-                  src={bv.hinh}
-                  alt={bv.tieu_de}
-                  className="w-full h-40 object-cover"
-                />
+                <div className="relative w-full h-48">
+                  <Image
+                    src={bv.hinh}
+                    alt={bv.tieu_de}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               ) : (
-                <div className="w-full h-40 bg-gray-100 flex items-center justify-center text-gray-400">
+                <div className="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">
                   Chưa có ảnh
                 </div>
               )}
 
               <div className="p-4">
-                <h2 className="font-semibold text-lg mb-2 group-hover:text-[#6A0A0A]">
+                <h2 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-[#6A0A0A]">
                   {bv.tieu_de}
                 </h2>
                 <div className="flex justify-between text-sm text-gray-500">
@@ -167,11 +173,11 @@ export default function BaiVietGrid() {
       )}
 
       {/* Phân trang */}
-      <div className="flex justify-center mt-6 gap-2">
+      <div className="flex justify-center mt-8 gap-2 flex-wrap">
         <button
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-4 py-2 border rounded-md disabled:opacity-50 hover:bg-gray-100 transition"
         >
           Prev
         </button>
@@ -180,9 +186,10 @@ export default function BaiVietGrid() {
           <button
             key={num}
             onClick={() => setPage(num)}
-            className={`px-3 py-1 border rounded ${
-              page === num ? "bg-blue-500 text-white" : ""
-            }`}
+            className={`px-4 py-2 border rounded-md transition ${page === num
+              ? "bg-blue-500 text-white border-blue-500"
+              : "hover:bg-gray-100"
+              }`}
           >
             {num}
           </button>
@@ -191,7 +198,7 @@ export default function BaiVietGrid() {
         <button
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           disabled={page === totalPages}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-4 py-2 border rounded-md disabled:opacity-50 hover:bg-gray-100 transition"
         >
           Next
         </button>
