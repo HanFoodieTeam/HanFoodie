@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { IDanhMuc } from "@/app/lib/cautrucdata";
-
+import Image from "next/image";
 export default function SuaDanhMuc() {
   const router = useRouter();
   const { id } = useParams();
@@ -190,7 +190,7 @@ export default function SuaDanhMuc() {
           {uploading && <p className="text-blue-500">Đang upload...</p>}
 
           {form.hinh && (
-            <img
+            <Image
               src={form.hinh}
               alt="preview"
               className="w-24 h-24 object-cover rounded border mt-2"

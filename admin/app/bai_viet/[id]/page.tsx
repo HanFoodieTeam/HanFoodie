@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-
+import Image from "next/image";
 interface IBaiViet {
   id: number;
   tieu_de: string;
@@ -192,7 +192,7 @@ export default function SuaBaiViet() {
           />
 
           {form.hinh && (
-            <img
+            <Image
               src={form.hinh}
               alt="Preview"
               className="mt-2 w-32 rounded shadow"

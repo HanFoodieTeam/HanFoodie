@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -32,16 +32,19 @@ function LoaiTuChonListContent() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [confirmItem, setConfirmItem] = useState<ILoaiTuChon | null>(null);
 
-  const updateQuery = (updates: Record<string, string | undefined>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    Object.entries(updates).forEach(([key, val]) => {
-      if (val && val !== "") params.set(key, val);
-      else params.delete(key);
-    });
-    router.push(`/loai_tuy_chon?${params.toString()}`);
-  };
+  const updateQuery = useCallback(
+    (updates: Record<string, string | undefined>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(updates).forEach(([key, val]) => {
+        if (val && val !== "") params.set(key, val);
+        else params.delete(key);
+      });
+      router.push(`/loai_tuy_chon?${params.toString()}`);
+    },
+    [router, searchParams]
+  );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const qs = new URLSearchParams({
@@ -64,18 +67,18 @@ function LoaiTuChonListContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, searchQuery]);
 
   useEffect(() => {
     fetchData();
-  }, [page, searchQuery]);
+  }, [fetchData]);
 
   useEffect(() => {
     const delay = setTimeout(() => {
       updateQuery({ search: search.trim(), page: "1" });
     }, 500);
     return () => clearTimeout(delay);
-  }, [search]);
+  }, [search, updateQuery]);
 
   const handleToggleClick = (item: ILoaiTuChon) => setConfirmItem(item);
 
@@ -217,8 +220,7 @@ function LoaiTuChonListContent() {
           <button
             key={p}
             onClick={() => goToPage(p)}
-            className={`px-3 py-1 rounded ${p === page ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
-              }`}
+            className={`px-3 py-1 rounded ${p === page ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
           >
             {p}
           </button>
@@ -241,12 +243,8 @@ function LoaiTuChonListContent() {
             </h2>
             <p className="text-center mb-5 text-lg">
               Bạn có muốn{" "}
-              <span className="text-red-600 font-semibold">
-                {confirmItem.an_hien ? "ẩn" : "hiển thị"}
-              </span>{" "}
-              loại{" "}
-              <span className="font-semibold text-gray-700">{confirmItem.ten}</span>{" "}
-              không?
+              <span className="text-red-600 font-semibold">{confirmItem.an_hien ? "ẩn" : "hiển thị"}</span>{" "}
+              loại <span className="font-semibold text-gray-700">{confirmItem.ten}</span> không?
             </p>
             <div className="flex justify-center space-x-4">
               <button

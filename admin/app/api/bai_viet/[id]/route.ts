@@ -2,16 +2,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaiVietModel } from "@/app/lib/models";
 import { IBaiViet } from "@/app/lib/cautrucdata";
-import fs from "fs";
-import path from "path";
+import cloudinaryPkg from "cloudinary";
 
-// ===== Kiểu dữ liệu lấy từ DB =====
+// ===== Cloudinary Config =====
+const cloudinary = cloudinaryPkg.v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
+
+// ====================== KIỂU DỮ LIỆU ==============================
+
+// Dữ liệu thô lấy từ DB, trước khi format
 type RawBaiViet = Omit<IBaiViet, "an_hien" | "ngay_dang"> & {
   an_hien: number | boolean | null;
   ngay_dang: string | Date | null;
 };
 
-// ===== Body PUT từ FormData =====
+// Dữ liệu khi PUT
 interface UpdateBaiVietFields {
   tieu_de: string;
   noi_dung: string;
@@ -23,30 +33,12 @@ interface UpdateBaiVietFields {
   hinh?: string | null;
 }
 
-// ===== Body PATCH =====
+// Body PATCH
 interface PatchBaiVietBody {
   an_hien: boolean;
 }
 
-// ===== Lưu file upload =====
-async function saveUploadedFile(file: File): Promise<string> {
-  const uploadsDir = path.join(process.cwd(), "public/uploads/bai_viet");
-
-  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-  const ext = path.extname(file.name);
-  const filename = `${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2)}${ext}`;
-  const filepath = path.join(uploadsDir, filename);
-
-  const buffer = Buffer.from(await file.arrayBuffer());
-  fs.writeFileSync(filepath, buffer);
-
-  return `/uploads/bai_viet/${filename}`;
-}
-
-// ===== Format dữ liệu về IBaiViet =====
+// Format về IBaiViet chuẩn
 function formatBaiViet(raw: RawBaiViet): IBaiViet {
   return {
     id: raw.id,
@@ -57,42 +49,36 @@ function formatBaiViet(raw: RawBaiViet): IBaiViet {
     luot_xem: raw.luot_xem,
     slug: raw.slug,
     an_hien: Boolean(raw.an_hien),
-    ngay_dang: raw.ngay_dang
-      ? new Date(raw.ngay_dang).toISOString()
-      : null,
+    ngay_dang: raw.ngay_dang ? new Date(raw.ngay_dang).toISOString() : null,
   };
 }
 
-// ====================== GET ===========================
+// ==============================================================
+//                           GET
+// ==============================================================
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
-
     const numericId = Number(id);
-    if (isNaN(numericId)) {
-      return NextResponse.json({
-        success: false,
-        message: "ID không hợp lệ",
-      });
+
+    if (Number.isNaN(numericId)) {
+      return NextResponse.json({ success: false, message: "ID không hợp lệ" });
     }
 
-    const bv = await BaiVietModel.findByPk(numericId);
-    if (!bv) {
+    const item = await BaiVietModel.findByPk(numericId);
+    if (!item) {
       return NextResponse.json({
         success: false,
         message: "Không tìm thấy bài viết",
       });
     }
 
-    const formatted = formatBaiViet(bv.toJSON() as RawBaiViet);
+    const formatted = formatBaiViet(item.toJSON() as RawBaiViet);
 
-    return NextResponse.json({
-      success: true,
-      data: formatted,
-    });
+    return NextResponse.json({ success: true, data: formatted });
   } catch {
     return NextResponse.json(
       { success: false, message: "Lỗi server" },
@@ -101,7 +87,9 @@ export async function GET(
   }
 }
 
-// ====================== PUT ===========================
+// ==============================================================
+//                           PUT
+// ==============================================================
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -110,14 +98,11 @@ export async function PUT(
     const { id } = await context.params;
     const numericId = Number(id);
 
-    if (isNaN(numericId)) {
-      return NextResponse.json({
-        success: false,
-        message: "ID không hợp lệ",
-      });
+    if (Number.isNaN(numericId)) {
+      return NextResponse.json({ success: false, message: "ID không hợp lệ" });
     }
 
-    const form = await req.formData();
+    const form: FormData = await req.formData();
 
     const tieu_de = form.get("tieu_de") as string | null;
     const noi_dung = form.get("noi_dung") as string | null;
@@ -125,7 +110,10 @@ export async function PUT(
 
     if (!tieu_de || !noi_dung || !id_loai_bv_raw) {
       return NextResponse.json(
-        { success: false, message: "Thiếu dữ liệu bắt buộc" },
+        {
+          success: false,
+          message: "Thiếu dữ liệu bắt buộc",
+        },
         { status: 400 }
       );
     }
@@ -139,33 +127,41 @@ export async function PUT(
       ngay_dang: form.get("ngay_dang")
         ? new Date(String(form.get("ngay_dang")))
         : new Date(),
-      an_hien: form.get("an_hien") === "true",
+      an_hien: form.get("an_hien") === "1",
     };
 
     const file = form.get("hinh") as File | null;
 
-    const bv = await BaiVietModel.findByPk(numericId);
-    if (!bv) {
+    const existing = await BaiVietModel.findByPk(numericId);
+    if (!existing) {
       return NextResponse.json(
         { success: false, message: "Không tìm thấy bài viết" },
         { status: 404 }
       );
     }
 
-    // ========== Upload file ==========
-    let finalImage = bv.getDataValue("hinh") as string | null;
+    // Hình hiện tại
+    let finalImage: string | null = existing.getDataValue("hinh");
 
+    // Upload
     if (file && file.size > 0) {
-      finalImage = await saveUploadedFile(file);
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+      const uploaded = await cloudinary.uploader.upload(base64, {
+        folder: "bai_viet",
+      });
+
+      finalImage = uploaded.secure_url;
     }
 
-    await bv.update({
+    await existing.update({
       ...fields,
       hinh: finalImage,
       an_hien: fields.an_hien ? 1 : 0,
     });
 
-    const formatted = formatBaiViet(bv.toJSON() as RawBaiViet);
+    const formatted = formatBaiViet(existing.toJSON() as RawBaiViet);
 
     return NextResponse.json({
       success: true,
@@ -181,7 +177,9 @@ export async function PUT(
   }
 }
 
-// ====================== PATCH ===========================
+// ==============================================================
+//                           PATCH
+// ==============================================================
 export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -190,14 +188,11 @@ export async function PATCH(
     const { id } = await context.params;
     const numericId = Number(id);
 
-    if (isNaN(numericId)) {
-      return NextResponse.json({
-        success: false,
-        message: "ID không hợp lệ",
-      });
+    if (Number.isNaN(numericId)) {
+      return NextResponse.json({ success: false, message: "ID không hợp lệ" });
     }
 
-    const body = (await req.json()) as PatchBaiVietBody;
+    const body: PatchBaiVietBody = await req.json();
 
     if (typeof body.an_hien !== "boolean") {
       return NextResponse.json(
@@ -206,15 +201,15 @@ export async function PATCH(
       );
     }
 
-    const bv = await BaiVietModel.findByPk(numericId);
-    if (!bv) {
+    const existing = await BaiVietModel.findByPk(numericId);
+    if (!existing) {
       return NextResponse.json(
         { success: false, message: "Không tìm thấy bài viết" },
         { status: 404 }
       );
     }
 
-    await bv.update({ an_hien: body.an_hien ? 1 : 0 });
+    await existing.update({ an_hien: body.an_hien ? 1 : 0 });
 
     return NextResponse.json({
       success: true,

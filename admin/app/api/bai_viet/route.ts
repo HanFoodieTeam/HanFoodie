@@ -3,40 +3,52 @@ import { NextRequest, NextResponse } from "next/server";
 import { Op, WhereOptions } from "sequelize";
 import { BaiVietModel } from "@/app/lib/models";
 import { IBaiViet } from "@/app/lib/cautrucdata";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import cloudinaryPkg from "cloudinary";
 
-// ========================= GET =========================
+// ===== Cloudinary Config =====
+const cloudinary = cloudinaryPkg.v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
+
+/* -------------------------------------------------------------------------- */
+/*                                 GET METHOD                                 */
+/* -------------------------------------------------------------------------- */
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const url = new URL(req.url);
 
-    const page = Number(url.searchParams.get("page") ?? "1");
-    const limit = Number(url.searchParams.get("limit") ?? "6");
-    const offset = (page - 1) * limit;
+    const page: number = Number(url.searchParams.get("page") ?? "1");
+    const limit: number = Number(url.searchParams.get("limit") ?? "6");
+    const offset: number = (page - 1) * limit;
 
-    const search = url.searchParams.get("search") ?? "";
-    const an_hien = url.searchParams.get("an_hien") ?? "";
+    const search: string = url.searchParams.get("search") ?? "";
+    const an_hien_raw: string = url.searchParams.get("an_hien") ?? "";
 
     const where: WhereOptions = {};
 
-    if (search) {
+    if (search.length > 0) {
       where["tieu_de"] = { [Op.like]: `%${search}%` };
     }
 
-    if (an_hien === "0" || an_hien === "1") {
-      where["an_hien"] = Number(an_hien);
+    if (an_hien_raw === "0" || an_hien_raw === "1") {
+      where["an_hien"] = Number(an_hien_raw);
     }
 
-    const { count, rows } = await BaiVietModel.findAndCountAll({
+    // Get + Count
+    const result = await BaiVietModel.findAndCountAll({
       where,
       order: [["ngay_dang", "DESC"]],
       limit,
       offset,
     });
 
-    const data: IBaiViet[] = rows.map((row) => {
+    // Map sang IBaiViet
+    const data: IBaiViet[] = result.rows.map((row) => {
       const raw = row.toJSON() as IBaiViet;
 
       return {
@@ -51,12 +63,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({
       success: true,
       data,
-      totalItems: count,
-      totalPages: Math.ceil(count / limit),
+      totalItems: result.count,
+      totalPages: Math.ceil(result.count / limit),
       currentPage: page,
     });
-  } catch (error) {
-    console.error("Lỗi GET danh sách bài viết:", error);
+  } catch (err) {
+    console.error("Lỗi GET danh sách bài viết:", err);
     return NextResponse.json(
       { success: false, message: "Lỗi khi lấy danh sách bài viết" },
       { status: 500 }
@@ -64,10 +76,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-// ========================= POST =========================
+/* -------------------------------------------------------------------------- */
+/*                                 POST METHOD                                */
+/* -------------------------------------------------------------------------- */
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
-    const form = await req.formData();
+    const form: FormData = await req.formData();
 
     const tieu_de = form.get("tieu_de") as string | null;
     const noi_dung = form.get("noi_dung") as string | null;
@@ -75,73 +90,77 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const slug = form.get("slug") as string | null;
     const an_hien_raw = form.get("an_hien") as string | null;
     const ngay_dang_raw = form.get("ngay_dang") as string | null;
-
     const file = form.get("hinh") as File | null;
 
+    // Validate
     if (!tieu_de || !noi_dung || !id_loai_bv_raw) {
       return NextResponse.json(
-        { success: false, message: "Thiếu tiêu đề, nội dung hoặc loại bài viết" },
+        {
+          success: false,
+          message: "Thiếu tiêu đề, nội dung hoặc loại bài viết",
+        },
         { status: 400 }
       );
     }
 
-    const id_loai_bv = Number(id_loai_bv_raw);
-    const an_hien = an_hien_raw === "1";
-
-    const ngay_dang = ngay_dang_raw
+    // Convert kiểu
+    const id_loai_bv: number = Number(id_loai_bv_raw);
+    const an_hien: boolean = an_hien_raw === "1";
+    const ngay_dang: Date = ngay_dang_raw
       ? new Date(`${ngay_dang_raw}T00:00:00`)
       : new Date();
 
-    let filePath: string | null = null;
+    // Upload ảnh
+    let hinhUrl: string | null = null;
 
-    // ========================= Lưu file upload =========================
     if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const filename = uuidv4() + "-" + file.name.replace(/\s+/g, "_");
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
 
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      const fullPath = path.join(uploadDir, filename);
+      const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-      await mkdir(uploadDir, { recursive: true });
-      await writeFile(fullPath, buffer);
+      const uploadResult = await cloudinary.uploader.upload(base64, {
+        folder: "bai_viet",
+      });
 
-      filePath = "/uploads/" + filename;
+      hinhUrl = uploadResult.secure_url;
     }
 
-    // ========================= Lưu DB =========================
+    // Lưu DB
     const newItem = await BaiVietModel.create({
       tieu_de,
       noi_dung,
-      hinh: filePath,
       id_loai_bv,
-      luot_xem: 0,
       slug: slug ?? "",
       ngay_dang,
       an_hien: an_hien ? 1 : 0,
+      hinh: hinhUrl,
+      luot_xem: 0,
     });
 
-    const rawDate = newItem.getDataValue("ngay_dang");
-
-    const created: IBaiViet = {
+    // Convert sang IBaiViet
+    const saved: IBaiViet = {
       id: newItem.getDataValue("id"),
       tieu_de,
       noi_dung,
-      hinh: filePath,
       id_loai_bv,
-      luot_xem: 0,
       slug: slug ?? "",
+      hinh: hinhUrl,
+      luot_xem: 0,
       ngay_dang:
-        rawDate instanceof Date ? rawDate.toISOString() : String(rawDate),
+        newItem.getDataValue("ngay_dang") instanceof Date
+          ? newItem.getDataValue("ngay_dang").toISOString()
+          : String(newItem.getDataValue("ngay_dang")),
       an_hien,
     };
 
     return NextResponse.json({
       success: true,
       message: "Thêm bài viết thành công",
-      data: created,
+      data: saved,
     });
-  } catch (error) {
-    console.error("Lỗi POST bài viết:", error);
+  } catch (err) {
+    console.error("Lỗi POST bài viết:", err);
     return NextResponse.json(
       { success: false, message: "Lỗi khi thêm bài viết" },
       { status: 500 }

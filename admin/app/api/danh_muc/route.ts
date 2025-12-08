@@ -4,11 +4,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { Op, WhereOptions } from "sequelize";
 import { DanhMucModel } from "@/app/lib/models";
 import { IDanhMuc } from "@/app/lib/cautrucdata";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { Buffer } from "buffer";
+import { UploadApiResponse, UploadApiErrorResponse, v2 as cloudinary } from "cloudinary";
 
-// Loại bỏ any bằng cách khai báo kiểu JSON của Sequelize
+// Khởi tạo Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
+
+// Loại bỏ any bằng kiểu JSON của Sequelize
 interface DanhMucRaw extends Omit<IDanhMuc, "an_hien"> {
   an_hien: number | boolean;
 }
@@ -17,14 +24,14 @@ interface DanhMucRaw extends Omit<IDanhMuc, "an_hien"> {
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
-    const searchParams = url.searchParams;
+    const params = url.searchParams;
 
-    const page = Number(searchParams.get("page") || 1);
-    const limit = Number(searchParams.get("limit") || 7);
+    const page = Number(params.get("page") || 1);
+    const limit = Number(params.get("limit") || 7);
     const offset = (page - 1) * limit;
 
-    const search = searchParams.get("search") || "";
-    const an_hien = searchParams.get("an_hien");
+    const search = params.get("search") || "";
+    const an_hien = params.get("an_hien");
 
     const where: WhereOptions = {};
 
@@ -33,7 +40,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (an_hien === "0" || an_hien === "1") {
-      where["an_hien"] = an_hien === "1" ? 1 : 0;
+      where["an_hien"] = Number(an_hien);
     }
 
     const { count, rows } = await DanhMucModel.findAndCountAll({
@@ -43,14 +50,9 @@ export async function GET(req: NextRequest) {
       offset,
     });
 
-    // CHUẨN HÓA KIỂU TRẢ VỀ
     const data: IDanhMuc[] = rows.map((row) => {
       const raw = row.toJSON() as DanhMucRaw;
-
-      return {
-        ...raw,
-        an_hien: Boolean(raw.an_hien),
-      };
+      return { ...raw, an_hien: Boolean(raw.an_hien) };
     });
 
     return NextResponse.json({
@@ -62,12 +64,28 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("Lỗi GET danh mục:", error);
-
     return NextResponse.json(
       { success: false, message: "Lỗi khi lấy danh sách danh mục" },
       { status: 500 }
     );
   }
+}
+
+// ========================= CLOUDINARY UPLOAD =========================
+async function uploadToCloudinary(
+  file: File
+): Promise<UploadApiResponse | UploadApiErrorResponse> {
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream({ folder: "danh_muc" }, (err, result) => {
+        if (err || !result) reject(err);
+        else resolve(result);
+      })
+      .end(buffer);
+  });
 }
 
 // ========================= POST =========================
@@ -90,20 +108,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    let filePath: string | null = null;
+    let imageUrl: string | null = null;
 
-    // Nếu có file → lưu vào /public/uploads
+    // Nếu có ảnh → upload Cloudinary
     if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const filename = uuidv4() + "-" + file.name.replace(/\s+/g, "_");
-
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      const fullPath = path.join(uploadDir, filename);
-
-      await mkdir(uploadDir, { recursive: true });
-      await writeFile(fullPath, buffer);
-
-      filePath = "/uploads/" + filename;
+      const uploadResult = await uploadToCloudinary(file);
+      if ("secure_url" in uploadResult) {
+        imageUrl = uploadResult.secure_url;
+      }
     }
 
     // Lưu vào DB
@@ -113,7 +125,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       thu_tu,
       so_san_pham,
       an_hien: an_hien ? 1 : 0,
-      hinh: filePath,
+      hinh: imageUrl,
     });
 
     const created: IDanhMuc = {
@@ -122,7 +134,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       slug,
       thu_tu,
       so_san_pham,
-      hinh: filePath,
+      hinh: imageUrl,
       an_hien,
     };
 
@@ -133,7 +145,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     });
   } catch (error) {
     console.error("Lỗi POST danh mục:", error);
-
     return NextResponse.json(
       { success: false, message: "Lỗi khi thêm danh mục" },
       { status: 500 }
