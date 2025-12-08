@@ -20,7 +20,6 @@ export default function SuaMonThem() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  //  Lấy dữ liệu món thêm hiện tại
   useEffect(() => {
     if (!id) return;
 

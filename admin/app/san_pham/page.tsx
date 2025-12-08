@@ -672,12 +672,10 @@ function SanPhamListContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [confirmItem, setConfirmItem] = useState<ISanPham | null>(null);
 
-  // ---- Helper hiển thị ảnh an toàn ----
 const safeImage = (src: string | null | undefined) =>
   src ? encodeURI(src.trim()) : "/no-image.png";
 
 
-  // ---- Cập nhật URL ----
   const updateQuery = (updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([key, val]) => {
@@ -686,7 +684,6 @@ const safeImage = (src: string | null | undefined) =>
     router.push(`/san_pham?${params.toString()}`);
   };
 
-  // ---- Fetch API ----
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -707,7 +704,7 @@ const safeImage = (src: string | null | undefined) =>
         setTotalPages(json.totalPages);
       }
     } catch (err) {
-      console.error("❌ Lỗi tải sản phẩm:", err);
+      console.error(" Lỗi tải sản phẩm:", err);
     } finally {
       setLoading(false);
     }

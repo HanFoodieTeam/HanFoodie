@@ -16,20 +16,16 @@ interface IMonThemResponse {
 function MonThemListContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // ====== Đọc tham số từ URL ======
   const page = Number(searchParams.get("page") || 1);
   const searchQuery = searchParams.get("search") || "";
   const loai = searchParams.get("loai") || "all";
 
-  // ====== State quản lý dữ liệu ======
   const [data, setData] = useState<IMonThem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [search, setSearch] = useState<string>(searchQuery); // input tìm kiếm
+  const [search, setSearch] = useState<string>(searchQuery); 
   const [totalPages, setTotalPages] = useState<number>(1);
   const [confirmItem, setConfirmItem] = useState<IMonThem | null>(null);
 
-  // ====== Cập nhật URL query ======
   const updateQuery = (updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([key, val]) => {
@@ -38,8 +34,6 @@ function MonThemListContent() {
     });
     router.push(`/mon_them?${params.toString()}`);
   };
-
-  // ====== Gọi API lấy dữ liệu ======
   const fetchData = async () => {
     try {
       setLoading(true);
