@@ -149,23 +149,82 @@ export default function DatHangPage() {
     localStorage.setItem("donHangTam", JSON.stringify(updated));
   };
 
-const searchParams = useSearchParams();
-const status = searchParams.get("status");
-const idDon = searchParams.get("id");
-const maDon = searchParams.get("maDon");
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status");
+  const idDon = searchParams.get("id");
+  const maDon = searchParams.get("maDon");
 
-useEffect(() => {
-  if (status === "success" && idDon && maDon) {
-    setPopupSuccess({
-      open: true,
-      idDon: Number(idDon),
-      maDon: maDon
-    });
+  // useEffect(() => {
+  //   if (status === "success" && idDon && maDon) {
+  //     setPopupSuccess({
+  //       open: true,
+  //       idDon: Number(idDon),
+  //       maDon: maDon
+  //     });
 
-    // Xóa param khỏi URL để reload không mở lại popup
-    window.history.replaceState({}, "", "/dat_hang");
-  }
-}, [status, idDon, maDon]);
+  //     // Xóa param khỏi URL để reload không mở lại popup
+  //     window.history.replaceState({}, "", "/dat_hang");
+  //   }
+  // }, [status, idDon, maDon]);
+
+  useEffect(() => {
+    if (status === "success" && idDon && maDon) {
+
+      // ⭐ Đây là thời điểm duy nhất gọi email + xoá giỏ hàng
+
+      setPopupSuccess({
+        open: true,
+        idDon: Number(idDon),
+        maDon: maDon
+      });
+
+      // ❌ Chỗ này bạn mới xoá param
+      window.history.replaceState({}, "", "/dat_hang");
+    }
+  }, [status, idDon, maDon]);
+
+  useEffect(() => {
+    const xuLyThanhToan = async () => {
+      if (status === "success" && idDon && maDon) {
+        const donHangTam = localStorage.getItem("donHangTam");
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("nguoi_dung") || "{}");
+
+        if (donHangTam && token && user?.id) {
+          await fetch("/api/xu_ly_thanh_toan_vnpay", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              idDon: Number(idDon),
+              maDon,
+              idNguoiDung: user.id,
+              danhSach: JSON.parse(donHangTam),
+            }),
+          });
+
+          // 🧹 Sau khi backend xử lý xong mới xoá local
+          localStorage.removeItem("donHangTam");
+        }
+
+        // Hiển thị popup thành công
+        setPopupSuccess({
+          open: true,
+          idDon: Number(idDon),
+          maDon: maDon,
+        });
+
+        // Xóa query param khỏi URL
+        window.history.replaceState({}, "", "/dat_hang");
+      }
+    };
+
+    xuLyThanhToan();
+  }, [status, idDon, maDon]);
+
+
 
   const handleXacNhan = async () => {
     if (isLoading) return;
@@ -484,32 +543,32 @@ useEffect(() => {
 
 
 
-<Suspense fallback={null}>
-      {popupSuccess.open && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center max-w-sm w-full">
-            <h2 className="text-xl font-semibold text-green-600 mb-2">🎉 Đặt hàng thành công!</h2>
-            <p className="text-gray-700 mb-4">
-              Mã đơn hàng của bạn là:
-              <br />
-              <span className="font-bold text-[#e8594f]">{popupSuccess.maDon}</span>
-            </p>
-            <div className="flex justify-center gap-3">
-              <button
-                onClick={() => router.push("/")}
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium">
-                Trang chủ
-              </button>
+      <Suspense fallback={null}>
+        {popupSuccess.open && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-lg p-6 text-center max-w-sm w-full">
+              <h2 className="text-xl font-semibold text-green-600 mb-2">🎉 Đặt hàng thành công!</h2>
+              <p className="text-gray-700 mb-4">
+                Mã đơn hàng của bạn là:
+                <br />
+                <span className="font-bold text-[#e8594f]">{popupSuccess.maDon}</span>
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => router.push("/")}
+                  className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium">
+                  Trang chủ
+                </button>
 
-              <button
-                onClick={() => router.push(`/chi_tiet_don_hang/${popupSuccess.idDon}`)}
-                className="px-4 py-2 rounded-lg bg-[#e8594f] text-white hover:bg-[#d94b42] font-medium">
-                Xem chi tiết
-              </button>
+                <button
+                  onClick={() => router.push(`/chi_tiet_don_hang/${popupSuccess.idDon}`)}
+                  className="px-4 py-2 rounded-lg bg-[#e8594f] text-white hover:bg-[#d94b42] font-medium">
+                  Xem chi tiết
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
       </Suspense>
 
       {showVerifyPopup && (

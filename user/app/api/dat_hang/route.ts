@@ -182,7 +182,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         }
         await t.commit();
 
-        
+
 
 
         // Lấy thông tin gửi email 
@@ -250,24 +250,24 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const urlDonHang = `${baseUrl}/chi_tiet_don_hang/${donHang.id}`;
         const logoUrl = `${baseUrl}/logOut.png`;
         // gửi email khi cod  
-if (phuong_thuc_thanh_toan === true) {
-        await sendMail(
-            user.email,
-            "Đặt hàng thành công - HanFoodie",
-            orderEmailTemplate({
-                logoUrl,
-                hoTen: ho_ten_nguoi_nhan,
-                maDon: donHang.ma_don,
-                ngayDat: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
-                phuongThucThanhToan: phuong_thuc_thanh_toan ? "Thanh toán khi nhận hàng" : "Thanh toán online",
-                sanPhamListHtml,
-                tongTienHang: tong_tien_hang,
-                giamGia: so_tien_giam,
-                tongThanhToan: so_tien_thanh_toan,
-                urlDonHang
-            })
-        );
-    }
+        if (phuong_thuc_thanh_toan === true) {
+            await sendMail(
+                user.email,
+                "Đặt hàng thành công - HanFoodie",
+                orderEmailTemplate({
+                    logoUrl,
+                    hoTen: ho_ten_nguoi_nhan,
+                    maDon: donHang.ma_don,
+                    ngayDat: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
+                    phuongThucThanhToan: phuong_thuc_thanh_toan ? "Thanh toán khi nhận hàng" : "Thanh toán online",
+                    sanPhamListHtml,
+                    tongTienHang: tong_tien_hang,
+                    giamGia: so_tien_giam,
+                    tongThanhToan: so_tien_thanh_toan,
+                    urlDonHang
+                })
+            );
+        }
 
 
         return NextResponse.json({
