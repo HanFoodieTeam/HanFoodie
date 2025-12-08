@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import qs from "qs";
-import { BienTheModel, ChiTietDonHangModel, DonHangModel, GioHangModel, NguoiDungModel, SanPhamModel } from "@/app/lib/models";
+import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel, BienTheModel, SanPhamModel, NguoiDungModel } from "@/app/lib/models";
 import { sendMail } from "@/app/GUI_EMAIL/guiemail_dh";
 import { orderEmailTemplate } from "@/app/GUI_EMAIL/orderEmail";
 
@@ -92,22 +92,54 @@ if (thanhCong) {
     ]
   });
 
+
   const sanPhamListHtml = chiTiet
-    .map((item) => {
-      const sp = item.getDataValue("bien_the")?.getDataValue("san_pham");
-      const hinhSP = sp?.hinh ?? "";
-      return `
+  .map((item) => {
+    const row = item.get({ plain: true });
+
+    const bienThe = row.bien_the;
+    const sp = bienThe?.san_pham;
+
+    // ----- Tuỳ chọn -----
+    let textTuyChon = "";
+    if (row.json_tuy_chon) {
+      try {
+        const obj = JSON.parse(row.json_tuy_chon);
+        textTuyChon = Object.entries(obj)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(", ");
+      } catch {}
+    }
+
+    // ----- Món thêm -----
+    let textMonThem = "";
+    if (row.json_mon_them) {
+      try {
+        const arr = JSON.parse(row.json_mon_them);
+        if (Array.isArray(arr)) {
+          textMonThem = arr.map((m: any) => m.ten).join(", ");
+        }
+      } catch {}
+    }
+
+    return `
       <div style="display:flex; margin-bottom:14px;">
-        <img src="${hinhSP}" width="80" height="80"
+        <img src="${sp?.hinh ?? ""}" width="80" height="80"
           style="object-fit:cover; border-radius:6px; margin-right:12px;" />
         <div>
-          <strong>${sp?.ten}</strong><br/>
-          Số lượng: ${item.getDataValue("so_luong")}<br/>
-          Giá: ${item.getDataValue("don_gia").toLocaleString()}đ
+          <strong>${sp?.ten ?? "Sản phẩm"}</strong><br/>
+          ${bienThe?.ten ? `Biến thể: ${bienThe.ten}<br/>` : ""}
+          ${textTuyChon ? `Tuỳ chọn: ${textTuyChon}<br/>` : ""}
+          ${textMonThem ? `Món thêm: ${textMonThem}<br/>` : ""}
+          Số lượng: ${row.so_luong}<br/>
+          Giá: ${row.don_gia.toLocaleString()}đ
         </div>
       </div>`;
-    })
-    .join("");
+  })
+  .join("");
+
+
+
 
   const user = await NguoiDungModel.findByPk(don.id_nguoi_dung);
 
