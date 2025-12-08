@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 export default function ThemDanhMuc() {
   const router = useRouter();
 
@@ -125,7 +125,7 @@ export default function ThemDanhMuc() {
           />
 
           {hinhFile && (
-            <img
+            <Image
               src={URL.createObjectURL(hinhFile)}
               className="w-24 h-24 object-cover rounded mt-2 border"
               alt="Preview"

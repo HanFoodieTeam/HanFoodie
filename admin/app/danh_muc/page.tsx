@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IDanhMuc } from "@/app/lib/cautrucdata";
-
+import Image from "next/image";
 interface IDanhMucResponse {
   success: boolean;
   data: IDanhMuc[];
@@ -177,7 +177,7 @@ function DanhMucListContent() {
                     <td className="px-3 py-2 text-center">{(page - 1) * 10 + index + 1}</td>
                     <td className="px-3 py-2">
                       {dm.hinh ? (
-                        <img
+                        <Image
                           src={dm.hinh}
                           alt={dm.ten}
                           className="w-12 h-12 object-cover rounded-lg mx-auto"

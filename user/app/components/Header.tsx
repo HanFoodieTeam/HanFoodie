@@ -338,6 +338,7 @@ import LoginForm from "./dangnhap";
 import RegisterForm from "./dang_ky";
 import { INguoiDung } from "../lib/cautrucdata";
 import { useCart } from "../context/giohangcontext";
+import QuenMatKhauForm from "./quen_mat_khau";
 
 export default function Header() {
   const { count } = useCart();
@@ -348,6 +349,7 @@ export default function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [nguoiDung, setNguoiDung] = useState<INguoiDung | null>(null);
+  const [showForgot, setShowForgot] = useState(false);
 
   const timeoutRef = useRef<number | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -449,11 +451,10 @@ export default function Header() {
 
               <div
                 className={`absolute right-0 mt-2 w-44 bg-white text-gray-800 rounded-xl shadow-lg transform origin-top-right z-50
-                ${
-                  userOpen
+                ${userOpen
                     ? "opacity-100 visible translate-y-0 scale-100"
                     : "opacity-0 invisible translate-y-1 scale-95"
-                }
+                  }
                 transition-all duration-150`}
               >
                 <div className="py-1">
@@ -489,7 +490,10 @@ export default function Header() {
                       >
                         Đăng nhập
                       </button>
-                      <button className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg">
+                      <button
+                        onClick={() => setShowForgot(true)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
+                      >
                         Quên mật khẩu
                       </button>
                     </>
@@ -600,7 +604,13 @@ export default function Header() {
                   >
                     Đăng nhập
                   </button>
-                  <button className="block w-full text-left py-2">Quên mật khẩu</button>
+                  <button
+                    onClick={() => { setShowForgot(true); setOpenMenu(false); }}
+                    className="block w-full text-left py-2"
+                  >
+                    Quên mật khẩu
+                  </button>
+
                 </>
               )}
             </div>
@@ -656,6 +666,30 @@ export default function Header() {
                 localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
                 setNguoiDung(nguoiDungMoi);
               }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* POPUP QUÊN MẬT KHẨU */}
+      {showForgot && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/25"
+          onClick={() => setShowForgot(false)}
+        >
+          <div
+            className="relative bg-white rounded-2xl shadow-xl w-[400px] max-w-[90%] p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowForgot(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <QuenMatKhauForm
+              onClose={() => setShowForgot(false)}
             />
           </div>
         </div>

@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IBaiViet } from "@/app/lib/cautrucdata";
+import Image from "next/image";
 
 interface IBaiVietResponse {
   success: boolean;
@@ -185,7 +186,7 @@ function BaiVietListContent() {
                 <tr key={bv.id} className="border-t hover:bg-gray-100 transition-all">
                   <td className="px-3 py-2">
                     {bv.hinh ? (
-                      <img
+                      <Image
                         src={bv.hinh}
                         alt={bv.tieu_de}
                         className="w-12 h-12 object-cover rounded-lg mx-auto border border-gray-200 shadow-sm"
