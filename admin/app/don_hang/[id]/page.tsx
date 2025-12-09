@@ -23,7 +23,6 @@ const trangThaiColors: Record<TrangThaiDonHang, string> = {
 
 export default function DonHangDetail() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const [donHang, setDonHang] = useState<IDonHang | null>(null);
   const [loading, setLoading] = useState(true);
 
