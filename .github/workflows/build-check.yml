@@ -1,4 +1,4 @@
-name: Build Check for All Branches
+name: Build Admin & User Apps
 
 on:
   push:
@@ -7,27 +7,54 @@ on:
     branches: ["*"]
 
 jobs:
-  build:
+  build-admin:
+    name: Build Admin
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install Dependencies
+      - name: Install Admin Dependencies
+        working-directory: ./admin
         run: npm install
 
-      - name: Build Project
+      - name: Build Admin
+        working-directory: ./admin
         run: npm run build
 
-      - name: Upload Logs if Build Failed
+      - name: Upload Logs if Admin Build Fails
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: build-log
-          path: .
+          name: admin-build-log
+          path: ./admin
+
+  build-user:
+    name: Build User
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install User Dependencies
+        working-directory: ./user
+        run: npm install
+
+      - name: Build User
+        working-directory: ./user
+        run: npm run build
+
+      - name: Upload Logs if User Build Fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-build-log
+          path: ./user
