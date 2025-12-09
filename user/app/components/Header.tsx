@@ -14,7 +14,8 @@ import QuenMatKhauForm from "./quen_mat_khau";
 
 export default function Header() {
   const { count } = useCart();
-
+  const [showRegister, setShowRegister] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -339,6 +340,7 @@ export default function Header() {
             </button>
 
             <RegisterForm
+<<<<<<< HEAD
   onClose={() => setShowRegister(false)}
   onRegisterSuccess={(nguoiDungMoi) => {
     localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
@@ -349,6 +351,18 @@ export default function Header() {
     setShowLogin(true);
   }}
 />
+=======
+              onClose={() => setShowRegister(false)}
+              onRegisterSuccess={(nguoiDungMoi) => {
+                localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
+                setNguoiDung(nguoiDungMoi);
+              }}
+              onSwitchToLogin={() => {
+                setShowRegister(false);
+                setShowAuth(true); 
+              }}
+            />
+>>>>>>> 5f392d97dca988aef7fa29f145637b9cf12377cd
 
           </div>
         </div>
