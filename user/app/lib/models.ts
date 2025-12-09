@@ -56,23 +56,68 @@ export interface NguoiDungInstance
 export const NguoiDungModel = db.define<NguoiDungInstance>(
 
   "nguoi_dung",
-  {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    ho_ten: { type: DataTypes.STRING(255), allowNull: false },
-    sdt: { type: DataTypes.INTEGER, allowNull: true },
-    email: { type: DataTypes.STRING(255), allowNull: false },
-    hinh: { type: DataTypes.STRING(255), allowNull: true }, // ✅ thêm dòng này
-    tep_khach: { type: DataTypes.STRING(255), allowNull: true },
-    mat_khau: { type: DataTypes.STRING(255), allowNull: false },
-    trang_thai: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 0 },
-    ngay_sinh: { type: DataTypes.DATEONLY, allowNull: true },
-    ma_kich_hoat: { type: DataTypes.STRING(255), allowNull: true },
-    vai_tro: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 0 },
+   {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    hinh: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    ho_ten: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    sdt: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    email: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    tep_khach: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    mat_khau: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    trang_thai: {
+      type: DataTypes.TINYINT,
+      allowNull: true,
+      defaultValue: 0, // 0 khóa, 1 hoạt động
+    },
+    ngay_sinh: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    token_kich_hoat: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    vai_tro: {
+      type: DataTypes.TINYINT,
+      allowNull: true,
+      defaultValue: 0, // 0 user, 1 admin
+    },
     ngay_tao: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
-    }
+      defaultValue: DataTypes.NOW,
+    },
+    kich_hoat: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0, // 0 chưa kích hoạt - 1 đã kích hoạt
+    },
+    han_token: {
+      type: DataTypes.DATE,
+      allowNull: true, // cho phép null nếu đã kích hoạt hoặc chưa gửi token
+    },
   },
   {
     tableName: "nguoi_dung",

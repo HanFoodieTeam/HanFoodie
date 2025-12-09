@@ -213,7 +213,7 @@ function MonThemListContent() {
         <table className="min-w-full text-base text-left border-collapse table-fixed">
           <thead className="bg-gray-300 text-gray-700 uppercase text-base">
             <tr>
-              <th className="px-5 py-3 w-[180px] text-center">Hết món hôm nay</th>
+              <th className="px-5 py-3 w-[180px] text-center">Hết món</th>
               <th className="px-5 py-3 w-[240px] truncate">Tên món thêm</th>
               <th className="px-5 py-3 w-[120px] text-center">Giá thêm</th>
               <th className="px-5 py-3 w-[140px] text-center">Loại món</th>
@@ -399,7 +399,6 @@ function MonThemListContent() {
   );
 }
 
-//  Bọc Suspense để tránh lỗi build khi dùng useSearchParams 
 export default function MonThemList() {
   return (
     <Suspense fallback={<div className="p-4 text-lg">Đang tải...</div>}>

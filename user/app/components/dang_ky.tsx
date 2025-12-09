@@ -2,16 +2,18 @@
 "use client";
 
 import { useState } from "react";
-import { INguoiDung } from "../lib/cautrucdata";
+import { INguoiDung } from "@/app/lib/cautrucdata";
 
 interface RegisterFormProps {
   onClose: () => void;
   onRegisterSuccess: (nguoiDungMoi: INguoiDung) => void;
+  onSwitchToLogin: () => void;
 }
 
 export default function RegisterForm({
   onClose,
   onRegisterSuccess,
+  onSwitchToLogin
 }: RegisterFormProps) {
   const [ho_ten, setHoTen] = useState("");
   const [email, setEmail] = useState("");
@@ -98,10 +100,8 @@ export default function RegisterForm({
         disabled={dangThanhCong} />
 
       {thongBao && (
-        <p
-          className={`text-center text-sm ${
-            dangThanhCong ? "text-green-600 font-medium" : "text-red-500"
-          }`}>
+        <p className={`text-center text-sm ${dangThanhCong ? "text-green-600 font-medium" : "text-red-500"
+            }`}>
           {thongBao}
         </p>
       )}
@@ -110,11 +110,23 @@ export default function RegisterForm({
         type="submit"
         disabled={dangThanhCong}
         className={`w-full p-2 rounded text-white transition-all ${dangThanhCong
-            ? "bg-green-600 cursor-not-allowed"
-            : "bg-[#6A0A0A] hover:opacity-90"
+          ? "bg-green-600 cursor-not-allowed"
+          : "bg-[#6A0A0A] hover:opacity-90"
           }`}>
         {dangThanhCong ? " Đăng ký thành công" : "Đăng ký"}
       </button>
+      <p className="text-center text-sm">
+        Tôi đã có tài khoản tại HanFoodie?
+        <span className="text-blue-600 cursor-pointer ml-1 hover:underline"
+          onClick={(e) => {
+            e.preventDefault();
+            console.log("ĐÃ CLICK ĐĂNG KÝ");
+            onSwitchToLogin?.();
+          }}>
+          Đăng nhập
+        </span>
+      </p>
+
     </form>
   );
- }
+}

@@ -1165,6 +1165,262 @@
 // //     </UserLayout>
 // //   );
 // // }
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { CheckCircle, Package, XCircle } from 'lucide-react';
+import UserLayout from '@/app/components/UserLayout';
+import { useUser } from '@/app/hooks/useUser';
+import { IDonHang, IChiTietDonHang } from '@/app/lib/cautrucdata';
+
+interface IChiTietDonHangMoRong
+  extends Omit<IChiTietDonHang, 'json_tuy_chon' | 'json_mon_them'> {
+  bien_the?: {
+    id: number;
+    ten: string;
+    gia_them?: number;
+    san_pham?: {
+      id: number;
+      ten: string;
+      hinh?: string;
+      gia_goc?: number;
+    };
+  };
+  json_tuy_chon?: Record<string, string> | string;
+  json_mon_them?: { ten: string; gia?: number; so_luong?: number }[] | string;
+}
+
+export default function ChiTietDonHangPage() {
+  const { id } = useParams();
+  const user = useUser();
+  const [donHang, setDonHang] = useState<IDonHang | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    async function fetchChiTiet() {
+      try {
+        const res = await fetch(`/api/chi_tiet_don_hang/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+
+        if (res.ok) setDonHang(data);
+        else toast.error(data.thong_bao || 'Không tải được đơn hàng');
+      } catch {
+        toast.error('Lỗi khi tải đơn hàng');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchChiTiet();
+  }, [id, user]);
+
+  if (loading)
+    return <p className="p-8 text-center text-gray-600">Đang tải chi tiết đơn hàng...</p>;
+  if (!donHang)
+    return <p className="p-8 text-center text-gray-600">Không tìm thấy đơn hàng</p>;
+
+  const chiTiet = (donHang as unknown as { chi_tiet_don_hang: IChiTietDonHangMoRong[] })
+    .chi_tiet_don_hang ?? [];
+
+  const trangThaiSteps = [
+    { label: 'Đơn hàng chờ xác nhận', key: 'cho_xac_nhan' },
+    { label: 'Đơn hàng đã xác nhận', key: 'da_xac_nhan' },
+    { label: 'Đơn hàng đang giao', key: 'dang_giao' },
+    { label: 'Đơn hàng đã giao', key: 'da_giao' },
+    { label: 'Đơn hàng đã hủy', key: 'da_huy' },
+  ] as const;
+
+  const currentStep = Math.max(
+    0,
+    trangThaiSteps.findIndex((s) => s.key === donHang.trang_thai)
+  );
+
+  const nhanTrangThai = {
+    cho_xac_nhan: { text: '🕓 Chờ xác nhận', color: 'bg-yellow-100 text-yellow-700' },
+    da_xac_nhan: { text: '✅ Đã xác nhận', color: 'bg-green-100 text-green-700' },
+    dang_giao: { text: '🚚 Đang giao hàng', color: 'bg-blue-100 text-blue-700' },
+    da_giao: { text: '🎉 Đã giao thành công', color: 'bg-green-100 text-green-700' },
+    da_huy: { text: '❌ Đơn hàng đã hủy', color: 'bg-red-100 text-red-700' },
+  } as const;
+
+  const trangThaiHienTai = nhanTrangThai[donHang.trang_thai as keyof typeof nhanTrangThai];
+
+  return (
+    <UserLayout user={user!}>
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-[#6A0A0A]">
+            Chi tiết đơn hàng #{donHang.ma_don}
+          </h2>
+        </div>
+
+        {/* Thông tin người nhận */}
+        <div className="grid grid-cols-2 gap-3 mb-6 text-sm">
+          <p>
+            <strong>Ngày đặt:</strong> {new Date(donHang.ngay_tao).toLocaleString('vi-VN')}
+          </p>
+          <p>
+            <strong>Người nhận:</strong> {donHang.ho_ten_nguoi_nhan}
+          </p>
+          <p>
+            <strong>Điện thoại:</strong> {donHang.sdt_nguoi_nhan}
+          </p>
+          <p className="col-span-2">
+            <strong>Địa chỉ:</strong> {donHang.dia_chi_nguoi_nhan}
+          </p>
+          {donHang.ghi_chu && (
+            <p className="col-span-2">
+              <strong>Ghi chú:</strong> {donHang.ghi_chu}
+            </p>
+          )}
+        </div>
+
+       {/* Danh sách sản phẩm */}
+<div className="border-t pt-4">
+  {chiTiet.map((sp) => {
+    const giaGoc = sp.bien_the?.san_pham?.gia_goc ?? 0;
+    const giaBienThe = sp.bien_the?.gia_them ?? 0;
+
+    // Xử lý món thêm
+    const monThemArray: { ten: string }[] =
+      Array.isArray(sp.json_mon_them)
+        ? sp.json_mon_them
+        : typeof sp.json_mon_them === 'string'
+        ? JSON.parse(sp.json_mon_them || '[]')
+        : [];
+
+    // Xử lý tuỳ chọn
+    let tuyChonData: Record<string, string> = {};
+    if (typeof sp.json_tuy_chon === 'string') {
+      try {
+        tuyChonData = JSON.parse(sp.json_tuy_chon || '{}');
+      } catch {
+        tuyChonData = {};
+      }
+    } else if (sp.json_tuy_chon) {
+      tuyChonData = sp.json_tuy_chon;
+    }
+
+    const tuyChonHienThi = Object.entries(tuyChonData).filter(([_, v]) => v && v !== '');
+
+    const donGia = giaGoc + giaBienThe; // bỏ giá món thêm
+    const thanhTien = donGia * sp.so_luong;
+
+    return (
+      <div
+        key={sp.id}
+        className="flex items-start gap-4 border-b pb-4 mb-4 transition hover:bg-gray-50 rounded-lg p-2"
+      >
+        <img
+          src={sp.bien_the?.san_pham?.hinh || '/noimg.png'}
+          alt={sp.bien_the?.san_pham?.ten || ''}
+          className="w-20 h-20 object-cover rounded-lg shadow-sm"
+        />
+        <div className="flex-1">
+          <p className="font-medium text-base text-gray-800">
+            {sp.bien_the?.san_pham?.ten}
+          </p>
+
+          {/* Biến thể: chỉ tên, bỏ giá */}
+          {sp.bien_the?.ten && (
+            <p className="text-sm text-gray-600">
+              <strong>Biến thể:</strong> {sp.bien_the.ten}
+            </p>
+          )}
+
+          {/* Tuỳ chọn và món thêm trên cùng 1 hàng, món thêm chỉ tên */}
+          {(tuyChonHienThi.length > 0 || monThemArray.length > 0) && (
+            <p className="text-sm text-gray-600 flex flex-wrap gap-2">
+              {tuyChonHienThi.length > 0 && (
+                <span>
+                  <strong>Tuỳ chọn:</strong>{' '}
+                  {tuyChonHienThi.map(([k, v]) => `${k}: ${v}`).join(', ')}
+                </span>
+              )}
+              {monThemArray.length > 0 && (
+                <span>
+                  <strong>Món thêm:</strong>{' '}
+                  {monThemArray.filter((m) => m.ten).map((m) => m.ten).join(', ')}
+                </span>
+              )}
+            </p>
+          )}
+
+          <p className="text-sm text-gray-600">Số lượng: {sp.so_luong}</p>
+        </div>
+
+        <div className="text-right">
+          <p className="text-sm text-gray-600">
+            Đơn giá: {donGia.toLocaleString('vi-VN')}₫
+          </p>
+          <p className="text-[#D33C3C] font-semibold">
+            Thành tiền: {thanhTien.toLocaleString('vi-VN')}₫
+          </p>
+        </div>
+      </div>
+    );
+  })}
+</div>
+
+
+        {/* Tổng tiền */}
+        <div className="text-right mt-4 border-t pt-3">
+          <p>Tổng tiền hàng: {donHang.tong_tien_hang.toLocaleString('vi-VN')}₫</p>
+          <p>Giảm giá: -{donHang.so_tien_giam.toLocaleString('vi-VN')}₫</p>
+          <p className="text-lg font-semibold text-[#D33C3C]">
+            Tổng thanh toán: {donHang.so_tien_thanh_toan.toLocaleString('vi-VN')}₫
+          </p>
+        </div>
+
+        {/* Trạng thái */}
+        <div className="mt-8 border-t pt-5">
+          <h3 className="font-semibold text-lg mb-3 text-[#6A0A0A]">
+            Trạng thái đơn hàng
+          </h3>
+          <div className="relative pl-6">
+            {trangThaiSteps.map((step, index) => {
+              const isHuy = donHang.trang_thai === 'da_huy';
+              let icon;
+              let textColor = 'text-gray-400';
+              let fontWeight = '';
+
+              if (isHuy && step.key === 'da_huy') {
+                icon = <XCircle className="text-red-500" size={20} />;
+                textColor = 'text-red-600';
+                fontWeight = 'font-semibold';
+              } else if (isHuy) {
+                icon = <Package className="text-gray-300" size={20} />;
+              } else if (index < currentStep) {
+                icon = <CheckCircle className="text-green-500" size={20} />;
+                textColor = 'text-green-600';
+              } else if (index === currentStep) {
+                icon = <CheckCircle className="text-[#D33C3C]" size={20} />;
+                textColor = 'text-[#D33C3C] font-semibold';
+              } else {
+                icon = <Package className="text-gray-300" size={20} />;
+              }
+
+              return (
+                <div key={step.key} className={`flex items-start gap-3 mb-3 ${textColor} ${fontWeight}`}>
+                  {icon}
+                  <p>{step.label}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </UserLayout>
+  );
+}
 // 'use client';
 
 // import { useEffect, useState } from 'react';
@@ -1180,7 +1436,6 @@
 //   bien_the?: {
 //     id: number;
 //     ten: string;
-//     gia_them?: number;
 //     san_pham?: {
 //       id: number;
 //       ten: string;
@@ -1189,7 +1444,7 @@
 //     };
 //   };
 //   json_tuy_chon?: Record<string, string> | string;
-//   json_mon_them?: { ten: string; gia?: number; so_luong?: number }[] | string;
+//   json_mon_them?: { ten: string }[] | string;
 // }
 
 // export default function ChiTietDonHangPage() {
@@ -1230,12 +1485,11 @@
 //   const chiTiet = (donHang as unknown as { chi_tiet_don_hang: IChiTietDonHangMoRong[] })
 //     .chi_tiet_don_hang ?? [];
 
+//   // ✅ Chỉ giữ các trạng thái cần hiển thị
 //   const trangThaiSteps = [
-//     { label: 'Đơn hàng chờ xác nhận', key: 'cho_xac_nhan' },
-//     { label: 'Đơn hàng đã xác nhận', key: 'da_xac_nhan' },
-//     { label: 'Đơn hàng đang giao', key: 'dang_giao' },
-//     { label: 'Đơn hàng đã giao', key: 'da_giao' },
-//     { label: 'Đơn hàng đã hủy', key: 'da_huy' },
+//     { label: 'Đang giao', key: 'dang_giao' },
+//     { label: 'Đã giao', key: 'da_giao' },
+//     { label: 'Đã hủy', key: 'da_huy' },
 //   ] as const;
 
 //   const currentStep = Math.max(
@@ -1244,8 +1498,6 @@
 //   );
 
 //   const nhanTrangThai = {
-//     cho_xac_nhan: { text: '🕓 Chờ xác nhận', color: 'bg-yellow-100 text-yellow-700' },
-//     da_xac_nhan: { text: '✅ Đã xác nhận', color: 'bg-green-100 text-green-700' },
 //     dang_giao: { text: '🚚 Đang giao hàng', color: 'bg-blue-100 text-blue-700' },
 //     da_giao: { text: '🎉 Đã giao thành công', color: 'bg-green-100 text-green-700' },
 //     da_huy: { text: '❌ Đơn hàng đã hủy', color: 'bg-red-100 text-red-700' },
@@ -1296,18 +1548,15 @@
 //         {/* Danh sách sản phẩm */}
 //         <div className="border-t pt-4">
 //           {chiTiet.map((sp) => {
-//             const giaGoc = sp.bien_the?.san_pham?.gia_goc ?? 0;
-//             const giaBienThe = sp.bien_the?.gia_them ?? 0;
-
-//             // ✅ Xử lý món thêm
-//             const monThemArray: { ten: string; gia?: number; so_luong?: number }[] =
+//             // Xử lý món thêm (bỏ giá và số lượng)
+//             const monThemArray: { ten: string }[] =
 //               Array.isArray(sp.json_mon_them)
 //                 ? sp.json_mon_them
 //                 : typeof sp.json_mon_them === 'string'
 //                 ? JSON.parse(sp.json_mon_them || '[]')
 //                 : [];
 
-//             // ✅ Xử lý tuỳ chọn
+//             // Xử lý tuỳ chọn
 //             let tuyChonData: Record<string, string> = {};
 //             if (typeof sp.json_tuy_chon === 'string') {
 //               try {
@@ -1318,17 +1567,7 @@
 //             } else if (sp.json_tuy_chon) {
 //               tuyChonData = sp.json_tuy_chon;
 //             }
-
 //             const tuyChonHienThi = Object.entries(tuyChonData).filter(([_, v]) => v && v !== '');
-
-//             // ✅ Tính tổng món thêm (có nhân số lượng)
-//             const tongMonThem = monThemArray.reduce(
-//               (t: number, m) => t + ((m.gia ?? 0) * (m.so_luong ?? 1)),
-//               0
-//             );
-
-//             const donGia = giaGoc + giaBienThe + tongMonThem;
-//             const thanhTien = donGia * sp.so_luong;
 
 //             return (
 //               <div
@@ -1347,10 +1586,7 @@
 
 //                   {sp.bien_the?.ten && (
 //                     <p className="text-sm text-gray-600">
-//                       <strong>Biến thể:</strong> {sp.bien_the.ten}{' '}
-//                       {giaBienThe > 0 && (
-//                         <span>(+{giaBienThe.toLocaleString('vi-VN')}₫)</span>
-//                       )}
+//                       <strong>Biến thể:</strong> {sp.bien_the.ten}
 //                     </p>
 //                   )}
 
@@ -1363,29 +1599,11 @@
 
 //                   {monThemArray.length > 0 && (
 //                     <p className="text-sm text-gray-600">
-//                       <strong>Món thêm:</strong>{' '}
-//                       {monThemArray
-//                         .filter((m) => m.ten)
-//                         .map(
-//                           (m) =>
-//                             `${m.ten} (+${(m.gia ?? 0).toLocaleString('vi-VN')}₫ ×${
-//                               m.so_luong ?? 1
-//                             })`
-//                         )
-//                         .join(', ')}
+//                       <strong>Món thêm:</strong> {monThemArray.map((m) => m.ten).join(', ')}
 //                     </p>
 //                   )}
 
 //                   <p className="text-sm text-gray-600">Số lượng: {sp.so_luong}</p>
-//                 </div>
-
-//                 <div className="text-right">
-//                   <p className="text-sm text-gray-600">
-//                     Đơn giá: {donGia.toLocaleString('vi-VN')}₫
-//                   </p>
-//                   <p className="text-[#D33C3C] font-semibold">
-//                     Thành tiền: {thanhTien.toLocaleString('vi-VN')}₫
-//                   </p>
 //                 </div>
 //               </div>
 //             );
@@ -1442,242 +1660,3 @@
 //     </UserLayout>
 //   );
 // }
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import toast from 'react-hot-toast';
-import { CheckCircle, Package, XCircle } from 'lucide-react';
-import UserLayout from '@/app/components/UserLayout';
-import { useUser } from '@/app/hooks/useUser';
-import { IDonHang, IChiTietDonHang } from '@/app/lib/cautrucdata';
-
-interface IChiTietDonHangMoRong
-  extends Omit<IChiTietDonHang, 'json_tuy_chon' | 'json_mon_them'> {
-  bien_the?: {
-    id: number;
-    ten: string;
-    san_pham?: {
-      id: number;
-      ten: string;
-      hinh?: string;
-      gia_goc?: number;
-    };
-  };
-  json_tuy_chon?: Record<string, string> | string;
-  json_mon_them?: { ten: string }[] | string;
-}
-
-export default function ChiTietDonHangPage() {
-  const { id } = useParams();
-  const user = useUser();
-  const [donHang, setDonHang] = useState<IDonHang | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!user) return;
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    async function fetchChiTiet() {
-      try {
-        const res = await fetch(`/api/chi_tiet_don_hang/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-
-        if (res.ok) setDonHang(data);
-        else toast.error(data.thong_bao || 'Không tải được đơn hàng');
-      } catch {
-        toast.error('Lỗi khi tải đơn hàng');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchChiTiet();
-  }, [id, user]);
-
-  if (loading)
-    return <p className="p-8 text-center text-gray-600">Đang tải chi tiết đơn hàng...</p>;
-  if (!donHang)
-    return <p className="p-8 text-center text-gray-600">Không tìm thấy đơn hàng</p>;
-
-  const chiTiet = (donHang as unknown as { chi_tiet_don_hang: IChiTietDonHangMoRong[] })
-    .chi_tiet_don_hang ?? [];
-
-  // ✅ Chỉ giữ các trạng thái cần hiển thị
-  const trangThaiSteps = [
-    { label: 'Đang giao', key: 'dang_giao' },
-    { label: 'Đã giao', key: 'da_giao' },
-    { label: 'Đã hủy', key: 'da_huy' },
-  ] as const;
-
-  const currentStep = Math.max(
-    0,
-    trangThaiSteps.findIndex((s) => s.key === donHang.trang_thai)
-  );
-
-  const nhanTrangThai = {
-    dang_giao: { text: '🚚 Đang giao hàng', color: 'bg-blue-100 text-blue-700' },
-    da_giao: { text: '🎉 Đã giao thành công', color: 'bg-green-100 text-green-700' },
-    da_huy: { text: '❌ Đơn hàng đã hủy', color: 'bg-red-100 text-red-700' },
-  } as const;
-
-  const trangThaiHienTai = nhanTrangThai[donHang.trang_thai as keyof typeof nhanTrangThai];
-
-  return (
-    <UserLayout user={user!}>
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-[#6A0A0A]">
-            Chi tiết đơn hàng #{donHang.ma_don}
-          </h2>
-          {trangThaiHienTai && (
-            <span
-              className={`px-3 py-1 text-sm font-medium rounded-full ${trangThaiHienTai.color}`}
-            >
-              {trangThaiHienTai.text}
-            </span>
-          )}
-        </div>
-
-        {/* Thông tin người nhận */}
-        <div className="grid grid-cols-2 gap-3 mb-6 text-sm">
-          <p>
-            <strong>Ngày đặt:</strong> {new Date(donHang.ngay_tao).toLocaleString('vi-VN')}
-          </p>
-          <p>
-            <strong>Trạng thái:</strong> {donHang.trang_thai}
-          </p>
-          <p>
-            <strong>Người nhận:</strong> {donHang.ho_ten_nguoi_nhan}
-          </p>
-          <p>
-            <strong>Điện thoại:</strong> {donHang.sdt_nguoi_nhan}
-          </p>
-          <p className="col-span-2">
-            <strong>Địa chỉ:</strong> {donHang.dia_chi_nguoi_nhan}
-          </p>
-          {donHang.ghi_chu && (
-            <p className="col-span-2">
-              <strong>Ghi chú:</strong> {donHang.ghi_chu}
-            </p>
-          )}
-        </div>
-
-        {/* Danh sách sản phẩm */}
-        <div className="border-t pt-4">
-          {chiTiet.map((sp) => {
-            // Xử lý món thêm (bỏ giá và số lượng)
-            const monThemArray: { ten: string }[] =
-              Array.isArray(sp.json_mon_them)
-                ? sp.json_mon_them
-                : typeof sp.json_mon_them === 'string'
-                ? JSON.parse(sp.json_mon_them || '[]')
-                : [];
-
-            // Xử lý tuỳ chọn
-            let tuyChonData: Record<string, string> = {};
-            if (typeof sp.json_tuy_chon === 'string') {
-              try {
-                tuyChonData = JSON.parse(sp.json_tuy_chon || '{}');
-              } catch {
-                tuyChonData = {};
-              }
-            } else if (sp.json_tuy_chon) {
-              tuyChonData = sp.json_tuy_chon;
-            }
-            const tuyChonHienThi = Object.entries(tuyChonData).filter(([_, v]) => v && v !== '');
-
-            return (
-              <div
-                key={sp.id}
-                className="flex items-start gap-4 border-b pb-4 mb-4 transition hover:bg-gray-50 rounded-lg p-2"
-              >
-                <img
-                  src={sp.bien_the?.san_pham?.hinh || '/noimg.png'}
-                  alt={sp.bien_the?.san_pham?.ten || ''}
-                  className="w-20 h-20 object-cover rounded-lg shadow-sm"
-                />
-                <div className="flex-1">
-                  <p className="font-medium text-base text-gray-800">
-                    {sp.bien_the?.san_pham?.ten}
-                  </p>
-
-                  {sp.bien_the?.ten && (
-                    <p className="text-sm text-gray-600">
-                      <strong>Biến thể:</strong> {sp.bien_the.ten}
-                    </p>
-                  )}
-
-                  {tuyChonHienThi.length > 0 && (
-                    <p className="text-sm text-gray-600">
-                      <strong>Tuỳ chọn:</strong>{' '}
-                      {tuyChonHienThi.map(([k, v]) => `${k}: ${v}`).join(', ')}
-                    </p>
-                  )}
-
-                  {monThemArray.length > 0 && (
-                    <p className="text-sm text-gray-600">
-                      <strong>Món thêm:</strong> {monThemArray.map((m) => m.ten).join(', ')}
-                    </p>
-                  )}
-
-                  <p className="text-sm text-gray-600">Số lượng: {sp.so_luong}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Tổng tiền */}
-        <div className="text-right mt-4 border-t pt-3">
-          <p>Tổng tiền hàng: {donHang.tong_tien_hang.toLocaleString('vi-VN')}₫</p>
-          <p>Giảm giá: -{donHang.so_tien_giam.toLocaleString('vi-VN')}₫</p>
-          <p className="text-lg font-semibold text-[#D33C3C]">
-            Tổng thanh toán: {donHang.so_tien_thanh_toan.toLocaleString('vi-VN')}₫
-          </p>
-        </div>
-
-        {/* Trạng thái */}
-        <div className="mt-8 border-t pt-5">
-          <h3 className="font-semibold text-lg mb-3 text-[#6A0A0A]">
-            Trạng thái đơn hàng
-          </h3>
-          <div className="relative pl-6">
-            {trangThaiSteps.map((step, index) => {
-              const isHuy = donHang.trang_thai === 'da_huy';
-              let icon;
-              let textColor = 'text-gray-400';
-              let fontWeight = '';
-
-              if (isHuy && step.key === 'da_huy') {
-                icon = <XCircle className="text-red-500" size={20} />;
-                textColor = 'text-red-600';
-                fontWeight = 'font-semibold';
-              } else if (isHuy) {
-                icon = <Package className="text-gray-300" size={20} />;
-              } else if (index < currentStep) {
-                icon = <CheckCircle className="text-green-500" size={20} />;
-                textColor = 'text-green-600';
-              } else if (index === currentStep) {
-                icon = <CheckCircle className="text-[#D33C3C]" size={20} />;
-                textColor = 'text-[#D33C3C] font-semibold';
-              } else {
-                icon = <Package className="text-gray-300" size={20} />;
-              }
-
-              return (
-                <div key={step.key} className={`flex items-start gap-3 mb-3 ${textColor} ${fontWeight}`}>
-                  {icon}
-                  <p>{step.label}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </UserLayout>
-  );
-}
