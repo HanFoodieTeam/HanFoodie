@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (!user) return NextResponse.json({ thong_bao: "User không tồn tại" }, { status: 404 });
 
     await user.update({
-      kich_hoat: 1,
+      kich_hoat: true,
       token_kich_hoat: null,
       han_token: null,
     });
