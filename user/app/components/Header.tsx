@@ -10,6 +10,7 @@ import LoginForm from "./dangnhap";
 import RegisterForm from "./dang_ky";
 import { INguoiDung } from "../lib/cautrucdata";
 import { useCart } from "../context/giohangcontext";
+import QuenMatKhauForm from "./quen_mat_khau";
 
 export default function Header() {
   const { count } = useCart();
@@ -21,6 +22,7 @@ export default function Header() {
   const [isLogin, setIsLogin] = useState(true);
 
   const [nguoiDung, setNguoiDung] = useState<INguoiDung | null>(null);
+  const [showForgot, setShowForgot] = useState(false);
 
   const timeoutRef = useRef<number | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -162,8 +164,10 @@ export default function Header() {
                       >
                         Đăng nhập
                       </button>
-
-                      <button className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg">
+                      <button
+                        onClick={() => setShowForgot(true)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
+                      >
                         Quên mật khẩu
                       </button>
                     </>
@@ -274,7 +278,13 @@ export default function Header() {
                   >
                     Đăng nhập
                   </button>
-                  <button className="block w-full text-left py-2">Quên mật khẩu</button>
+                  <button
+                    onClick={() => { setShowForgot(true); setOpenMenu(false); }}
+                    className="block w-full text-left py-2"
+                  >
+                    Quên mật khẩu
+                  </button>
+
                 </>
               )}
             </div>
@@ -298,24 +308,75 @@ export default function Header() {
             >
               <X className="w-5 h-5" />
             </button>
+            <LoginForm
+  onClose={() => setShowLogin(false)}
+  onLoginSuccess={(nguoiDungMoi) => setNguoiDung(nguoiDungMoi)}
+  onSwitchToRegister={() => {
+    setShowLogin(false);
+    setShowRegister(true);
+  }}
+/>
 
-            {isLogin ? (
-              <LoginForm
-                onClose={() => setShowAuth(false)}
-                onLoginSuccess={(nguoiDungMoi) => setNguoiDung(nguoiDungMoi)}
-                onSwitchToRegister={() => setIsLogin(false)}
-              />
-            ) : (
-              <RegisterForm
-                onClose={() => setShowAuth(false)}
-                onRegisterSuccess={(nguoiDungMoi) => setNguoiDung(nguoiDungMoi)}
-                onSwitchToLogin={() => setIsLogin(true)}
-              />
-            )}
           </div>
         </div>
       )}
 
+      {/* POPUP REGISTER */}
+      {showRegister && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/25"
+          onClick={() => setShowRegister(false)}
+        >
+          <div
+            className="relative bg-white rounded-2xl shadow-xl w-[400px] max-w-[90%] p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowRegister(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <RegisterForm
+  onClose={() => setShowRegister(false)}
+  onRegisterSuccess={(nguoiDungMoi) => {
+    localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
+    setNguoiDung(nguoiDungMoi);
+  }}
+  onSwitchToLogin={() => {
+    setShowRegister(false);
+    setShowLogin(true);
+  }}
+/>
+
+          </div>
+        </div>
+      )}
+
+      {/* POPUP QUÊN MẬT KHẨU */}
+      {showForgot && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/25"
+          onClick={() => setShowForgot(false)}
+        >
+          <div
+            className="relative bg-white rounded-2xl shadow-xl w-[400px] max-w-[90%] p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowForgot(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <QuenMatKhauForm
+              onClose={() => setShowForgot(false)}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

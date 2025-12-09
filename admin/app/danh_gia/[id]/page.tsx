@@ -22,10 +22,8 @@ function DanhGiaChiTiet() {
   const [loading, setLoading] = useState(true);
   const [tenSanPham, setTenSanPham] = useState<string>("");
 
-  // Modal ẩn hiện
   const [confirmAnHien, setConfirmAnHien] = useState<IDanhGia | null>(null);
 
-  // Hàm che tên
   function maskName(name: string): string {
     if (!name || name.trim().length < 2) return "******";
     const clean = name.trim();

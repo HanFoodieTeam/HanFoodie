@@ -26,7 +26,7 @@ function MonThemListContent() {
   //  State quản lý dữ liệu 
   const [data, setData] = useState<IMonThem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [search, setSearch] = useState<string>(searchQuery); // input tìm kiếm
+  const [search, setSearch] = useState<string>(searchQuery); 
   const [totalPages, setTotalPages] = useState<number>(1);
   const [confirmItem, setConfirmItem] = useState<IMonThem | null>(null);
 

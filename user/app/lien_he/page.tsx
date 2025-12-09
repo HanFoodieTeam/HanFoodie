@@ -100,8 +100,9 @@ export default function LienHePage() {
         </div>
 
         {/* Cột phải: Form liên hệ */}
-        <div className="md:w-1/2 flex flex-col items-center justify-center p-6 overflow-hidden">
-          <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
+        {/* Cột phải: Form liên hệ */}
+        <div className="md:w-1/2 flex flex-col items-center justify-center p-6 bg-white overflow-hidden">
+          <div className="w-full max-w-md">
             <h1 className="text-3xl font-bold text-[#6A0A0A] mb-4">Liên hệ với HanFoodie</h1>
             <p className="text-gray-700 mb-6 text-sm md:text-base">
               Vui lòng điền thông tin để chúng tôi hỗ trợ bạn nhanh nhất.
@@ -113,28 +114,28 @@ export default function LienHePage() {
                 name="name"
                 placeholder="Tên của bạn"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6A0A0A] transition"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#6A0A0A] transition"
               />
               <input
                 type="text"
                 name="subject"
                 placeholder="Tiêu đề"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6A0A0A] transition"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#6A0A0A] transition"
               />
               <input
                 type="email"
                 name="email"
                 placeholder="Email"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6A0A0A] transition"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#6A0A0A] transition"
               />
               <textarea
                 name="message"
                 rows={5}
                 placeholder="Nội dung liên hệ..."
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6A0A0A] transition resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#6A0A0A] transition resize-none"
               />
 
               {!isSending ? (
@@ -160,6 +161,7 @@ export default function LienHePage() {
             </form>
           </div>
         </div>
+
       </div>
     </div>
   );

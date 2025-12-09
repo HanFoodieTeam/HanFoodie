@@ -1254,7 +1254,7 @@ export default function ChiTietDonHangPage() {
   const trangThaiHienTai = nhanTrangThai[donHang.trang_thai as keyof typeof nhanTrangThai];
 
   return (
-    <UserLayout user={user!}>
+    <UserLayout >
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-[#6A0A0A]">

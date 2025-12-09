@@ -260,13 +260,13 @@ export interface INguoiDung {
   email: string;
   tep_khach?: string | null;
   mat_khau: string;
-  trang_thai?: boolean | number;
-  ngay_sinh?: string | Date | null;  // DATEONLY -> string hoặc Date
+  trang_thai?: boolean;
+  ngay_sinh?: string | null | Date;
   token_kich_hoat?: string | null;
-  vai_tro?: boolean | number;
-  ngay_tao?: Date | string | null;   // DATE -> Date
-  kich_hoat?: boolean | number;
-  han_token?: Date | string | null;  // DATE -> Date
+  vai_tro?: boolean;
+  ngay_tao?:string | null | Date;
+  kich_hoat:boolean;
+  han_token:string | null;
 }
 
 

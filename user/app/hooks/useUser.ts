@@ -1,21 +1,65 @@
+// // // // // // 'use client';
+
+// // // // // // import { useState, useEffect } from 'react';
+
+// // // // // // interface User {
+// // // // // //   id: number;
+// // // // // //   ho_ten: string;
+// // // // // //   hinh?: string | null;
+// // // // // //   email?: string;
+// // // // // // }
+
+// // // // // // let cachedUser: User | null = null;
+
+// // // // // // export function useUser() {
+// // // // // //   const [user, setUser] = useState<User | null>(cachedUser);
+
+// // // // // //   useEffect(() => {
+// // // // // //     if (cachedUser) return; // 🔹 Nếu đã có user thì không fetch lại
+
+// // // // // //     const token = localStorage.getItem('token');
+// // // // // //     if (!token) return;
+
+// // // // // //     async function fetchUser() {
+// // // // // //       try {
+// // // // // //         const res = await fetch('/api/ho_so', {
+// // // // // //           headers: { Authorization: `Bearer ${token}` },
+// // // // // //         });
+// // // // // //         const data = await res.json();
+// // // // // //         if (res.ok && data.nguoi_dung) {
+// // // // // //           cachedUser = data.nguoi_dung; // 🔹 Lưu vào cache
+// // // // // //           setUser(data.nguoi_dung);
+// // // // // //         }
+// // // // // //       } catch (err) {
+// // // // // //         console.error('🔥 Lỗi lấy hồ sơ:', err);
+// // // // // //       }
+// // // // // //     }
+
+// // // // // //     fetchUser();
+// // // // // //   }, []);
+
+// // // // // //   return user;
+// // // // // // }
 // // // // // 'use client';
 
 // // // // // import { useState, useEffect } from 'react';
 
-// // // // // interface User {
+// // // // // interface IUser {
 // // // // //   id: number;
 // // // // //   ho_ten: string;
-// // // // //   hinh?: string | null;
 // // // // //   email?: string;
+// // // // //   sdt?: string;
+// // // // //   ngay_sinh?: string;
+// // // // //   hinh?: string | null;
 // // // // // }
 
-// // // // // let cachedUser: User | null = null;
+// // // // // let cachedUser: IUser | null = null;
 
 // // // // // export function useUser() {
-// // // // //   const [user, setUser] = useState<User | null>(cachedUser);
+// // // // //   const [user, setUser] = useState<IUser | null>(cachedUser);
 
 // // // // //   useEffect(() => {
-// // // // //     if (cachedUser) return; // 🔹 Nếu đã có user thì không fetch lại
+// // // // //     if (cachedUser) return; // ⚡ Nếu đã có cache thì khỏi fetch lại
 
 // // // // //     const token = localStorage.getItem('token');
 // // // // //     if (!token) return;
@@ -27,15 +71,81 @@
 // // // // //         });
 // // // // //         const data = await res.json();
 // // // // //         if (res.ok && data.nguoi_dung) {
-// // // // //           cachedUser = data.nguoi_dung; // 🔹 Lưu vào cache
+// // // // //           cachedUser = data.nguoi_dung;
 // // // // //           setUser(data.nguoi_dung);
 // // // // //         }
 // // // // //       } catch (err) {
-// // // // //         console.error('🔥 Lỗi lấy hồ sơ:', err);
+// // // // //         console.error('Lỗi khi tải user:', err);
 // // // // //       }
 // // // // //     }
 
 // // // // //     fetchUser();
+// // // // //   }, []);
+
+// // // // //   return user;
+// // // // // // }
+// // // // // 'use client';
+
+// // // // // import { useState, useEffect } from 'react';
+
+// // // // // interface IUser {
+// // // // //   id: number;
+// // // // //   ho_ten: string;
+// // // // //   email?: string;
+// // // // //   sdt?: string;
+// // // // //   ngay_sinh?: string;
+// // // // //   hinh?: string | null;
+// // // // // }
+
+// // // // // let cachedUser: IUser | null = null;
+// // // // // let listeners: ((u: IUser | null) => void)[] = [];
+
+// // // // // export function updateUser(newUser: IUser | null) {
+// // // // //   cachedUser = newUser;
+// // // // //   localStorage.setItem('user', JSON.stringify(newUser));
+// // // // //   listeners.forEach((fn) => fn(newUser));
+// // // // // }
+
+// // // // // export function useUser() {
+// // // // //   const [user, setUser] = useState<IUser | null>(cachedUser);
+
+// // // // //   useEffect(() => {
+// // // // //     if (cachedUser) {
+// // // // //       setUser(cachedUser);
+// // // // //       return;
+// // // // //     }
+
+// // // // //     const stored = localStorage.getItem('user');
+// // // // //     if (stored) {
+// // // // //       const parsed = JSON.parse(stored);
+// // // // //       cachedUser = parsed;
+// // // // //       setUser(parsed);
+// // // // //     }
+
+// // // // //     const token = localStorage.getItem('token');
+// // // // //     if (!token) return;
+
+// // // // //     (async () => {
+// // // // //       try {
+// // // // //         const res = await fetch('/api/ho_so', {
+// // // // //           headers: { Authorization: `Bearer ${token}` },
+// // // // //         });
+// // // // //         const data = await res.json();
+// // // // //         if (res.ok && data.nguoi_dung) {
+// // // // //           cachedUser = data.nguoi_dung;
+// // // // //           localStorage.setItem('user', JSON.stringify(data.nguoi_dung));
+// // // // //           setUser(data.nguoi_dung);
+// // // // //         }
+// // // // //       } catch (err) {
+// // // // //         console.error('Lỗi khi tải user:', err);
+// // // // //       }
+// // // // //     })();
+
+// // // // //     const listener = (u: IUser | null) => setUser(u);
+// // // // //     listeners.push(listener);
+// // // // //     return () => {
+// // // // //       listeners = listeners.filter((fn) => fn !== listener);
+// // // // //     };
 // // // // //   }, []);
 
 // // // // //   return user;
@@ -54,55 +164,16 @@
 // // // // }
 
 // // // // let cachedUser: IUser | null = null;
-
-// // // // export function useUser() {
-// // // //   const [user, setUser] = useState<IUser | null>(cachedUser);
-
-// // // //   useEffect(() => {
-// // // //     if (cachedUser) return; // ⚡ Nếu đã có cache thì khỏi fetch lại
-
-// // // //     const token = localStorage.getItem('token');
-// // // //     if (!token) return;
-
-// // // //     async function fetchUser() {
-// // // //       try {
-// // // //         const res = await fetch('/api/ho_so', {
-// // // //           headers: { Authorization: `Bearer ${token}` },
-// // // //         });
-// // // //         const data = await res.json();
-// // // //         if (res.ok && data.nguoi_dung) {
-// // // //           cachedUser = data.nguoi_dung;
-// // // //           setUser(data.nguoi_dung);
-// // // //         }
-// // // //       } catch (err) {
-// // // //         console.error('Lỗi khi tải user:', err);
-// // // //       }
-// // // //     }
-
-// // // //     fetchUser();
-// // // //   }, []);
-
-// // // //   return user;
-// // // // // }
-// // // // 'use client';
-
-// // // // import { useState, useEffect } from 'react';
-
-// // // // interface IUser {
-// // // //   id: number;
-// // // //   ho_ten: string;
-// // // //   email?: string;
-// // // //   sdt?: string;
-// // // //   ngay_sinh?: string;
-// // // //   hinh?: string | null;
-// // // // }
-
-// // // // let cachedUser: IUser | null = null;
 // // // // let listeners: ((u: IUser | null) => void)[] = [];
 
 // // // // export function updateUser(newUser: IUser | null) {
+// // // //   if (newUser?.hinh) {
+// // // //     newUser.hinh = `${newUser.hinh}?v=${Date.now()}`; // 🔥 chống cache
+// // // //   }
+
 // // // //   cachedUser = newUser;
 // // // //   localStorage.setItem('user', JSON.stringify(newUser));
+
 // // // //   listeners.forEach((fn) => fn(newUser));
 // // // // }
 
@@ -131,10 +202,19 @@
 // // // //           headers: { Authorization: `Bearer ${token}` },
 // // // //         });
 // // // //         const data = await res.json();
+
 // // // //         if (res.ok && data.nguoi_dung) {
-// // // //           cachedUser = data.nguoi_dung;
-// // // //           localStorage.setItem('user', JSON.stringify(data.nguoi_dung));
-// // // //           setUser(data.nguoi_dung);
+// // // //           const fixedUser = {
+// // // //             ...data.nguoi_dung,
+// // // //             hinh: data.nguoi_dung.hinh
+// // // //               ? `${data.nguoi_dung.hinh}?v=${Date.now()}`
+// // // //               : null,
+// // // //           };
+
+// // // //           cachedUser = fixedUser;
+// // // //           localStorage.setItem('user', JSON.stringify(fixedUser));
+
+// // // //           setUser(fixedUser);
 // // // //         }
 // // // //       } catch (err) {
 // // // //         console.error('Lỗi khi tải user:', err);
@@ -143,6 +223,7 @@
 
 // // // //     const listener = (u: IUser | null) => setUser(u);
 // // // //     listeners.push(listener);
+
 // // // //     return () => {
 // // // //       listeners = listeners.filter((fn) => fn !== listener);
 // // // //     };
@@ -166,15 +247,23 @@
 // // // let cachedUser: IUser | null = null;
 // // // let listeners: ((u: IUser | null) => void)[] = [];
 
-// // // export function updateUser(newUser: IUser | null) {
-// // //   if (newUser?.hinh) {
-// // //     newUser.hinh = `${newUser.hinh}?v=${Date.now()}`; // 🔥 chống cache
-// // //   }
+// // // // 🔥 FIXED: đảm bảo lưu đủ dữ liệu
+// // // export function updateUser(u: IUser | null) {
+// // //   if (!u) return;
 
-// // //   cachedUser = newUser;
-// // //   localStorage.setItem('user', JSON.stringify(newUser));
+// // //   const fullUser: IUser = {
+// // //     id: u.id,
+// // //     ho_ten: u.ho_ten,
+// // //     email: u.email,
+// // //     sdt: u.sdt,
+// // //     ngay_sinh: u.ngay_sinh,
+// // //     hinh: u.hinh ? `${u.hinh}?v=${Date.now()}` : null,
+// // //   };
 
-// // //   listeners.forEach((fn) => fn(newUser));
+// // //   cachedUser = fullUser;
+// // //   localStorage.setItem('user', JSON.stringify(fullUser));
+
+// // //   listeners.forEach((fn) => fn(fullUser));
 // // // }
 
 // // // export function useUser() {
@@ -204,17 +293,21 @@
 // // //         const data = await res.json();
 
 // // //         if (res.ok && data.nguoi_dung) {
-// // //           const fixedUser = {
-// // //             ...data.nguoi_dung,
+// // //           const fullUser: IUser = {
+// // //             id: data.nguoi_dung.id,
+// // //             ho_ten: data.nguoi_dung.ho_ten,
+// // //             email: data.nguoi_dung.email,
+// // //             sdt: data.nguoi_dung.sdt,
+// // //             ngay_sinh: data.nguoi_dung.ngay_sinh,
 // // //             hinh: data.nguoi_dung.hinh
 // // //               ? `${data.nguoi_dung.hinh}?v=${Date.now()}`
 // // //               : null,
 // // //           };
 
-// // //           cachedUser = fixedUser;
-// // //           localStorage.setItem('user', JSON.stringify(fixedUser));
+// // //           cachedUser = fullUser;
+// // //           localStorage.setItem('user', JSON.stringify(fullUser));
 
-// // //           setUser(fixedUser);
+// // //           setUser(fullUser);
 // // //         }
 // // //       } catch (err) {
 // // //         console.error('Lỗi khi tải user:', err);
@@ -235,7 +328,7 @@
 
 // // import { useState, useEffect } from 'react';
 
-// // interface IUser {
+// // export interface INguoiDung {
 // //   id: number;
 // //   ho_ten: string;
 // //   email?: string;
@@ -244,14 +337,13 @@
 // //   hinh?: string | null;
 // // }
 
-// // let cachedUser: IUser | null = null;
-// // let listeners: ((u: IUser | null) => void)[] = [];
+// // let cachedUser: INguoiDung | null = null;
+// // let listeners: ((u: INguoiDung | null) => void)[] = [];
 
-// // // 🔥 FIXED: đảm bảo lưu đủ dữ liệu
-// // export function updateUser(u: IUser | null) {
+// // export function updateUser(u: INguoiDung | null) {
 // //   if (!u) return;
 
-// //   const fullUser: IUser = {
+// //   const fullUser: INguoiDung = {
 // //     id: u.id,
 // //     ho_ten: u.ho_ten,
 // //     email: u.email,
@@ -262,12 +354,11 @@
 
 // //   cachedUser = fullUser;
 // //   localStorage.setItem('user', JSON.stringify(fullUser));
-
 // //   listeners.forEach((fn) => fn(fullUser));
 // // }
 
 // // export function useUser() {
-// //   const [user, setUser] = useState<IUser | null>(cachedUser);
+// //   const [user, setUser] = useState<INguoiDung | null>(cachedUser);
 
 // //   useEffect(() => {
 // //     if (cachedUser) {
@@ -291,22 +382,19 @@
 // //           headers: { Authorization: `Bearer ${token}` },
 // //         });
 // //         const data = await res.json();
-
 // //         if (res.ok && data.nguoi_dung) {
-// //           const fullUser: IUser = {
+// //           const fullUser: INguoiDung = {
 // //             id: data.nguoi_dung.id,
 // //             ho_ten: data.nguoi_dung.ho_ten,
 // //             email: data.nguoi_dung.email,
-// //             sdt: data.nguoi_dung.sdt,
-// //             ngay_sinh: data.nguoi_dung.ngay_sinh,
+// //             sdt: data.nguoi_dung.sdt || null,
+// //             ngay_sinh: data.nguoi_dung.ngay_sinh || null,
 // //             hinh: data.nguoi_dung.hinh
 // //               ? `${data.nguoi_dung.hinh}?v=${Date.now()}`
 // //               : null,
 // //           };
-
 // //           cachedUser = fullUser;
 // //           localStorage.setItem('user', JSON.stringify(fullUser));
-
 // //           setUser(fullUser);
 // //         }
 // //       } catch (err) {
@@ -314,7 +402,7 @@
 // //       }
 // //     })();
 
-// //     const listener = (u: IUser | null) => setUser(u);
+// //     const listener = (u: INguoiDung | null) => setUser(u);
 // //     listeners.push(listener);
 
 // //     return () => {
@@ -328,7 +416,7 @@
 
 // import { useState, useEffect } from 'react';
 
-// export interface INguoiDung {
+// export interface IUser {
 //   id: number;
 //   ho_ten: string;
 //   email?: string;
@@ -337,13 +425,14 @@
 //   hinh?: string | null;
 // }
 
-// let cachedUser: INguoiDung | null = null;
-// let listeners: ((u: INguoiDung | null) => void)[] = [];
+// let cachedUser: IUser | null = null;
+// let listeners: ((u: IUser | null) => void)[] = [];
 
-// export function updateUser(u: INguoiDung | null) {
+// // 🔥 Cập nhật cache + localStorage
+// export function updateUser(u: IUser | null) {
 //   if (!u) return;
 
-//   const fullUser: INguoiDung = {
+//   const fullUser: IUser = {
 //     id: u.id,
 //     ho_ten: u.ho_ten,
 //     email: u.email,
@@ -354,11 +443,12 @@
 
 //   cachedUser = fullUser;
 //   localStorage.setItem('user', JSON.stringify(fullUser));
+
 //   listeners.forEach((fn) => fn(fullUser));
 // }
 
 // export function useUser() {
-//   const [user, setUser] = useState<INguoiDung | null>(cachedUser);
+//   const [user, setUser] = useState<IUser | null>(cachedUser);
 
 //   useEffect(() => {
 //     if (cachedUser) {
@@ -368,7 +458,7 @@
 
 //     const stored = localStorage.getItem('user');
 //     if (stored) {
-//       const parsed = JSON.parse(stored);
+//       const parsed = JSON.parse(stored) as IUser;
 //       cachedUser = parsed;
 //       setUser(parsed);
 //     }
@@ -382,17 +472,19 @@
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 //         const data = await res.json();
+
 //         if (res.ok && data.nguoi_dung) {
-//           const fullUser: INguoiDung = {
+//           const fullUser: IUser = {
 //             id: data.nguoi_dung.id,
 //             ho_ten: data.nguoi_dung.ho_ten,
 //             email: data.nguoi_dung.email,
-//             sdt: data.nguoi_dung.sdt || null,
-//             ngay_sinh: data.nguoi_dung.ngay_sinh || null,
+//             sdt: data.nguoi_dung.sdt,
+//             ngay_sinh: data.nguoi_dung.ngay_sinh,
 //             hinh: data.nguoi_dung.hinh
 //               ? `${data.nguoi_dung.hinh}?v=${Date.now()}`
 //               : null,
 //           };
+
 //           cachedUser = fullUser;
 //           localStorage.setItem('user', JSON.stringify(fullUser));
 //           setUser(fullUser);
@@ -402,7 +494,7 @@
 //       }
 //     })();
 
-//     const listener = (u: INguoiDung | null) => setUser(u);
+//     const listener = (u: IUser | null) => setUser(u);
 //     listeners.push(listener);
 
 //     return () => {
@@ -412,9 +504,9 @@
 
 //   return user;
 // }
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export interface IUser {
   id: number;
@@ -425,80 +517,77 @@ export interface IUser {
   hinh?: string | null;
 }
 
+// GLOBAL STATE TRONG BỘ NHỚ
 let cachedUser: IUser | null = null;
+
+// DANH SÁCH COMPONENT LẮNG NGHE
 let listeners: ((u: IUser | null) => void)[] = [];
 
-// 🔥 Cập nhật cache + localStorage
+// ===============================
+// 🔥 HÀM CẬP NHẬT USER GLOBAL
+// ===============================
 export function updateUser(u: IUser | null) {
-  if (!u) return;
+  cachedUser = u;
 
-  const fullUser: IUser = {
-    id: u.id,
-    ho_ten: u.ho_ten,
-    email: u.email,
-    sdt: u.sdt,
-    ngay_sinh: u.ngay_sinh,
-    hinh: u.hinh ? `${u.hinh}?v=${Date.now()}` : null,
-  };
+  if (u) {
+    localStorage.setItem("user", JSON.stringify(u));
+  } else {
+    localStorage.removeItem("user");
+  }
 
-  cachedUser = fullUser;
-  localStorage.setItem('user', JSON.stringify(fullUser));
-
-  listeners.forEach((fn) => fn(fullUser));
+  // thông báo cho mọi component dùng useUser
+  listeners.forEach((fn) => fn(u));
 }
 
+// ===============================
+// 🔥 HOOK LẤY USER TOÀN APP
+// ===============================
 export function useUser() {
   const [user, setUser] = useState<IUser | null>(cachedUser);
 
   useEffect(() => {
+    // Nếu đã có cache → dùng ngay
     if (cachedUser) {
       setUser(cachedUser);
-      return;
-    }
-
-    const stored = localStorage.getItem('user');
-    if (stored) {
-      const parsed = JSON.parse(stored) as IUser;
-      cachedUser = parsed;
-      setUser(parsed);
-    }
-
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    (async () => {
-      try {
-        const res = await fetch('/api/ho_so', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-
-        if (res.ok && data.nguoi_dung) {
-          const fullUser: IUser = {
-            id: data.nguoi_dung.id,
-            ho_ten: data.nguoi_dung.ho_ten,
-            email: data.nguoi_dung.email,
-            sdt: data.nguoi_dung.sdt,
-            ngay_sinh: data.nguoi_dung.ngay_sinh,
-            hinh: data.nguoi_dung.hinh
-              ? `${data.nguoi_dung.hinh}?v=${Date.now()}`
-              : null,
-          };
-
-          cachedUser = fullUser;
-          localStorage.setItem('user', JSON.stringify(fullUser));
-          setUser(fullUser);
-        }
-      } catch (err) {
-        console.error('Lỗi khi tải user:', err);
+    } else {
+      // Lấy từ localStorage
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        const parsed = JSON.parse(stored) as IUser;
+        cachedUser = parsed;
+        setUser(parsed);
       }
-    })();
+    }
 
+    // Nếu có token thì gọi API để lấy user mới nhất
+    const token = localStorage.getItem("token");
+    if (token) {
+      (async () => {
+        try {
+          const res = await fetch("/api/ho_so", {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const json = await res.json();
+
+          if (res.ok && json.nguoi_dung) {
+            cachedUser = json.nguoi_dung;
+            localStorage.setItem("user", JSON.stringify(json.nguoi_dung));
+            setUser(json.nguoi_dung);
+          }
+        } catch (e) {
+          console.log("Không thể load hồ sơ:", e);
+        }
+      })();
+    }
+
+    // Đăng ký listener
     const listener = (u: IUser | null) => setUser(u);
     listeners.push(listener);
 
     return () => {
-      listeners = listeners.filter((fn) => fn !== listener);
+      listeners = listeners.filter((l) => l !== listener);
     };
   }, []);
 
