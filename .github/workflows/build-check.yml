@@ -1,4 +1,4 @@
-name: Build Admin & User Apps
+name: CI - Admin & User Build
 
 on:
   push:
@@ -7,34 +7,8 @@ on:
     branches: ["*"]
 
 jobs:
-  build-admin:
-    name: Build Admin
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Admin Dependencies
-        working-directory: ./admin
-        run: npm install
-
-      - name: Build Admin
-        working-directory: ./admin
-        run: npm run build
-
-      - name: Upload Logs if Admin Build Fails
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: admin-build-log
-          path: ./admin
-
-  build-user:
-    name: Build User
+  user:
+    name: "1️⃣ Build User"
     runs-on: ubuntu-latest
 
     steps:
@@ -52,9 +26,36 @@ jobs:
         working-directory: ./user
         run: npm run build
 
-      - name: Upload Logs if User Build Fails
+      - name: Upload Logs if User Build Failed
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: user-build-log
           path: ./user
+
+  admin:
+    name: "2️⃣ Build Admin"
+    runs-on: ubuntu-latest
+    needs: user     # Đảm bảo chạy sau User
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Admin Dependencies
+        working-directory: ./admin
+        run: npm install
+
+      - name: Build Admin
+        working-directory: ./admin
+        run: npm run build
+
+      - name: Upload Logs if Admin Build Failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-build-log
+          path: ./admin
