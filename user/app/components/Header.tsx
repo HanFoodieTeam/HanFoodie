@@ -1303,20 +1303,15 @@ export default function Header() {
             >
               <X className="w-5 h-5" />
             </button>
+            <LoginForm
+  onClose={() => setShowLogin(false)}
+  onLoginSuccess={(nguoiDungMoi) => setNguoiDung(nguoiDungMoi)}
+  onSwitchToRegister={() => {
+    setShowLogin(false);
+    setShowRegister(true);
+  }}
+/>
 
-            {isLogin ? (
-              <LoginForm
-                onClose={() => setShowAuth(false)}
-                onLoginSuccess={(nguoiDungMoi) => setNguoiDung(nguoiDungMoi)}
-                onSwitchToRegister={() => setIsLogin(false)}
-              />
-            ) : (
-              <RegisterForm
-                onClose={() => setShowAuth(false)}
-                onRegisterSuccess={(nguoiDungMoi) => setNguoiDung(nguoiDungMoi)}
-                onSwitchToLogin={() => setIsLogin(true)}
-              />
-            )}
           </div>
         </div>
       )}
@@ -1339,12 +1334,17 @@ export default function Header() {
             </button>
 
             <RegisterForm
-              onClose={() => setShowRegister(false)}
-              onRegisterSuccess={(nguoiDungMoi) => {
-                localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
-                setNguoiDung(nguoiDungMoi);
-              }}
-            />
+  onClose={() => setShowRegister(false)}
+  onRegisterSuccess={(nguoiDungMoi) => {
+    localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
+    setNguoiDung(nguoiDungMoi);
+  }}
+  onSwitchToLogin={() => {
+    setShowRegister(false);
+    setShowLogin(true);
+  }}
+/>
+
           </div>
         </div>
       )}

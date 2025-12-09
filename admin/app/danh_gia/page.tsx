@@ -15,7 +15,6 @@ function DanhGiaTable() {
   const [data, setData] = useState<IThongKeDanhGia[]>([]);
   const [loading, setLoading] = useState(true);
 
-  //  Lấy query params
   const search = searchParams.get("search") || "";
   const sortOrder = (searchParams.get("sort") as "asc" | "desc") || "asc";
   const page = Number(searchParams.get("page") || "1");
@@ -23,7 +22,6 @@ function DanhGiaTable() {
 
   const pageSize = 7;
 
-  //  Cập nhật query trên URL
   const updateQuery = (params: Record<string, string>) => {
     const newParams = new URLSearchParams(searchParams.toString());
     Object.entries(params).forEach(([key, value]) => {

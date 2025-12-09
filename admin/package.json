@@ -19,6 +19,7 @@
     "prisma": "^7.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-hot-toast": "^2.6.0",
     "sequelize": "^6.37.7"
   },
   "devDependencies": {

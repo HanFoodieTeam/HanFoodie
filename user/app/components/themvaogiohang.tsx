@@ -13,7 +13,6 @@
 // } from "@/app/lib/cautrucdata";
 // import LoginForm from "./dangnhap";
 // import { useCart } from "../context/giohangcontext";
-// import RegisterForm from "./dang_ky";
 
 
 // interface ILoaiTuyChonMoRong extends ILoaiTuyChon {
@@ -39,9 +38,6 @@
 
 //   // States
 //   const [qty, setQty] = useState(1);
-//   const [isLogin, setIsLogin] = useState(true);
-
-
 //   const [selectedBienThe, setSelectedBienThe] = useState<number | null>(
 //     bien_the.length ? bien_the[0].id ?? null : null
 //   );
@@ -435,37 +431,22 @@
 //               </button>
 //             </div>
 
+//             {/* Modal đăng nhập giữ nguyên */}
 //             {showLogin && (
 //               <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-//                 <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md relative"
-//                   onClick={(e) => e.stopPropagation()}>
-
+//                 <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md relative">
 //                   <button
 //                     onClick={() => setShowLogin(false)}
 //                     className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
 //                     ✕
 //                   </button>
-
-//                   {isLogin ? (
-//                     <LoginForm
-//                       onClose={() => setShowLogin(false)}
-//                       onLoginSuccess={handleLoginSuccess}
-//                       onSwitchToRegister={() => setIsLogin(false)}
-//                     />
-//                   ) : (
-//                     <RegisterForm
-//                       onClose={() => setShowLogin(false)}
-//                       onRegisterSuccess={() => {
-//                         setIsLogin(true);
-//                       }}
-//                       onSwitchToLogin={() => setIsLogin(true)}
-//                     />
-//                   )}
-
+//                   <LoginForm
+//                     onClose={() => setShowLogin(false)}
+//                     onLoginSuccess={handleLoginSuccess}
+//                   />
 //                 </div>
 //               </div>
 //             )}
-
 //           </div>
 
 //         </motion.div>
@@ -474,6 +455,7 @@
 //   );
 // }
 
+///component/themvaogio
 
 
 "use client";
@@ -492,7 +474,6 @@ import {
 import LoginForm from "./dangnhap";
 import { useCart } from "../context/giohangcontext";
 import RegisterForm from "./dang_ky";
-import PopupXacThuc from "./popup_xac_thuc";
 
 
 interface ILoaiTuyChonMoRong extends ILoaiTuyChon {
@@ -512,26 +493,16 @@ interface ThemVaoGioHangProps {
   };
   onClose: () => void;
   onRequireLogin: (action: "cart" | "buy") => void;
-  onLoginActionComplete?: (callback: () => void) => void;
-  onActionRequest: (callback: () => void) => void;
-
 }
 
-export default function ThemVaoGioHang({
-  data,
-  onClose,
-  onRequireLogin,
-  onLoginActionComplete,
-  onActionRequest
-}: ThemVaoGioHangProps) {
+export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVaoGioHangProps) {
   const { san_pham, bien_the = [], mon_them = [], tuy_chon = [] } = data || {};
 
   // States
   const [qty, setQty] = useState(1);
   const [isLogin, setIsLogin] = useState(true);
 
-  const [showVerifyPopup, setShowVerifyPopup] = useState(false);
-  const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(null);
+
   const [selectedBienThe, setSelectedBienThe] = useState<number | null>(
     bien_the.length ? bien_the[0].id ?? null : null
   );
@@ -599,11 +570,12 @@ export default function ThemVaoGioHang({
   const handleAddToCart = async () => {
     const userData = localStorage.getItem("nguoi_dung");
 
-    if (!userData) {
-      onClose();
-      onActionRequest(() => handleAddToCart());
-      return onRequireLogin("cart");
-    }
+    //  Nếu chưa đăng nhập → hiện form login
+  if (!userData) {
+  onRequireLogin("buy");
+  return;
+}
+
 
 
     const user = JSON.parse(userData);
@@ -665,11 +637,11 @@ export default function ThemVaoGioHang({
     const userData = localStorage.getItem("nguoi_dung");
     const user = userData ? JSON.parse(userData) : null;
 
-    if (!userData) {
-      onClose();
-      onActionRequest(() => handleBuyNow());
-      return onRequireLogin("buy");
-    }
+  if (!userData) {
+  onRequireLogin("cart");
+  return;
+}
+
 
 
 
@@ -934,11 +906,37 @@ export default function ThemVaoGioHang({
               </button>
             </div>
 
-            {showVerifyPopup && (
-              <PopupXacThuc
-                email={JSON.parse(localStorage.getItem("nguoi_dung")!).email}
-                onClose={() => setShowVerifyPopup(false)} />
+            {showLogin && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md relative"
+                  onClick={(e) => e.stopPropagation()}>
+
+                  <button
+                    onClick={() => setShowLogin(false)}
+                    className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                    ✕
+                  </button>
+
+                  {isLogin ? (
+                    <LoginForm
+                      onClose={() => setShowLogin(false)}
+                      onLoginSuccess={handleLoginSuccess}
+                      onSwitchToRegister={() => setIsLogin(false)}
+                    />
+                  ) : (
+                    <RegisterForm
+                      onClose={() => setShowLogin(false)}
+                      onRegisterSuccess={() => {
+                        setIsLogin(true);
+                      }}
+                      onSwitchToLogin={() => setIsLogin(true)}
+                    />
+                  )}
+
+                </div>
+              </div>
             )}
+
           </div>
 
         </motion.div>
@@ -946,5 +944,6 @@ export default function ThemVaoGioHang({
     </AnimatePresence>
   );
 }
+
 
 
