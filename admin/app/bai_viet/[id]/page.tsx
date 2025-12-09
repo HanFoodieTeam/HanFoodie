@@ -75,8 +75,8 @@ export default function SuaBaiViet() {
         type === "number"
           ? Number(value)
           : type === "radio"
-          ? value === "true"
-          : value,
+            ? value === "true"
+            : value,
     }));
   };
 
@@ -195,9 +195,13 @@ export default function SuaBaiViet() {
             <Image
               src={form.hinh}
               alt="Preview"
-              className="mt-2 w-32 rounded shadow"
+              width={128}   // thêm width
+              height={128}  // thêm height
+              className="mt-2 rounded shadow"
             />
           )}
+
+
         </div>
 
         {/* Loại bài viết */}

@@ -18,8 +18,9 @@ function DanhMucListContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const page = Number(searchParams.get("page") || 1);
-  const searchQuery = searchParams.get("search") || "";
+  // --- State cho page & search ---
+  const [page, setPage] = useState<number>(() => Number(searchParams.get("page")) || 1);
+  const [searchQuery, setSearchQuery] = useState<string>(() => searchParams.get("search") || "");
 
   const [data, setData] = useState<IDanhMuc[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -27,29 +28,21 @@ function DanhMucListContent() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [confirmItem, setConfirmItem] = useState<IDanhMuc | null>(null);
 
-  const updateQuery = useCallback(
-    (updates: Record<string, string | undefined>) => {
-      const params = new URLSearchParams(searchParams.toString());
-      Object.entries(updates).forEach(([key, val]) => {
-        if (val && val !== "") params.set(key, val);
-        else params.delete(key);
-      });
-      router.push(`/danh_muc?${params.toString()}`);
-    },
-    [router, searchParams]
-  );
+  // --- Update URL khi page/searchQuery thay đổi ---
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (page) params.set("page", String(page));
+    router.replace(`/danh_muc?${params.toString()}`);
+  }, [searchQuery, page, router]);
 
+  // --- Fetch dữ liệu ---
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const qs = new URLSearchParams({
-        page: String(page),
-        search: searchQuery,
-      });
-
+      const qs = new URLSearchParams({ page: String(page), search: searchQuery });
       const res = await fetch(`/api/danh_muc?${qs.toString()}`);
       const json: IDanhMucResponse = await res.json();
-
       if (json.success) {
         setData(json.data);
         setTotalPages(json.totalPages);
@@ -68,12 +61,14 @@ function DanhMucListContent() {
     fetchData();
   }, [fetchData]);
 
+  // --- Delay tìm kiếm ---
   useEffect(() => {
     const delay = setTimeout(() => {
-      updateQuery({ search: search.trim(), page: "1" });
+      setPage(1);
+      setSearchQuery(search.trim());
     }, 500);
     return () => clearTimeout(delay);
-  }, [search, updateQuery]);
+  }, [search]);
 
   const handleToggleClick = (item: IDanhMuc) => setConfirmItem(item);
 
@@ -95,7 +90,7 @@ function DanhMucListContent() {
         prev.map((dm) => (dm.id === id ? { ...dm, an_hien: newState } : dm))
       );
     } catch (err) {
-      console.error("❌ PATCH lỗi:", err);
+      console.error(" PATCH lỗi:", err);
       alert("Không thể cập nhật trạng thái!");
     } finally {
       setConfirmItem(null);
@@ -104,7 +99,7 @@ function DanhMucListContent() {
 
   const goToPage = (p: number) => {
     if (p < 1 || p > totalPages) return;
-    updateQuery({ page: String(p) });
+    setPage(p);
   };
 
   return (
@@ -126,7 +121,8 @@ function DanhMucListContent() {
               <button
                 onClick={() => {
                   setSearch("");
-                  updateQuery({ search: "", page: "1" });
+                  setSearchQuery("");
+                  setPage(1);
                 }}
                 className="absolute right-2 text-gray-500 hover:text-red-500"
                 title="Xoá nội dung"
@@ -175,50 +171,47 @@ function DanhMucListContent() {
                 </td>
               </tr>
             ) : (
-              <>
-                {data.map((dm, index) => (
-                  <tr key={dm.id} className="border-t hover:bg-gray-100 transition-all">
-                    <td className="px-3 py-2 text-center">{(page - 1) * 10 + index + 1}</td>
-                    <td className="px-3 py-2">
-                      {dm.hinh ? (
-                        <Image
-                          src={dm.hinh}
-                          alt={dm.ten}
-                          width={48}
-                          height={48}
-                          className="rounded-lg mx-auto object-cover"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto flex items-center justify-center text-gray-400 text-xs">
-                          Chưa có
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-3 py-2 font-medium">{dm.ten}</td>
-                    <td className="px-3 py-2 text-center">{dm.thu_tu}</td>
-                    <td
-                      className="px-3 py-2 text-center cursor-pointer select-none"
-                      onClick={() => handleToggleClick(dm)}
-                      title="Bấm để đổi trạng thái"
+              data.map((dm, index) => (
+                <tr key={dm.id} className="border-t hover:bg-gray-100 transition-all">
+                  <td className="px-3 py-2 text-center">{(page - 1) * 10 + index + 1}</td>
+                  <td className="px-3 py-2">
+                    {dm.hinh ? (
+                      <Image
+                        src={dm.hinh}
+                        alt={dm.ten}
+                        width={48}
+                        height={48}
+                        className="rounded-lg mx-auto object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto flex items-center justify-center text-gray-400 text-xs">
+                        Chưa có
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-3 py-2 font-medium">{dm.ten}</td>
+                  <td className="px-3 py-2 text-center">{dm.thu_tu}</td>
+                  <td
+                    className="px-3 py-2 text-center cursor-pointer select-none"
+                    onClick={() => handleToggleClick(dm)}
+                    title="Bấm để đổi trạng thái"
+                  >
+                    <span
+                      className={`inline-block w-5 h-5 rounded-full border-2 border-gray-300 transition-colors ${
+                        dm.an_hien ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
+                      }`}
+                    ></span>
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    <Link
+                      href={`/danh_muc/${dm.id}`}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
                     >
-                      <span
-                        className={`inline-block w-5 h-5 rounded-full border-2 border-gray-300 transition-colors ${
-                          dm.an_hien ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
-                        }`}
-                      ></span>
-                    </td>
-
-                    <td className="px-3 py-2 text-center">
-                      <Link
-                        href={`/danh_muc/${dm.id}`}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        Sửa
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </>
+                      Sửa
+                    </Link>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
