@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { Op, WhereOptions } from "sequelize";
 import { DanhMucModel } from "@/app/lib/models";
 import { IDanhMuc } from "@/app/lib/cautrucdata";
-import { v4 as uuidv4 } from "uuid";
 import { Buffer } from "buffer";
 import { UploadApiResponse, UploadApiErrorResponse, v2 as cloudinary } from "cloudinary";
 

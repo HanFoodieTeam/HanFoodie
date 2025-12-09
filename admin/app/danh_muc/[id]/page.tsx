@@ -86,8 +86,8 @@ export default function SuaDanhMuc() {
         type === "number"
           ? Number(value)
           : type === "radio"
-          ? value === "true"
-          : value,
+            ? value === "true"
+            : value,
     }));
   };
 
@@ -190,12 +190,27 @@ export default function SuaDanhMuc() {
           {uploading && <p className="text-blue-500">Đang upload...</p>}
 
           {form.hinh && (
-            <Image
-              src={form.hinh}
-              alt="preview"
-              className="w-24 h-24 object-cover rounded border mt-2"
-            />
+            <>
+              {form.hinh.startsWith("data:") ? (
+                // Nếu là base64 (preview file upload)
+                <img
+                  src={form.hinh}
+                  alt="preview"
+                  className="w-24 h-24 object-cover rounded border mt-2"
+                />
+              ) : (
+                // Nếu là URL bên ngoài
+                <Image
+                  src={form.hinh}
+                  alt="preview"
+                  width={100}
+                  height={100}
+                  className="object-cover rounded border mt-2"
+                />
+              )}
+            </>
           )}
+
         </div>
 
         {/* Thứ tự */}
