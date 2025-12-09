@@ -339,7 +339,7 @@ export default function SanPhamHotSection({ data }: Props) {
         Sản phẩm nổi bật
       </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
         {data.map((sp) => {
           const isFavorite = favorites.includes(sp.id);
 
@@ -349,11 +349,6 @@ export default function SanPhamHotSection({ data }: Props) {
               className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden relative group"
             >
               <div className="relative">
-                <img
-                  src={sp.hinh || "/noimg.png"}
-                  alt={sp.ten}
-                  className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                />
 
                 <button
                   onClick={() => toggleFavorite(sp.id)}

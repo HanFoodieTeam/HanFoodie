@@ -1,9 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
-import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel, BienTheModel, SanPhamModel } from "@/app/lib/models";
+import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel, BienTheModel, SanPhamModel, NguoiDungModel } from "@/app/lib/models";
 import { db } from "@/app/lib/database";
 import { Transaction } from "sequelize";
 import { getUserFromToken } from "@/app/lib/auth";
 import { IChiTietDonHang } from "@/app/lib/cautrucdata";
+import { sendMail } from "../../GUI_EMAIL/guiemail_dh";
+import { orderEmailTemplate } from "@/app/GUI_EMAIL/orderEmail";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
     const t: Transaction = await db.transaction();
@@ -14,6 +16,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         if (!user) {
             return NextResponse.json({ success: false, message: "Không xác thực được người dùng" }, { status: 401 });
         }
+        // Kiểm tra người dùng đã kích hoạt hay chưa
+        const userDB = await NguoiDungModel.findByPk(user.id);
+        if (!userDB || userDB.getDataValue("kich_hoat") !== 1) {
+            return NextResponse.json(
+                { success: false, message: "Tài khoản chưa được kích hoạt" },
+                { status: 403 }
+            );
+        }
+
 
         const id_nguoi_dung = user.id;
         const body = await req.json();
@@ -39,14 +50,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             })[];
         } = body;
 
+
+
         if (!danh_sach_san_pham?.length) {
             return NextResponse.json({ success: false, message: "Không có sản phẩm nào trong đơn hàng" }, { status: 400 });
         }
 
         //  Tính tổng tiền hàng
         const tong_tien_hang = danh_sach_san_pham.reduce(
-            (tong, sp) => tong + sp.don_gia * sp.so_luong,
-            0
+            (tong, sp) => tong + sp.don_gia * sp.so_luong, 0
         );
 
         //  Tính giảm giá
@@ -170,10 +182,99 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         }
         await t.commit();
 
+        
+
+
+        // Lấy thông tin gửi email 
+        const sanPhamListHtml: string = (
+            await Promise.all(
+                danh_sach_san_pham.map(async (sp) => {
+                    if (!sp.id_bien_the) return "";
+
+                    const bienThe = await BienTheModel.findByPk(sp.id_bien_the, {
+                        include: [{ model: SanPhamModel, as: "san_pham" }],
+                    });
+
+                    const data = bienThe?.get({ plain: true }) as {
+                        ten?: string;
+                        san_pham?: { ten: string; hinh: string };
+                    };
+
+                    const tenSP = data?.san_pham?.ten ?? "Sản phẩm";
+                    const tenBienThe = data?.ten ?? null;
+                    const hinhSP = data?.san_pham?.hinh ?? "";
+
+                    let textTuyChon = "";
+                    if (sp.json_tuy_chon) {
+                        const obj = JSON.parse(sp.json_tuy_chon);
+                        textTuyChon = Object.entries(obj)
+                            .map(([k, v]) => `${k}: ${v}`)
+                            .join(", ");
+                    }
+
+                    let textMonThem = "";
+                    if (sp.json_mon_them) {
+                        const arr = JSON.parse(sp.json_mon_them);
+                        if (Array.isArray(arr) && arr.length > 0) {
+                            textMonThem = arr
+                                .map(
+                                    (m: { ten: string; gia_them?: number }) =>
+                                        `${m.ten}`
+                                )
+                                .join(", ");
+                        }
+                    }
+
+                    return `
+                <div style="display:flex; margin-bottom:14px;">
+                    <img src="${hinhSP}" width="80" height="80"
+                        style="object-fit:cover; border-radius:6px; margin-right:12px;" />
+                    <div>
+                        <strong>${tenSP}</strong><br/>
+                        ${tenBienThe ? `Biến thể: ${tenBienThe}<br/>` : ""}
+                        ${textTuyChon ? `Tuỳ chọn: ${textTuyChon}<br/>` : ""}
+                        ${textMonThem ? `Món thêm: ${textMonThem}<br/>` : ""}
+                        ${ghi_chu ? `Ghi chú: ${ghi_chu}<br/>` : ""}
+                        Số lượng: ${sp.so_luong}<br/>
+                        Giá: ${sp.don_gia.toLocaleString()}đ
+                    </div>
+                </div>
+            `;
+                })
+            )
+        ).join("");
+
+
+
+        const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
+        const urlDonHang = `${baseUrl}/chi_tiet_don_hang/${donHang.id}`;
+        const logoUrl = `${baseUrl}/logOut.png`;
+        // gửi email khi cod  
+if (phuong_thuc_thanh_toan === true) {
+        await sendMail(
+            user.email,
+            "Đặt hàng thành công - HanFoodie",
+            orderEmailTemplate({
+                logoUrl,
+                hoTen: ho_ten_nguoi_nhan,
+                maDon: donHang.ma_don,
+                ngayDat: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
+                phuongThucThanhToan: phuong_thuc_thanh_toan ? "Thanh toán khi nhận hàng" : "Thanh toán online",
+                sanPhamListHtml,
+                tongTienHang: tong_tien_hang,
+                giamGia: so_tien_giam,
+                tongThanhToan: so_tien_thanh_toan,
+                urlDonHang
+            })
+        );
+    }
+
+
         return NextResponse.json({
             success: true,
             message: "Đặt hàng thành công!",
             data: {
+                id: donHang.id,
                 ma_don: donHang.ma_don,
                 tong_tien_hang,
                 so_tien_giam,
@@ -186,4 +287,3 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         return NextResponse.json({ success: false, message: "Đặt hàng thất bại", error });
     }
 }
-    

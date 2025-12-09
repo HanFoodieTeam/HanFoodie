@@ -19,9 +19,10 @@ export default function RootLayout({
       <body className="bg-gray-500 text-gray-900">
         <CartProvider>
           <Header />
-          {/* ✅ Container toàn trang - 80% width */}
           <main className="pt-[72px]">
-            <div className="max-w-[80%] mx-auto px-4">{children}</div>
+            <div className="w-[80%] max-w-[1200px] mx-auto px-4">
+              {children}
+            </div>
           </main>
         </CartProvider>
         <Footer />

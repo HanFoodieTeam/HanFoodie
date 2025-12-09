@@ -5,6 +5,7 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { IDanhGia } from "@/app/lib/cautrucdata";
+import Image from "next/image";
 
 function DanhGiaChiTiet() {
   const { id } = useParams();
@@ -117,31 +118,22 @@ function DanhGiaChiTiet() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">
           Đánh giá sản phẩm: <span className="text-blue-600">{tenSanPham}</span>
         </h1>
-
-        <Link
-          href="/danh_gia"
-          className="text-sm bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">
-          ← Quay lại thống kê
-        </Link>
       </div>
 
       {/* Bộ lọc sao */}
       <div className="flex gap-2 mb-4">
         {[0, 1, 2, 3, 4, 5].map((s) => (
-          <button
-            key={s}
-            onClick={() => updateQuery({ filterSao: String(s), page: "1" })}
+          <button key={s} onClick={() => updateQuery({ filterSao: String(s), page: "1" })}
             className={`px-3 py-1 rounded-lg text-sm border ${filterSao === s
               ? "bg-blue-500 text-white border-blue-600"
               : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-          >
+              }`}>
             {s === 0 ? "Tất cả" : `${s} ⭐`}
           </button>
         ))}
@@ -188,11 +180,7 @@ function DanhGiaChiTiet() {
                   key={dg.id}
                   className="border-b hover:bg-gray-50 transition-colors">
                   <td className="px-5 py-3 text-center">
-                    <img
-                      src={dg.hinh || "/no-image.png"}
-                      alt=""
-                      className="w-16 h-16 rounded-lg object-cover border"
-                    />
+                    <Image src={(dg?.hinh || "/noing.png").trim()} alt="" width={90} height={90} className="rounded-lg object-cover" />
                   </td>
 
                   <td className="px-5 py-3 text-center">
@@ -212,10 +200,13 @@ function DanhGiaChiTiet() {
                       className="inline text-yellow-500 fill-yellow-500" />
                   </td>
 
-                  <td className="px-5 py-3 w-[300px] truncate text-center"
+                  <td
+                    className="px-5 py-3 max-w-[300px] text-center overflow-hidden text-ellipsis whitespace-nowrap"
                     title={dg.noi_dung ?? ""}>
                     {dg.noi_dung || "—"}
                   </td>
+
+
 
                   <td className="px-5 py-3 text-center cursor-pointer select-none text-xl"
                     onClick={() => setConfirmAnHien(dg)}>
@@ -252,14 +243,11 @@ function DanhGiaChiTiet() {
 
           return (
             p <= totalPages && (
-              <button
-                key={p}
-                onClick={() => goToPage(p)}
+              <button key={p} onClick={() => goToPage(p)}
                 className={`px-3 py-1 rounded ${p === page
                   ? "bg-blue-500 text-white font-bold scale-105"
                   : "bg-gray-200 hover:bg-gray-300"
-                  }`}
-              >
+                  }`}>
                 {p}
               </button>
             )

@@ -306,7 +306,7 @@ export class DonHangModel
   declare dia_chi_nguoi_nhan: string;
   declare sdt_nguoi_nhan: number;
   declare ngay_tao: Date;
-  declare trang_thai: "cho_xac_nhan" | "da_xac_nhan" | "dang_giao" | "da_giao" | "da_huy";
+  declare trang_thai: "cho_thanh_toan"|"cho_xac_nhan" | "da_xac_nhan" | "dang_giao" | "da_giao" | "da_huy";
   declare ma_don: string;
   declare ngay_cap_nhat: Date;
   declare phuong_thuc_thanh_toan: boolean;

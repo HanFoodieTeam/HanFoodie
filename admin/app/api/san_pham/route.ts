@@ -407,6 +407,7 @@ import {
   HinhModel,
   BienTheModel,
 } from "@/app/lib/models";
+import { ISanPham } from "@/app/lib/cautrucdata";
 
 // ================================
 // CONFIG CLOUDINARY

@@ -577,6 +577,7 @@ export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVa
 }
 
 
+
     const user = JSON.parse(userData);
     const idNguoiDung = user.id;
 
@@ -609,14 +610,13 @@ export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVa
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, //  gửi token lên server
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
       await reloadCart();
 
       if (!res.ok) {
-        //  await reloadCart();
         const err = await res.json();
         alert(err.thong_bao || "Thêm giỏ hàng thất bại!");
         return;
@@ -630,11 +630,12 @@ export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVa
     } finally {
       setIsAdding(false);
     }
+
   };
 
-  //mua hàng
   const handleBuyNow = async (): Promise<void> => {
     const userData = localStorage.getItem("nguoi_dung");
+    const user = userData ? JSON.parse(userData) : null;
 
   if (!userData) {
   onRequireLogin("cart");
@@ -642,10 +643,14 @@ export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVa
 }
 
 
-    const user = JSON.parse(userData);
+
+
+    if (user.kich_hoat === 0 || user.kich_hoat === false) {
+      setShowVerifyPopup(true);
+      return;
+    }
 
     const bienTheChon = bien_the.find((b) => b.id === selectedBienThe);
-
     const item = {
       id: Date.now(),
       so_luong: qty,
@@ -660,12 +665,7 @@ export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVa
       json_mon_them: selectedMonThem
         .map((id) => {
           const m = mon_them.find((x) => x.id === id);
-          return m
-            ? {
-              ten: m.ten,
-              gia_them: m.gia_them ?? 0,
-            }
-            : null;
+          return m ? { ten: m.ten, gia_them: m.gia_them ?? 0 } : null;
         })
         .filter(Boolean),
       json_tuy_chon: Object.fromEntries(
@@ -679,14 +679,22 @@ export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVa
 
     localStorage.setItem("donHangTam", JSON.stringify([item]));
     window.location.href = "/dat_hang";
+
   };
 
-  //  Sau khi đăng nhập thành công
+
   const handleLoginSuccess = () => {
     setShowLogin(false);
-    handleAddToCart(); //  tự động thêm lại giỏ hàng
-  };
 
+    if (pendingAction === "cart") {
+      handleAddToCart();
+    } else if (pendingAction === "buy") {
+      handleBuyNow();
+      onClose?.();
+    }
+
+    setPendingAction(null);
+  };
 
 
   return (

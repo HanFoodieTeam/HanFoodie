@@ -126,7 +126,7 @@ export async function PATCH(req: Request, context: RouteParams) {
     });
 
     return NextResponse.json({
-      message: "✅ Cập nhật trạng thái đơn hàng thành công",
+      message: " Cập nhật trạng thái đơn hàng thành công",
       data: don,
     });
   } catch (err) {
@@ -141,56 +141,3 @@ export async function PATCH(req: Request, context: RouteParams) {
 
 
 
-
-// export async function PATCH(req: Request, context: RouteParams) {
-//   try {
-//     const { id } = await context.params;
-//     const parsedId = parseId(id);
-//     if (!parsedId) {
-//       return NextResponse.json({ error: "ID không hợp lệ" }, { status: 400 });
-//     }
-
-//     const body = (await req.json()) as { trang_thai?: TrangThaiDonHang };
-//     const next = body.trang_thai;
-//     if (!next) {
-//       return NextResponse.json({ error: "Thiếu trường 'trang_thai'" }, { status: 400 });
-//     }
-
-//     const don = await DonHangModel.findByPk(parsedId);
-//     if (!don) {
-//       return NextResponse.json({ error: "Không tìm thấy đơn hàng" }, { status: 404 });
-//     }
-
-//     const current = don.getDataValue("trang_thai") as TrangThaiDonHang;
-//     const allowedNext = ALLOWED[current] || [];
-
-//     if (!allowedNext.includes(next)) {
-//       return NextResponse.json(
-//         { error: `Không thể chuyển từ '${current}' sang '${next}'.`, allowed: allowedNext },
-//         { status: 400 }
-//       );
-//     }
-
-//     // ✅ Cập nhật thời gian nếu trạng thái là “đã giao” hoặc “đã hủy”
-//     const updateData: Partial<IDonHang> = { trang_thai: next };
-
-//     if (next === "da_giao" || next === "da_huy") {
-//       updateData.ngay_cap_nhat = new Date(); // thời điểm hoàn tất / hủy
-//     }
-
-//     await don.update(updateData);
-
-//     return NextResponse.json({
-//       message: "✅ Cập nhật trạng thái đơn hàng thành công",
-//       data: don,
-//     });
-//   } catch (err) {
-//     const msg = err instanceof Error ? err.message : String(err);
-//     console.error("PATCH /api/don_hang/:id error:", msg);
-//     return NextResponse.json(
-//       { error: "Lỗi khi cập nhật trạng thái đơn hàng", detail: msg },
-//       { status: 500 }
-//     );
-//   }
-// }
-  

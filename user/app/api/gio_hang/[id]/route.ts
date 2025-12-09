@@ -12,72 +12,6 @@ interface IGioHangRecord extends Model {
   json_tuy_chon: string | null;
   ghi_chu?: string | null;
 }
-
-
-
-
-
-// export async function PUT(
-//   req: NextRequest,
-//   context: { params: Promise<{ id: string }> }
-// ): Promise<NextResponse> {
-//   try {
-//     const user = getUserFromToken(req);
-//     if (!user)
-//       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-//     const { id } = await context.params;
-//     const parsedId = Number(id);
-//     if (!parsedId)
-//       return NextResponse.json({ error: "Thiếu ID giỏ hàng" }, { status: 400 });
-
-//     const body = (await req.json()) as {
-//       so_luong?: number;
-//        id_bien_the?: number;
-//       json_mon_them?: { id: number; ten: string; gia_them?: number | null }[];
-//       json_tuy_chon?: Record<string, string>;
-//       ghi_chu?: string;
-//     };
-
-//     const gioHang = (await GioHangModel.findOne({
-//       where: { id: parsedId, id_nguoi_dung: user.id },
-//     })) as IGioHangRecord | null;
-
-//     if (!gioHang)
-//       return NextResponse.json(
-//         { error: "Không tìm thấy sản phẩm trong giỏ" },
-//         { status: 404 }
-//       );
-
-//     await gioHang.update({
-//        id_bien_the: body.id_bien_the ?? gioHang.id_bien_the, 
-//       so_luong: body.so_luong ?? gioHang.so_luong,
-//       json_mon_them: JSON.stringify(body.json_mon_them ?? []),
-//       json_tuy_chon: JSON.stringify(body.json_tuy_chon ?? {}),
-//       ghi_chu: body.ghi_chu ?? gioHang.ghi_chu,
-//     });
-
-//     const updated = gioHang.toJSON() as IGioHangRecord;
-
-//     return NextResponse.json({
-//       message: "Cập nhật thành công",
-//       data: {
-//         ...updated,
-//         json_mon_them: updated.json_mon_them
-//           ? JSON.parse(updated.json_mon_them)
-//           : [],
-//         json_tuy_chon: updated.json_tuy_chon
-//           ? JSON.parse(updated.json_tuy_chon)
-//           : {},
-//       },
-//     });
-//   } catch (err) {
-//     const message = err instanceof Error ? err.message : "Lỗi không xác định";
-//     return NextResponse.json({ error: message }, { status: 500 });
-//   }
-// }
-
-
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -131,7 +65,6 @@ export async function PUT(
     await gioHang.update(updatedData);
 
 
-    //  Reload lại bản ghi để lấy dữ liệu mới nhất từ DB
     await gioHang.reload({
       include: [
         {
@@ -165,10 +98,10 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> } //  params là Promise
+  context: { params: Promise<{ id: string }> } 
 ): Promise<NextResponse> {
   try {
-    const { id } = await context.params; //  Bắt buộc phải await
+    const { id } = await context.params; 
     const user = getUserFromToken(req);
     if (!user)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

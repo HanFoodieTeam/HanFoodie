@@ -31,6 +31,18 @@ export interface IBienThe {
 
 }
 
+export interface IOrderEmail {
+  logoUrl: string;
+  hoTen: string;
+  maDon: string;
+  ngayDat: string;
+  phuongThucThanhToan: string;
+  sanPhamListHtml: string;
+  tongTienHang: number;
+  giamGia: number;
+  tongThanhToan: number;
+  urlDonHang: string;
+}
 export interface IChiTietDonHang {
   id: number;
   don_gia: number;
@@ -40,7 +52,6 @@ export interface IChiTietDonHang {
   id_don_hang: number;
   id_bien_the?: number | null;
   thanh_tien: number;
-
   ten_san_pham?: string;
 }
 
@@ -109,6 +120,7 @@ export interface IDiaChi {
 // }
 
 export type TrangThaiDonHang =
+  | "cho_thanh_toan"
   | "cho_xac_nhan"
   | "da_xac_nhan"
   | "dang_giao"
@@ -223,9 +235,26 @@ export interface IMonThem {
   trang_thai?: boolean;
 }
 
+// export interface INguoiDung {np
+//   id?: number;
+//   hinh?: string;
+//   ho_ten: string;
+//   sdt?: number | null;
+//   email: string;
+//   tep_khach?: string | null;
+//   mat_khau: string;
+//   trang_thai?: boolean;
+//   ngay_sinh?: string | null;
+//   token_kich_hoat?: string | null;
+//   vai_tro?: boolean;
+//   ngay_tao?:string |Date| null;
+//   kich_hoat:boolean;
+//   han_token:string | null;
+// }
+
 export interface INguoiDung {
   id?: number;
-  hinh?: string;
+  hinh?: string | null;
   ho_ten: string;
   sdt?: number | null;
   email: string;
@@ -239,7 +268,6 @@ export interface INguoiDung {
   kich_hoat:boolean;
   han_token:string | null;
 }
-
 
 
 export interface ISanPham {

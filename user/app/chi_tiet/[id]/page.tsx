@@ -41,7 +41,6 @@ interface ThemVaoGioHangProps {
 }
 
 
-/* Expanded đánh giá */
 interface IDanhGiaMoRong extends IDanhGia {
   nguoi_dung?: {
     id: number;
@@ -178,11 +177,9 @@ export default function ChiTietSanPhamPage() {
             <img
               src={mainImage}
               alt={san_pham.ten}
-              className="w-[500px] h-[400px] object-cover rounded-xl shadow-lg"
-            />
+              className="w-[500px] h-[400px] object-cover rounded-xl shadow-lg" />
           </div>
 
-          {/* Thông tin */}
           <div className="flex flex-col justify-between relative">
             <div>
               <h1 className="text-3xl font-bold text-[#6A0A0A] mb-4">
@@ -337,8 +334,7 @@ export default function ChiTietSanPhamPage() {
       <SanPhamLienQuanSection
         data={lien_quan}
         idDanhMuc={san_pham.id_danh_muc}
-        idSanPham={san_pham.id}
-      />
+        idSanPham={san_pham.id} />
     </main>
   );
 }

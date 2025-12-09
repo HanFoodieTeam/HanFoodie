@@ -115,6 +115,7 @@ export default function LoginForm({
       localStorage.setItem("token", data.token);
 
       setThongBao("Đăng nhập thành công!");
+      // onLoginSuccess(nguoiDung);
       onLoginSuccess(nguoiDung);
 
       setTimeout(() => onClose(), 1000);
@@ -154,6 +155,20 @@ export default function LoginForm({
       >
         {loading ? "Đang xử lý..." : "Đăng nhập"}
       </button>
+      <p className="text-center text-sm">
+        Bạn chưa có tài khoản tại HanFoodie?
+        <span
+          className="text-blue-600 cursor-pointer ml-1 hover:underline"
+          onClick={(e) => {
+            e.preventDefault();
+            console.log("ĐÃ CLICK ĐĂNG nhập");
+            onSwitchToRegister?.();
+          }} >
+          Đăng ký
+        </span>
+      </p>
+
+      {thongBao && <p className="text-center text-sm text-red-500">{thongBao}</p>}
 
       <p className="text-center text-sm">
         Chưa có tài khoản?{" "}

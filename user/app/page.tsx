@@ -53,9 +53,13 @@ export default function TrangChuPage() {
         <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
           <img
             src="/images/banner-home.jpg"
-            alt=""
+            alt="Banner"
+            onError={(e) => {
+              e.currentTarget.src = "/noimg.png";
+            }}
             className="w-full h-full object-cover"
           />
+
           <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white">
             <h1 className="text-3xl md:text-5xl font-bold mb-3">HanFoodie</h1>
             <p className="text-lg md:text-2xl">Ẩm thực giao tận tay bạn</p>
