@@ -18,7 +18,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         }
         // Kiểm tra người dùng đã kích hoạt hay chưa
         const userDB = await NguoiDungModel.findByPk(user.id);
-        if (!userDB || userDB.getDataValue("kich_hoat") !== 1) {
+        if (!userDB || !userDB.getDataValue("kich_hoat")) {
             return NextResponse.json(
                 { success: false, message: "Tài khoản chưa được kích hoạt" },
                 { status: 403 }

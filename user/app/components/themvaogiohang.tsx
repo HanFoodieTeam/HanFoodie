@@ -497,10 +497,12 @@ interface ThemVaoGioHangProps {
 
 export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVaoGioHangProps) {
   const { san_pham, bien_the = [], mon_them = [], tuy_chon = [] } = data || {};
+const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(null);
 
   // States
   const [qty, setQty] = useState(1);
   const [isLogin, setIsLogin] = useState(true);
+const [showVerifyPopup, setShowVerifyPopup] = useState(false);
 
 
   const [selectedBienThe, setSelectedBienThe] = useState<number | null>(
@@ -570,9 +572,9 @@ export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVa
   const handleAddToCart = async () => {
     const userData = localStorage.getItem("nguoi_dung");
 
-    //  Nếu chưa đăng nhập → hiện form login
-  if (!userData) {
-  onRequireLogin("buy");
+if (!userData) {
+  setPendingAction("cart");
+  onRequireLogin("cart");
   return;
 }
 
@@ -637,15 +639,16 @@ export default function ThemVaoGioHang({ data, onClose, onRequireLogin }: ThemVa
     const userData = localStorage.getItem("nguoi_dung");
     const user = userData ? JSON.parse(userData) : null;
 
-  if (!userData) {
-  onRequireLogin("cart");
+ if (!userData) {
+  setPendingAction("buy");
+  onRequireLogin("buy");
   return;
 }
 
 
 
 
-    if (user.kich_hoat === 0 || user.kich_hoat === false) {
+       if (user.kich_hoat === 0 || user.kich_hoat === false) {
       setShowVerifyPopup(true);
       return;
     }

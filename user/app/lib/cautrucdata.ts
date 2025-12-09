@@ -264,9 +264,9 @@ export interface INguoiDung {
   ngay_sinh?: string | null | Date;
   token_kich_hoat?: string | null;
   vai_tro?: boolean;
-  ngay_tao?:string | null | Date;
-  kich_hoat:boolean;
-  han_token:string | null;
+  ngay_tao?: string | null | Date;
+  kich_hoat: boolean;
+  han_token: Date | string | null;
 }
 
 

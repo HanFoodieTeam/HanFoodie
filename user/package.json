@@ -9,11 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "bcryptjs": "^3.0.2",
-=======
+
     "bcryptjs": "^3.0.3",
->>>>>>> 5f392d97dca988aef7fa29f145637b9cf12377cd
     "cloudinary": "^2.8.0",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.546.0",

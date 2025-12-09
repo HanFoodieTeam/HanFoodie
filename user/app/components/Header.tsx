@@ -340,18 +340,7 @@ export default function Header() {
             </button>
 
             <RegisterForm
-<<<<<<< HEAD
-  onClose={() => setShowRegister(false)}
-  onRegisterSuccess={(nguoiDungMoi) => {
-    localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
-    setNguoiDung(nguoiDungMoi);
-  }}
-  onSwitchToLogin={() => {
-    setShowRegister(false);
-    setShowLogin(true);
-  }}
-/>
-=======
+
               onClose={() => setShowRegister(false)}
               onRegisterSuccess={(nguoiDungMoi) => {
                 localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
@@ -362,7 +351,6 @@ export default function Header() {
                 setShowAuth(true); 
               }}
             />
->>>>>>> 5f392d97dca988aef7fa29f145637b9cf12377cd
 
           </div>
         </div>
