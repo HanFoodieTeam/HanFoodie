@@ -52,10 +52,9 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
   }, [currentStatus, currentPage]);
 
   const updateFilter = (newStatus: string, newPage = 1) => {
-    router.push(`?tab=don_hang&status=${newStatus}&page=${newPage}`, {
-      scroll: false,
-    });
-  };
+  router.replace(`?tab=don_hang&status=${newStatus}&page=${newPage}`);
+};
+
 
   useEffect(() => {
     let result = [...orders];

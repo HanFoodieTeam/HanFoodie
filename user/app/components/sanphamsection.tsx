@@ -260,6 +260,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import { ISanPham } from "../lib/cautrucdata";
+import Image from "next/image";
 
 const ID_USER = 1;
 
@@ -348,23 +349,30 @@ export default function SanPhamHotSection({ data }: Props) {
               key={sp.id}
               className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden relative group"
             >
+              {/* Ảnh */}
               <div className="relative">
 
+
+                <Image src={sp.hinh?.trim() || "/noimg.png"} alt={sp.ten || "Sản phẩm"} width={300} height={200}
+                  className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 rounded-md" />
+
+
+                {/* Nút tim */}
                 <button
                   onClick={() => toggleFavorite(sp.id)}
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
                 >
                   <Heart
-                    size={20}
-                    className={`transition-colors ${
-                      isFavorite
+                    size={22}
+                    className={`transition-colors ${isFavorite
                         ? "fill-red-500 text-red-500"
                         : "text-gray-200 hover:text-red-400"
-                    }`}
+                      }`}
                   />
                 </button>
               </div>
 
+              {/* Thông tin */}
               <Link href={`/chi_tiet/${sp.id}`} className="block">
                 <div className="p-4">
                   <h3 className="font-medium text-gray-800 hover:text-[#6A0A0A] line-clamp-1">
@@ -376,6 +384,7 @@ export default function SanPhamHotSection({ data }: Props) {
                 </div>
               </Link>
 
+              {/* Giá + Sao */}
               <div className="flex items-center justify-between px-4 pb-4">
                 <span className="text-[#6A0A0A] font-semibold text-lg">
                   {sp.gia_goc.toLocaleString("vi-VN")}₫
