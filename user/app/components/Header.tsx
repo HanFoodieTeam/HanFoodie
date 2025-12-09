@@ -1009,7 +1009,8 @@ import QuenMatKhauForm from "./quen_mat_khau";
 
 export default function Header() {
   const { count } = useCart();
-
+  const [showRegister, setShowRegister] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -1344,7 +1345,12 @@ export default function Header() {
                 localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
                 setNguoiDung(nguoiDungMoi);
               }}
+              onSwitchToLogin={() => {
+                setShowRegister(false);
+                setShowAuth(true); 
+              }}
             />
+
           </div>
         </div>
       )}
