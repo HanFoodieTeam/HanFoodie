@@ -2,10 +2,14 @@
   "name": "admin",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
+
   "scripts": {
     "dev": "next dev --turbopack --port 3002",
     "build": "next build --turbopack",
-    "start": "next start -p 3002",
+    "start": "next start -p 3002",  
     "lint": "eslint"
   },
   "dependencies": {

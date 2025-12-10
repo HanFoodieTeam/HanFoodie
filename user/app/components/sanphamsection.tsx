@@ -268,7 +268,6 @@ interface Props {
   data: ISanPham[];
 }
 
-// ⭐ Type tạm cho yêu thích (không cần sửa file bên ngoài)
 type TYeuThich = {
   id: number;
   id_nguoi_dung: number;
@@ -279,9 +278,7 @@ export default function SanPhamHotSection({ data }: Props) {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // ============================
-  // ⭐ LẤY YÊU THÍCH TỪ API
-  // ============================
+
   useEffect(() => {
     async function fetchFavorites() {
       try {
@@ -301,9 +298,7 @@ export default function SanPhamHotSection({ data }: Props) {
     fetchFavorites();
   }, []);
 
-  // ============================
-  // ⭐ TOGGLE YÊU THÍCH
-  // ============================
+
   const toggleFavorite = async (id: number) => {
     if (loading) return;
     setLoading(true);
@@ -336,9 +331,7 @@ export default function SanPhamHotSection({ data }: Props) {
 
   return (
     <section>
-      <h2 className="text-2xl font-semibold mb-3 text-[#6A0A0A]">
-        Sản phẩm nổi bật
-      </h2>
+     
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
         {data.map((sp) => {
