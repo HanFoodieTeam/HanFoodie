@@ -152,12 +152,12 @@ export default function Header() {
                     </>
                   ) : (
                     <>
-                      <button
-                        onClick={() => { setIsLogin(false); setShowAuth(true); }}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
-                      >
-                        Đăng ký
-                      </button>
+                     <button
+  onClick={() => { setIsLogin(false); setShowAuth(true); }}
+  className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
+>
+  Đăng ký
+</button>
 
                       <button
                         onClick={() => { setIsLogin(true); setShowAuth(true); }}
@@ -261,15 +261,12 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={() => {
-                      setIsLogin(true); setShowAuth(true);
-                      setOpenMenu(false);
-                    }}
-                    className="block w-full text-left py-2"
-                  >
-                    Đăng ký
-                  </button>
+                 <button
+  onClick={() => { setIsLogin(false); setShowAuth(true); }}
+  className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
+>
+  Đăng ký
+</button>
                   <button
                     onClick={() => {
                       setIsLogin(true); setShowAuth(true);
@@ -294,7 +291,7 @@ export default function Header() {
       </header>
 
       {/* POPUP AUTH */}
-      {showAuth && (
+      {/* {showAuth && (
         <div
           className="fixed inset-0 z-[999] flex items-center justify-center bg-black/25"
           onClick={() => setShowAuth(false)}
@@ -320,7 +317,55 @@ export default function Header() {
 
           </div>
         </div>
+      )} */}
+
+
+
+{/* POPUP AUTH */}
+{showAuth && (
+  <div
+    className="fixed inset-0 z-[999] flex items-center justify-center bg-black/25"
+    onClick={() => setShowAuth(false)}
+  >
+    <div
+      className="relative bg-white rounded-2xl shadow-xl w-[400px] max-w-[90%] p-4"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        onClick={() => setShowAuth(false)}
+        className="absolute top-2 right-2 text-gray-500 hover:text-black"
+      >
+        <X className="w-5 h-5" />
+      </button>
+
+      {isLogin ? (
+        <LoginForm
+          onClose={() => setShowAuth(false)}
+          onLoginSuccess={(nguoiDungMoi) => {
+            setNguoiDung(nguoiDungMoi);
+            localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
+            setShowAuth(false);
+          }}
+          onSwitchToRegister={() => {
+            setIsLogin(false); 
+          }}
+        />
+      ) : (
+        <RegisterForm
+          onClose={() => setShowAuth(false)}
+          onRegisterSuccess={(nguoiDungMoi) => {
+            setNguoiDung(nguoiDungMoi);
+            localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
+            setShowAuth(false);
+          }}
+          onSwitchToLogin={() => {
+            setIsLogin(true); // 
+          }}
+        />
       )}
+    </div>
+  </div>
+)}
 
       {/* POPUP REGISTER */}
       {showRegister && (

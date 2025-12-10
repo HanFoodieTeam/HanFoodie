@@ -117,6 +117,14 @@ export default function LoginForm({
       setThongBao("Đăng nhập thành công!");
       // onLoginSuccess(nguoiDung);
       onLoginSuccess(nguoiDung);
+      //  Điều hướng dựa trên vai_tro boolean
+      const APP_URL_ADMIN = data.url_admin ?? "http://localhost:3002";
+      if (nguoiDung.vai_tro === true) {
+        window.location.href = APP_URL_ADMIN;  // Admin
+      } else {
+        onClose(); // User
+      }
+
 
       setTimeout(() => onClose(), 1000);
     } catch (error) {
@@ -145,8 +153,7 @@ export default function LoginForm({
         value={matKhau}
         onChange={(e) => setMatKhau(e.target.value)}
         className="w-full border rounded-lg p-2"
-        required
-      />
+        required/>
 
       <button
         type="submit"
@@ -169,17 +176,6 @@ export default function LoginForm({
       </p>
 
       {thongBao && <p className="text-center text-sm text-red-500">{thongBao}</p>}
-
-      <p className="text-center text-sm">
-        Chưa có tài khoản?{" "}
-        <button
-          type="button"
-          onClick={onSwitchToRegister}   
-          className="text-blue-600 hover:underline"
-        >
-          Đăng ký
-        </button>
-      </p>
     </form>
   );
 }
