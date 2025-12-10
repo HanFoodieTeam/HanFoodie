@@ -421,25 +421,99 @@ cloudinary.config({
 // ================================
 // GET — Lấy danh sách sản phẩm
 // ================================
-export async function GET() {
+import { Op } from "sequelize";
+
+
+
+interface QueryParams {
+  search?: string;
+  danh_muc?: string;
+  min_price?: string;
+  max_price?: string;
+  page?: string;
+}
+
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+
+    const query: QueryParams = {
+      search: searchParams.get("search") || "",
+      danh_muc: searchParams.get("danh_muc") || "all",
+      min_price: searchParams.get("min_price") || "",
+      max_price: searchParams.get("max_price") || "",
+      page: searchParams.get("page") || "1",
+    };
+
+    // PHÂN TRANG
+    const page = Number(query.page);
+    const limit = 10; // mỗi trang 10 sp
+    const offset = (page - 1) * limit;
+
+    // LỌC
+    const whereClause: Record<string, unknown> = {};
+
+    // Lọc theo search
+    if (query.search) {
+      whereClause.ten = { [Op.like]: `%${query.search}%` };
+    }
+
+    // Lọc theo danh mục
+   if (query.danh_muc && query.danh_muc !== "all") {
+  const dm = await DanhMucModel.findOne({
+    where: { ten: query.danh_muc }
+  });
+
+  if (dm) {
+    whereClause.id_danh_muc = dm.get("id") as number;
+  }
+}
+
+
+    // Lọc theo giá
+    if (query.min_price) {
+      whereClause.gia_goc = { ...(whereClause.gia_goc as object), [Op.gte]: Number(query.min_price) };
+    }
+
+    if (query.max_price) {
+      whereClause.gia_goc = { ...(whereClause.gia_goc as object), [Op.lte]: Number(query.max_price) };
+    }
+
+    // TOTAL COUNT (không phân trang)
+    const totalItems = await SanPhamModel.count({ where: whereClause });
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    // LẤY DỮ LIỆU CÓ PHÂN TRANG
     const list = await SanPhamModel.findAll({
+      where: whereClause,
       include: [
         { model: DanhMucModel, as: "danh_muc" },
         { model: HinhModel, as: "hinh_anh" },
         { model: BienTheModel, as: "bien_the" },
       ],
       order: [["id", "DESC"]],
+      limit,
+      offset,
     });
 
-    return NextResponse.json({ success: true, data: list });
+    return NextResponse.json({
+      success: true,
+      data: list,
+      totalItems,
+      totalPages,
+      currentPage: page,
+    });
   } catch (error) {
+    console.error("GET /api/san_pham Lỗi:", error);
     return NextResponse.json(
       { success: false, message: "Lỗi server" },
       { status: 500 }
     );
   }
 }
+
+
 
 // ================================
 // POST — Thêm sản phẩm
