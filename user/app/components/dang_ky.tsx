@@ -126,13 +126,13 @@ import { INguoiDung } from "@/app/lib/cautrucdata";
 interface RegisterFormProps {
   onClose: () => void;
   onRegisterSuccess: (nguoiDungMoi: INguoiDung) => void;
-  onSwitchToLogin: () => void;   // ✅ THÊM DÒNG NÀY
+  onSwitchToLogin: () => void;   
 }
 
 export default function RegisterForm({
   onClose,
   onRegisterSuccess,
-  onSwitchToLogin,     // ✅ THÊM DÒNG NÀY
+  onSwitchToLogin,     
 }: RegisterFormProps) {
   const [ho_ten, setHoTen] = useState("");
   const [email, setEmail] = useState("");
