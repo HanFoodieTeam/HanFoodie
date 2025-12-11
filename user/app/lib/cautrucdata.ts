@@ -18,6 +18,8 @@ export interface IBanner {
   mo_ta?: string | null;
   link?: string | null;
   thu_tu?: string | null;
+  an_hien?: boolean;
+  loai?: boolean;
 }
 
 export interface IBienThe {

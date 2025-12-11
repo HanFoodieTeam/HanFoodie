@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IBaiViet, IDanhMuc, ISanPham } from "./lib/cautrucdata";
+import { IBaiViet, IBanner, IDanhMuc, ISanPham } from "./lib/cautrucdata";
 import DanhMucSection from "./components/danhmucsection";
 import SanPhamHotSection from "./components/sanphamsection";
 
@@ -13,30 +13,32 @@ export default function TrangChuPage() {
   const [baiVietMoi, setBaiVietMoi] = useState<IBaiViet[]>([]);
   const [spMuaNhieu, setSpMuaNhieu] = useState<ISanPham[]>([]);
 
+  const [bannerChinh, setBannerChinh] = useState<IBanner[]>([]);
+  const [bannerPhu, setBannerPhu] = useState<IBanner[]>([]);
+  const [currentPhu, setCurrentPhu] = useState(0);
 
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [resDM, resSP, resCombo, resBV, resSP_MN] = await Promise.all([
+        const [resDM, resSP, resCombo, resBV, resSP_MN, resBC, resBP] = await Promise.all([
           fetch("/api/danh_muc"),
           fetch("/api/trang_chu/sp_hot"),
           fetch("/api/trang_chu/combo"),
           fetch("/api/trang_chu/bai_viet"),
           fetch("/api/trang_chu/sp_mua_nhieu"),
-
-
+          fetch("/api/trang_chu/banner?loai=0"),
+          fetch("/api/trang_chu/banner?loai=1"),
         ]);
 
         setDanhMuc(await resDM.json());
         setSpHot(await resSP.json());
         setCombo(await resCombo.json());
         setBaiVietMoi(await resBV.json());
-        // const spMN = await resSP_MN.json();
-        // setSpMuaNhieu(spMN.data || []);
-        // console.log("sp mua nhiều:", spMN);
         setSpMuaNhieu(await resSP_MN.json());
+        setBannerChinh((await resBC.json()).data || []);
+        setBannerPhu((await resBP.json()).data || []);
 
 
       } catch (error) {
@@ -48,6 +50,46 @@ export default function TrangChuPage() {
 
     fetchData();
   }, []);
+  const [current, setCurrent] = useState(0);
+
+  // banner chính
+  useEffect(() => {
+    if (bannerChinh.length === 0) return;
+
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % bannerChinh.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [bannerChinh]);
+  const handlePrev = () => {
+    setCurrent((prev) =>
+      prev === 0 ? bannerChinh.length - 1 : prev - 1
+    );
+  };
+  const handleNext = () => {
+    setCurrent((prev) => (prev + 1) % bannerChinh.length);
+  };
+
+// banner phụ
+  useEffect(() => {
+    if (bannerPhu.length === 0) return;
+    const timer = setInterval(() => {
+      setCurrentPhu((prev) => (prev + 1) % bannerPhu.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [bannerPhu]);
+
+  const nextPhu = () => {
+    setCurrentPhu((prev) => (prev + 1) % bannerPhu.length);
+  };
+
+  const prevPhu = () => {
+    setCurrentPhu((prev) =>
+      prev === 0 ? bannerPhu.length - 1 : prev - 1
+    );
+  };
+
 
 
   if (loading)
@@ -59,21 +101,62 @@ export default function TrangChuPage() {
 
   return (<>
     <main className="">
-      <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
-        <img
-          src="/images/banner-home.jpg"
-          alt="Banner"
-          onError={(e) => {
-            e.currentTarget.src = "/noimg.png";
-          }}
-          className="w-full h-full object-cover"
-        />
 
-        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white">
-          <h1 className="text-3xl md:text-5xl font-bold mb-3">HanFoodie</h1>
-          <p className="text-lg md:text-2xl">Ẩm thực giao tận tay bạn</p>
-        </div>
+      {/* <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+        {bannerChinh.length > 0 ? (
+          <img
+            src={bannerChinh[0].hinh}
+            alt="Banner chính"
+            className="w-full h-full object-cover"
+            onError={(e) => (e.currentTarget.src = "/noimg.png")}
+          />
+        ) : (
+          <img
+            src="/noimg.png"
+            className="w-full h-full object-cover"
+          />
+        )}
+
+
+      </section> */}
+
+      <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+        {bannerChinh.length > 0 && (
+          <div className="relative w-full h-full">
+            <img
+              src={bannerChinh[current].hinh}
+              alt="Banner chính"
+              className="w-full h-full object-cover transition-all duration-500" />
+
+            {/* Nút lùi */}
+            <button
+              onClick={handlePrev}
+              className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full">
+              ❮
+            </button>
+
+            {/* Nút tới */}
+            <button
+              onClick={handleNext}
+              className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full" >
+              ❯
+            </button>
+
+            {/* Indicator dots */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              {bannerChinh.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrent(index)}
+                  className={`h-3 rounded-full transition-all ${current === index ? "bg-white w-6" : "bg-white/50 w-3"
+                    }`}
+                ></button>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
+
 
       <div className=" py-4 space-y-4 ">
         <DanhMucSection data={danhMuc} />
@@ -87,18 +170,57 @@ export default function TrangChuPage() {
         <SanPhamHotSection data={spMuaNhieu} />
 
 
+        {/* <section className="">
+          {bannerPhu.map((bn) => (
+            <div
+              key={bn.id}
+              className="relative w-full h-[200px] rounded-lg overflow-hidden">
+              <img
+                src={bn.hinh}
+                alt="Banner phụ"
+                className="w-full h-full object-cover"
+                onError={(e) => (e.currentTarget.src = "/noimg.png")}
+              />
+            </div>
+          ))}
+        </section> */}
 
-        <section className="relative w-full h-[220px] md:h-[240px] overflow-hidden rounded-lg">
-          <img
-            src="/images/banner-home.jpg"
-            alt=""
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">HanFoodie</h1>
-            <p className="text-base md:text-lg">
-              Ẩm thực giao tận tay bạn
-            </p>
-          </div>
+        <section className="relative w-full h-[200px] rounded-lg overflow-hidden mt-4">
+          {bannerPhu.length > 0 && (
+            <div className="relative w-full h-full">
+
+              {/* Ảnh banner phụ */}
+              <img
+                src={bannerPhu[currentPhu].hinh}
+                alt="Banner phụ"
+                className="w-full h-full object-cover transition-all duration-500"
+                onError={(e) => (e.currentTarget.src = "/noimg.png")} />
+
+              {/* Nút lùi */}
+              <button
+                onClick={prevPhu}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full">
+                ❮
+              </button>
+
+              {/* Nút tới */}
+              <button
+                onClick={nextPhu}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full">
+                ❯
+              </button>
+
+              {/* Chấm điều hướng */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                {bannerPhu.map((_, index) => (
+                  <button key={index} onClick={() => setCurrentPhu(index)}
+                    className={`h-3 rounded-full transition-all ${currentPhu === index ? "bg-white w-6" : "bg-white/50 w-3"
+                      }`}
+                  ></button>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* COMBO   */}
@@ -199,7 +321,6 @@ export default function TrangChuPage() {
 
       </div>
     </main>
-
   </>
 
   );

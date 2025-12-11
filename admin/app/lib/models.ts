@@ -268,6 +268,8 @@ export const BannerModel = db.define(
     mo_ta: { type: DataTypes.STRING(255), allowNull: true },
     link: { type: DataTypes.STRING(255), allowNull: true },
     thu_tu: { type: DataTypes.STRING(255), allowNull: true },
+    an_hien: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 0 },
+    loai: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 0 },
   },
   { tableName: "banner", timestamps: false }
 );

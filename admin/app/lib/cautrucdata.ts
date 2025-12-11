@@ -91,6 +91,8 @@ export interface IBanner {
   mo_ta?: string | null;
   link?: string | null;
   thu_tu?: string | null;
+  an_hien?: boolean;
+  loai?: boolean;
 }
 
 export interface IBienThe {
@@ -129,7 +131,12 @@ export interface IChiTietDonHang {
     };
   };
 }
-
+export interface ICloudinaryUpload {
+  asset_id: string;
+  public_id: string;
+  secure_url: string;
+  url: string;
+}
 
 
 export interface IDanhMuc {
@@ -266,7 +273,7 @@ export interface IMonThem {
   gia_them: number;
   loai_mon: number;
   trang_thai?: boolean;
-  het_mon: string |null;
+  het_mon: string | null;
 }
 
 export interface INguoiDung {
@@ -282,9 +289,9 @@ export interface INguoiDung {
   token_kich_hoat: boolean;     // xác thực email
   han_token?: string | null;
   ngay_tao?: string | null;
-  kich_hoat:boolean;
+  kich_hoat: boolean;
 
-  don_hang?: IDonHang[]; 
+  don_hang?: IDonHang[];
   dia_chi?: IDiaChi[];    // danh sách địa chỉ giao hàng
 }
 
