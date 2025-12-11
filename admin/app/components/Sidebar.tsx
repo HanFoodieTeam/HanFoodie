@@ -30,12 +30,25 @@ const Sidebar = () => {
           </button>
           {openMenus["dashboard"] && (
             <div className="ml-8 mt-1 space-y-1">
-              <Link href="/overview" className="block p-2 hover:bg-gray-200 rounded">
+              <Link href="/tong_quan" className="block p-2 hover:bg-gray-200 rounded">
                 Tổng quan
               </Link>
-              <Link href="/stats" className="block p-2 hover:bg-gray-200 rounded">
-                Thống kê
+              
+              {/*Theo doanh thu */}
+              <Link href="/thong_ke/doanh_thu" className="block p-2 hover:bg-gray-200 rounded">
+                Doanh thu
               </Link>
+              {/*Theo sản phẩm */}
+              <Link href="/thong_ke/san_pham" className="block p-2 hover:bg-gray-200 rounded">
+                Sản phẩm
+              </Link>
+
+              {/*Theo đánh giá */}
+              <Link href="/thong_ke/danh_gia" className="block p-2 hover:bg-gray-200 rounded">
+                Đánh giá
+              </Link>
+
+             
             </div>
           )}
         </div>

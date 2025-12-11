@@ -1,100 +1,65 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-interface IBaiViet {
-  id: number;
-  tieu_de: string;
-  noi_dung: string;
-  hinh: string | null;
-  id_loai_bv: number;
-  luot_xem: number;
-  slug: string;
-  ngay_dang: string;
-  an_hien: boolean;
-}
 
-export default function SuaBaiViet() {
+export default function ThemBaiViet() {
   const router = useRouter();
-  const params = useParams();
-  const id = params?.id;
 
-  const [form, setForm] = useState<IBaiViet>({
-    id: 0,
+  const [form, setForm] = useState({
     tieu_de: "",
+    slug: "",
     noi_dung: "",
-    hinh: null,
     id_loai_bv: 1,
     luot_xem: 0,
-    slug: "",
     ngay_dang: new Date().toISOString().slice(0, 10),
     an_hien: true,
   });
 
-  const [file, setFile] = useState<File | null>(null);
-
+  const [hinhFile, setHinhFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!id) return;
-
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`/api/bai_viet/${id}`);
-        if (!res.ok) throw new Error("Không tìm thấy bài viết!");
-
-        const resData = await res.json();
-        const data: IBaiViet = resData.data;
-
-        setForm({
-          ...data,
-          an_hien: !!data.an_hien,
-          ngay_dang: data.ngay_dang.slice(0, 10),
-        });
-      } catch {
-        alert(" Lỗi khi tải dữ liệu bài viết!");
-        router.push("/bai_viet");
-      } finally {
-        setInitialLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [id, router]);
-
+  // ======================== ON CHANGE ========================
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-    setForm((prev) => ({
-      ...prev,
+
+    setForm((f) => ({
+      ...f,
       [name]:
         type === "number"
           ? Number(value)
           : type === "radio"
-            ? value === "true"
-            : value,
+          ? value === "true"
+          : value,
     }));
   };
 
+  // ======================== ON FILE ========================
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setHinhFile(file);
+  };
+
+  // ======================== SUBMIT FORM ========================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // ------------------- VALIDATE -------------------
     if (!form.tieu_de.trim()) return setError("Tiêu đề không được để trống!");
     if (form.tieu_de.trim().length < 5) return setError("Tiêu đề phải có ít nhất 5 ký tự!");
-    
+
     if (!form.noi_dung.trim()) return setError("Nội dung không được để trống!");
     if (form.noi_dung.trim().length < 20) return setError("Nội dung phải có ít nhất 20 ký tự!");
-    
+
     const slugRegex = /^[a-z0-9-]+$/;
     if (!form.slug.trim()) return setError("Slug không được để trống!");
     if (!slugRegex.test(form.slug)) return setError("Slug chỉ được chứa chữ thường, số và dấu '-'");
 
-    if (file && file.size > 2 * 1024 * 1024) return setError("Hình ảnh không được vượt quá 2MB!");
+    if (hinhFile && hinhFile.size > 2 * 1024 * 1024) return setError("Hình ảnh không được vượt quá 2MB!");
     // ------------------------------------------------
 
     setLoading(true);
@@ -102,48 +67,41 @@ export default function SuaBaiViet() {
 
     const formData = new FormData();
     formData.append("tieu_de", form.tieu_de);
-    formData.append("noi_dung", form.noi_dung);
     formData.append("slug", form.slug);
+    formData.append("noi_dung", form.noi_dung);
     formData.append("id_loai_bv", String(form.id_loai_bv));
     formData.append("luot_xem", String(form.luot_xem));
     formData.append("ngay_dang", form.ngay_dang);
     formData.append("an_hien", form.an_hien ? "1" : "0");
 
-    if (file) {
-      formData.append("hinh", file);
-    } else {
-      formData.append("hinh", form.hinh || "");
+    if (hinhFile) {
+      formData.append("hinh", hinhFile);
     }
 
     try {
-      const res = await fetch(`/api/bai_viet/${id}`, {
-        method: "PUT",
+      const res = await fetch("/api/bai_viet", {
+        method: "POST",
         body: formData,
       });
 
+      const data = await res.json();
+
       if (res.ok) {
-        alert(" Cập nhật bài viết thành công!");
+        alert("Thêm bài viết thành công!");
         router.push("/bai_viet");
       } else {
-        const data = await res.json();
-        alert(" Cập nhật thất bại! " + (data.message || ""));
+        alert("Thêm thất bại: " + data.message);
       }
-    } catch (err) {
-      console.error(err);
-      alert(" Lỗi khi cập nhật bài viết!");
-    } finally {
-      setLoading(false);
+    } catch {
+      alert("Lỗi hệ thống!");
     }
+
+    setLoading(false);
   };
 
-  if (initialLoading)
-    return <div className="p-4 text-center">Đang tải dữ liệu...</div>;
-
   return (
-    <div className="p-6 bg-white rounded-xl shadow-md max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">
-        CẬP NHẬT BÀI VIẾT
-      </h1>
+    <div className="p-4 bg-white rounded-xl shadow-md max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4 text-center">THÊM BÀI VIẾT</h1>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
@@ -152,77 +110,66 @@ export default function SuaBaiViet() {
       )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
         {/* Tiêu đề */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Tiêu đề</label>
+          <label className="block mb-1 font-medium">Tiêu đề</label>
           <input
             name="tieu_de"
             value={form.tieu_de}
             onChange={handleChange}
-            className="border border-gray-300 p-2 rounded w-full"
+            className="border p-2 rounded w-full"
           />
         </div>
 
         {/* Slug */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Slug</label>
+          <label className="block mb-1 font-medium">Slug</label>
           <input
             name="slug"
             value={form.slug}
             onChange={handleChange}
-            className="border border-gray-300 p-2 rounded w-full"
+            className="border p-2 rounded w-full"
           />
         </div>
 
         {/* Nội dung */}
         <div className="md:col-span-2">
-          <label className="block mb-1 font-medium text-gray-700">Nội dung</label>
+          <label className="block mb-1 font-medium">Nội dung</label>
           <textarea
             name="noi_dung"
             value={form.noi_dung}
             onChange={handleChange}
             rows={6}
-            className="border border-gray-300 p-2 rounded w-full"
+            className="border p-2 rounded w-full"
           />
         </div>
 
-        {/* Upload hình */}
+        {/* Hình ảnh */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Hình ảnh</label>
-
+          <label className="block mb-1 font-medium">Hình ảnh</label>
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                setFile(e.target.files[0]);
-              }
-            }}
+            onChange={handleFileChange}
             className="border p-2 rounded w-full"
           />
-
-          {form.hinh && (
+          {hinhFile && (
             <Image
-              src={form.hinh}
+              src={URL.createObjectURL(hinhFile)}
+              className="w-24 h-24 object-cover rounded mt-2 border"
               alt="Preview"
-              width={128}   
-              height={128}  
-              className="mt-2 rounded shadow"
             />
           )}
-
-
         </div>
 
         {/* Loại bài viết */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Loại bài viết</label>
+          <label className="block mb-1 font-medium">Loại bài viết</label>
           <select
             name="id_loai_bv"
             value={form.id_loai_bv}
             onChange={handleChange}
-            className="border border-gray-300 p-2 rounded w-full"
+            className="border p-2 rounded w-full"
           >
             <option value={1}>Tin tức</option>
             <option value={2}>Thông báo</option>
@@ -231,7 +178,7 @@ export default function SuaBaiViet() {
 
         {/* Ngày đăng */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Ngày đăng</label>
+          <label className="block mb-1 font-medium">Ngày đăng</label>
           <input
             type="date"
             name="ngay_dang"
@@ -243,8 +190,8 @@ export default function SuaBaiViet() {
 
         {/* Trạng thái */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Trạng thái</label>
-          <div className="flex gap-6 p-2">
+          <label className="block mb-1 font-medium">Trạng thái</label>
+          <div className="flex gap-6">
             <label className="flex items-center gap-2">
               <input
                 type="radio"
@@ -253,7 +200,7 @@ export default function SuaBaiViet() {
                 checked={form.an_hien === true}
                 onChange={handleChange}
               />
-              <span>Hiện</span>
+              Hiện
             </label>
 
             <label className="flex items-center gap-2">
@@ -264,18 +211,30 @@ export default function SuaBaiViet() {
                 checked={form.an_hien === false}
                 onChange={handleChange}
               />
-              <span>Ẩn</span>
+              Ẩn
             </label>
           </div>
         </div>
 
-        {/* Nút Lưu */}
+        {/* Lượt xem */}
+        <div>
+          <label className="block mb-1 font-medium">Lượt xem</label>
+          <input
+            type="number"
+            name="luot_xem"
+            value={form.luot_xem}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* Nút lưu */}
         <div className="md:col-span-2 flex justify-end">
           <button
             disabled={loading}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg"
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg"
           >
-            {loading ? "Đang lưu..." : "Cập nhật bài viết"}
+            {loading ? "Đang lưu..." : "Thêm bài viết"}
           </button>
         </div>
       </form>
