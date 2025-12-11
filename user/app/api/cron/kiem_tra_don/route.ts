@@ -8,7 +8,7 @@ export async function GET() {
     const now = new Date();
     const expireTime = new Date(now.getTime() - DON_HANG_TIMEOUT * 60000);
 
-15    const updated = await DonHangModel.update(
+    const updated = await DonHangModel.update(
       { trang_thai: "da_huy", ghi_chu: "Hệ thống tự hủy do quá hạn thanh toán" },
       {
         where: {
