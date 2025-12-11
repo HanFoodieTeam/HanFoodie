@@ -430,7 +430,7 @@ export default function YeuThichPage() {
         </div>
       )}
 
-      <div className="mx-auto py-10 space-y-10 max-w-[80%]">
+      <div className="mx-auto py-10 space-y-10 ">
         {/* ===================== DANH SÁCH YÊU THÍCH ===================== */}
         <section>
           <h1 className="text-3xl font-semibold text-[#6A0A0A] mb-8">
