@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 
 import { v2 as cloudinary } from "cloudinary";
+import { link } from "fs";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -82,7 +83,7 @@ export async function POST(
     }
 
     const form = await req.formData();
-
+    const link = (form.get("link") || "").toString();
     const mo_ta = (form.get("mo_ta") || "").toString();
     const thu_tu = (form.get("thu_tu") || "1").toString();
     const loai = Number(form.get("loai") || 0);
@@ -105,6 +106,7 @@ export async function POST(
 
     await BannerModel.update(
       {
+        link,
         mo_ta,
         thu_tu,
         loai,

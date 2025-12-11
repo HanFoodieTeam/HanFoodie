@@ -71,7 +71,7 @@ export default function TrangChuPage() {
     setCurrent((prev) => (prev + 1) % bannerChinh.length);
   };
 
-// banner phụ
+  // banner phụ
   useEffect(() => {
     if (bannerPhu.length === 0) return;
     const timer = setInterval(() => {
@@ -102,32 +102,24 @@ export default function TrangChuPage() {
   return (<>
     <main className="">
 
-      {/* <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
-        {bannerChinh.length > 0 ? (
-          <img
-            src={bannerChinh[0].hinh}
-            alt="Banner chính"
-            className="w-full h-full object-cover"
-            onError={(e) => (e.currentTarget.src = "/noimg.png")}
-          />
-        ) : (
-          <img
-            src="/noimg.png"
-            className="w-full h-full object-cover"
-          />
-        )}
-
-
-      </section> */}
 
       <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
         {bannerChinh.length > 0 && (
           <div className="relative w-full h-full">
-            <img
-              src={bannerChinh[current].hinh}
-              alt="Banner chính"
-              className="w-full h-full object-cover transition-all duration-500" />
-
+            {bannerChinh[current].link ? (
+              <a href={bannerChinh[current].link}>
+                <img src={bannerChinh[current].hinh} alt="Banner chính"
+                  className="w-full h-full object-cover transition-all duration-500 cursor-pointer"
+                  onError={(e) => (e.currentTarget.src = "/noimg.png")} />
+              </a>
+            ) : (
+              <img
+                src={bannerChinh[current].hinh}
+                alt="Banner chính"
+                className="w-full h-full object-cover transition-all duration-500"
+                onError={(e) => (e.currentTarget.src = "/noimg.png")}
+              />
+            )}
             {/* Nút lùi */}
             <button
               onClick={handlePrev}
@@ -169,32 +161,21 @@ export default function TrangChuPage() {
         </h2>
         <SanPhamHotSection data={spMuaNhieu} />
 
-
-        {/* <section className="">
-          {bannerPhu.map((bn) => (
-            <div
-              key={bn.id}
-              className="relative w-full h-[200px] rounded-lg overflow-hidden">
-              <img
-                src={bn.hinh}
-                alt="Banner phụ"
-                className="w-full h-full object-cover"
-                onError={(e) => (e.currentTarget.src = "/noimg.png")}
-              />
-            </div>
-          ))}
-        </section> */}
-
         <section className="relative w-full h-[200px] rounded-lg overflow-hidden mt-4">
           {bannerPhu.length > 0 && (
             <div className="relative w-full h-full">
 
-              {/* Ảnh banner phụ */}
-              <img
-                src={bannerPhu[currentPhu].hinh}
-                alt="Banner phụ"
-                className="w-full h-full object-cover transition-all duration-500"
-                onError={(e) => (e.currentTarget.src = "/noimg.png")} />
+              {bannerPhu[currentPhu].link ? (
+                <a href={bannerPhu[currentPhu].link} target="_blank" rel="noopener noreferrer">
+                  <img src={bannerPhu[currentPhu].hinh} alt="Banner phụ"
+                    className="w-full h-full object-cover transition-all duration-500 cursor-pointer"
+                    onError={(e) => (e.currentTarget.src = "/noimg.png")} />
+                </a>
+              ) : (
+                <img src={bannerPhu[currentPhu].hinh} alt="Banner phụ"
+                  className="w-full h-full object-cover transition-all duration-500"
+                  onError={(e) => (e.currentTarget.src = "/noimg.png")} />
+              )}
 
               {/* Nút lùi */}
               <button

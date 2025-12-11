@@ -48,19 +48,13 @@ export default function ThemBannerPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+    <div className="max-w-3xl mx-auto bg-white p-2 rounded shadow">
       <h1 className="text-2xl font-bold mb-6">Thêm Banner</h1>
 
       <input type="file" accept="image/*" onChange={onFileChange} />
 
       {preview && (
-        <Image
-          src={preview}
-          alt="preview"
-          width={600}
-          height={260}
-          className="rounded mt-4"
-        />
+        <Image src={preview} alt="preview" width={600} height={260} className="rounded mt-4"/>
       )}
 
       <div className="mt-4">
@@ -68,8 +62,7 @@ export default function ThemBannerPage() {
         <input
           className="w-full border p-2 rounded"
           value={moTa}
-          onChange={(e) => setMoTa(e.target.value)}
-        />
+          onChange={(e) => setMoTa(e.target.value)}/>
       </div>
 
       <div className="mt-4">
@@ -77,8 +70,7 @@ export default function ThemBannerPage() {
         <input
           className="w-full border p-2 rounded"
           value={link}
-          onChange={(e) => setLink(e.target.value)}
-        />
+          onChange={(e) => setLink(e.target.value)}/>
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-4">
@@ -88,8 +80,7 @@ export default function ThemBannerPage() {
             type="number"
             className="w-full border p-2 rounded"
             value={thuTu}
-            onChange={(e) => setThuTu(e.target.value)}
-          />
+            onChange={(e) => setThuTu(e.target.value)}/>
         </div>
         <div>
           <label>Loại</label>

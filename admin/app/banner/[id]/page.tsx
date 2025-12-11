@@ -42,9 +42,9 @@ export default function SuaBannerPage() {
     const form = new FormData();
 
     if (file) {
-      form.append("hinh", file); 
+      form.append("hinh", file);
     }
-
+    form.append("link", banner.link || "");
     form.append("mo_ta", banner.mo_ta || "");
     form.append("thu_tu", banner.thu_tu || "1");
     form.append("loai", banner.loai ? "1" : "0");
@@ -69,7 +69,7 @@ export default function SuaBannerPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+    <div className="max-w-3xl mx-auto bg-white p-2 rounded shadow">
       <h1 className="text-2xl font-bold mb-6">Sửa Banner</h1>
 
       <label className="font-semibold">Chọn ảnh mới</label>
@@ -80,44 +80,57 @@ export default function SuaBannerPage() {
           const selected = e.target.files?.[0] || null;
           setFile(selected);
           if (selected) {
-            setPreview(URL.createObjectURL(selected)); 
+            setPreview(URL.createObjectURL(selected));
           }
         }}
       />
 
       <div className="mt-4">
-        <Image src={preview || banner.hinh} width={600} height={260} alt="banner" className="rounded border"/>
+        <Image src={preview || banner.hinh} width={600} height={260} alt="banner" className="rounded border" />
       </div>
 
+      <label className="mt-4 block font-semibold"> Link</label>
+      <input className="w-full border p-2 rounded" value={banner.link || ""} onChange={(e) => setBanner({ ...banner, link: e.target.value })} />
+
       <label className="mt-4 block font-semibold">Mô tả</label>
-      <input className="w-full border p-2 rounded" value={banner.mo_ta || ""}/>
+      <input className="w-full border p-2 rounded" value={banner.mo_ta || ""} onChange={(e) => setBanner({ ...banner, mo_ta: e.target.value })} />
 
-      <label className="mt-4 block font-semibold">Thứ tự</label>
-      <input type="number" className="w-full border p-2 rounded" value={banner.thu_tu || ""}
-        onChange={(e) => setBanner({ ...banner, thu_tu: e.target.value })}/>
 
-      <label className="mt-4 block font-semibold">Loại banner</label>
-      <select
-        className="w-full border p-2 rounded"
-        value={banner.loai ? 1 : 0}
-        onChange={(e) =>
-          setBanner({ ...banner, loai: Number(e.target.value) === 1 })
-        }>
-        <option value={0}>Banner chính</option>
-        <option value={1}>Banner phụ</option>
-      </select>
 
-      {/* Trạng thái */}
-      <label className="mt-4 block font-semibold">Trạng thái</label>
-      <select
-        className="w-full border p-2 rounded"
-        value={banner.an_hien ? 1 : 0}
-        onChange={(e) =>
-          setBanner({ ...banner, an_hien: Number(e.target.value) === 1 })
-        } >
-        <option value={1}>Hiển thị</option>
-        <option value={0}>Ẩn</option>
-      </select>
+      <div className="mt-4 grid grid-cols-3 gap-4">
+        <div>
+          <label>Thứ tự</label>
+          <input type="number" className="w-full border p-2 rounded" value={banner.thu_tu || ""}
+            onChange={(e) => setBanner({ ...banner, thu_tu: e.target.value })} />
+        </div>
+
+        <div>
+          <label>Loại</label>
+          <select
+            className="w-full border p-2 rounded"
+            value={banner.loai ? 1 : 0}
+            onChange={(e) =>
+              setBanner({ ...banner, loai: Number(e.target.value) === 1 })
+            }>
+            <option value={0}>Banner chính</option>
+            <option value={1}>Banner phụ</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Trạng thái</label>
+          <select
+            className="w-full border p-2 rounded"
+            value={banner.an_hien ? 1 : 0}
+            onChange={(e) =>
+              setBanner({ ...banner, an_hien: Number(e.target.value) === 1 })
+            } >
+            <option value={1}>Hiển thị</option>
+            <option value={0}>Ẩn</option>
+          </select>
+        </div>
+      </div>
+
 
       <button
         onClick={handleSubmit}
