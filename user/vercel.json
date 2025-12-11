@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/kiem-tra-don",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}
