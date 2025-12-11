@@ -442,7 +442,7 @@ export default function YeuThichPage() {
               Chưa có sản phẩm nào trong danh sách yêu thích.
             </p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {favorites.map((sp) => {
                 const isFavorite = favoriteIds.includes(sp.id);
 
