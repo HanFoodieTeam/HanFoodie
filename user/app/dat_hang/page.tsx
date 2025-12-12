@@ -592,7 +592,7 @@ import { useEffect, useState, Suspense } from "react";
 import { CreditCard, Wallet, Tag } from "lucide-react";
 
 import { useRouter } from "next/navigation";
-import { IDiaChi, IMaGiamGia } from "@/app/lib/cautrucdata";
+import { IDiaChi, IMaGiamGia } from "@/lib/cautrucdata";
 import PopupDiaChi from "../components/PopupDiaChi";
 import PopupMaGiamGia from "../components/Popupmagiamgia";
 import PopupXacThuc from "../components/popup_xac_thuc";

@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import qs from "qs";
-import { DonHangModel } from "@/app/lib/models";
+import { DonHangModel } from "@/lib/models";
 
 function sortObject(obj: Record<string, string>) {
   return Object.keys(obj)

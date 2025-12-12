@@ -1,7 +1,7 @@
 export const runtime = "nodejs"; // quan trọng nếu dùng Sequelize
 
 import { NextResponse } from "next/server";
-import { LoaiBaiVietModel } from "@/app/lib/models";
+import { LoaiBaiVietModel } from "@/lib/models";
 
 export async function GET() {
   try {

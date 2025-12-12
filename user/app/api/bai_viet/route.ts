@@ -1,8 +1,8 @@
 // File: app/api/bai_viet/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { BaiVietModel, LoaiBaiVietModel } from "@/app/lib/models";
+import { BaiVietModel, LoaiBaiVietModel } from "@/lib/models";
 import { WhereOptions } from "sequelize";
-import { IBaiViet } from "@/app/lib/cautrucdata";
+import { IBaiViet } from "@/lib/cautrucdata";
 
 // Kiểu raw dữ liệu từ Sequelize
 interface BaiVietRaw extends Omit<IBaiViet, "an_hien" | "ngay_dang"> {

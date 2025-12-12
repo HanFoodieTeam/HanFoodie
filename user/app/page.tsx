@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { IDanhMuc, ISanPham } from "./lib/cautrucdata";
+import { IDanhMuc, ISanPham } from "../lib/cautrucdata";
 import DanhMucSection from "./components/danhmucsection";
 import SanPhamHotSection from "./components/sanphamsection";
 import Footer from "./components/Footer"; 

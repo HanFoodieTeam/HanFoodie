@@ -3,7 +3,7 @@
 import { X, Tag, CheckCircle2, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { IMaGiamGia } from "@/app/lib/cautrucdata";
+import { IMaGiamGia } from "@/lib/cautrucdata";
 
 interface Props {
   open: boolean;

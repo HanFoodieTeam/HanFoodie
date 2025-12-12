@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
-import { query } from "../../lib/query";
+import { query } from "../../../lib/query";
 import { RowDataPacket } from "mysql2";
 
 interface IRequestBody {

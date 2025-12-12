@@ -333,7 +333,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
-import { ISanPham } from "../lib/cautrucdata";
+import { ISanPham } from "../../lib/cautrucdata";
 import SanPhamHotSection from "../components/sanphamsection";
 
 const USER_ID = 1;

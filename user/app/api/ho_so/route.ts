@@ -874,8 +874,8 @@
 // }
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { NguoiDungModel } from "@/app/lib/models";
-import { uploadHinh } from "@/app/lib/uploadHinh";
+import { NguoiDungModel } from "@/lib/models";
+import { uploadHinh } from "@/lib/uploadHinh";
 
 function xacThucNguoiDung(req: Request): number | null {
   const token = req.headers.get("authorization")?.split(" ")[1];

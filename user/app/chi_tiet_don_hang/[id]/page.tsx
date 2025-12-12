@@ -1935,7 +1935,7 @@ import toast from "react-hot-toast";
 import { Star } from "lucide-react";
 import UserLayout from "@/app/components/UserLayout";
 import { useUser } from "@/app/hooks/useUser";
-import type { IDonHang, IChiTietDonHang } from "@/app/lib/cautrucdata";
+import type { IDonHang, IChiTietDonHang } from "@/lib/cautrucdata";
 
 // Mở rộng ChiTietDonHang để kèm bien_the + parsed json fields
 export interface IChiTietDonHangMoRong

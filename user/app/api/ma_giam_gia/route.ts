@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { MaGiamGiaModel } from "@/app/lib/models";
+import { MaGiamGiaModel } from "@/lib/models";
 import { Op } from "sequelize";
-import { IMaGiamGia } from "@/app/lib/cautrucdata";
+import { IMaGiamGia } from "@/lib/cautrucdata";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {

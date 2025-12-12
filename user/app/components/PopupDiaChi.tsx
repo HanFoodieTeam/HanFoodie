@@ -153,7 +153,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IDiaChi } from "@/app/lib/cautrucdata";
+import { IDiaChi } from "@/lib/cautrucdata";
 import { X } from "lucide-react";
 
 interface PopupDiaChiProps {

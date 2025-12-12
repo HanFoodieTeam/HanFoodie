@@ -531,9 +531,9 @@
 //   }
 // }
 import { NextResponse } from "next/server";
-import type { IDanhGia } from "@/app/lib/cautrucdata";
-import { DanhGiaModel, BienTheModel, NguoiDungModel } from "@/app/lib/models";
-import { uploadHinh } from "@/app/lib/uploadHinh"; // <-- dùng 1 hàm này
+import type { IDanhGia } from "@/lib/cautrucdata";
+import { DanhGiaModel, BienTheModel, NguoiDungModel } from "@/lib/models";
+import { uploadHinh } from "@/lib/uploadHinh"; // <-- dùng 1 hàm này
 
 export const runtime = "nodejs";
 
