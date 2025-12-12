@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { IBaiViet, IBanner, IDanhMuc, ISanPham } from "./lib/cautrucdata";
 import DanhMucSection from "./components/danhmucsection";
 import SanPhamHotSection from "./components/sanphamsection";
+import Link from "next/link";
 
 export default function TrangChuPage() {
   const [danhMuc, setDanhMuc] = useState<IDanhMuc[]>([]);
@@ -208,16 +209,22 @@ export default function TrangChuPage() {
         <section className="relative z-10">
           <h2 className="text-lg font-semibold mb-3">Combo hấp dẫn</h2>
 
+
+
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {combo.slice(0, 6).map((sp) => (
-              <div
+              <Link
                 key={sp.id}
-                className="flex bg-white rounded-md border border-gray-200 shadow-sm hover:shadow-md overflow-hidden transition-all hover:-translate-y-1 h-[120px]">
+                href={`/chi_tiet/${sp.id}`}
+
+
+                className="flex bg-white rounded-md border border-gray-200 shadow-sm hover:shadow-md 
+                 overflow-hidden transition-all hover:-translate-y-1 h-[120px]" >
                 <div className="w-[30%] flex items-center justify-center bg-gray-100">
                   <img
                     src={sp.hinh || "/noimg.png"}
                     alt={sp.ten}
-                    className="w-[100%] h-[100%] object-cover rounded "
+                    className="w-[100%] h-[100%] object-cover rounded"
                   />
                 </div>
 
@@ -225,15 +232,13 @@ export default function TrangChuPage() {
                   <div>
                     <h1
                       className="font-semibold text-gray-800 text-[16px] leading-tight line-clamp-2"
-                      title={sp.ten}
-                    >
+                      title={sp.ten}>
                       {sp.ten}
                     </h1>
 
                     <p
                       className="text-[14px] text-gray-600 line-clamp-2 mt-1"
-                      title={sp.mo_ta}
-                    >
+                      title={sp.mo_ta}>
                       {sp.mo_ta || "Thưởng thức hương vị tuyệt hảo từ HanFoodie."}
                     </p>
                   </div>
@@ -242,7 +247,7 @@ export default function TrangChuPage() {
                     {sp.gia_goc?.toLocaleString("vi-VN")}đ
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
@@ -269,25 +274,19 @@ export default function TrangChuPage() {
                   />
                 </div>
 
-                {/* Nội dung */}
                 <div className="p-2 flex flex-col flex-grow justify-between">
-                  {/* Tên bài viết (1 dòng) */}
                   <h3
                     className="font-semibold text-gray-900 text-[15px] line-clamp-2"
-                    title={bv.tieu_de}
-                  >
+                    title={bv.tieu_de}>
                     {bv.tieu_de}
                   </h3>
 
-                  {/* Mô tả (2 dòng) */}
                   <p
                     className="text-[13px] text-gray-600 line-clamp-2"
-                    title={bv.noi_dung}
-                  >
+                    title={bv.noi_dung}>
                     {(bv.noi_dung ?? "").slice(0, 120)}
                   </p>
 
-                  {/* Ngày */}
                   <p className="text-[12px] text-gray-400 mt-2">
                     {bv.ngay_dang
                       ? new Date(bv.ngay_dang).toLocaleDateString("vi-VN")

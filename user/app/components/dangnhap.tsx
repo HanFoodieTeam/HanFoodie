@@ -44,15 +44,6 @@ export default function LoginForm({
       localStorage.setItem("token", data.token);
 
       setThongBao("Đăng nhập thành công!");
-      // onLoginSuccess(nguoiDung);
-      if (nguoiDung.vai_tro === true) {
-        window.location.href = process.env.NEXT_PUBLIC_ADMIN_URL || "https://admin.hanfoodie.io.vn/";
-      } else {
-        onClose();
-      }
-
-
-
 
 
       setTimeout(() => onClose(), 1000);
