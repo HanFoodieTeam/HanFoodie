@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { IDanhMuc } from "@/app/lib/cautrucdata";
+import { IDanhMuc } from "@/lib/cautrucdata";
 import Image from "next/image";
 
 interface IDanhMucResponse {

@@ -1193,7 +1193,7 @@ import {
   IDanhMuc,
   IHinh,
   IBienThe,
-} from "@/app/lib/cautrucdata";
+} from "@/lib/cautrucdata";
 
 /* ============================
    Kiểu mở rộng / cho form

@@ -10,7 +10,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import {
   IDonHang,
   TrangThaiDonHang,
-} from "@/app/lib/cautrucdata";
+} from "@/lib/cautrucdata";
 
 type ToppingParsed = { ten: string };
 type OptionParsed = Record<string, string | number>;

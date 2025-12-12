@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { MonThemModel } from "@/app/lib/models";
+import { MonThemModel } from "@/lib/models";
 
 //  LẤY THEO ID 
 export async function GET(

@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { IBanner } from "@/app/lib/cautrucdata";
+import { IBanner } from "@/lib/cautrucdata";
 
 type LoaiKey = "all" | "main" | "sub";
 

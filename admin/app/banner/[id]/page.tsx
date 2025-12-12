@@ -5,7 +5,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { IBanner } from "@/app/lib/cautrucdata";
+import { IBanner } from "@/lib/cautrucdata";
 
 export default function SuaBannerPage() {
   const params = useParams();

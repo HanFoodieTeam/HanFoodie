@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
-import { IDanhMuc, IBienThe, ISanPham } from "@/app/lib/cautrucdata";
+import { IDanhMuc, IBienThe, ISanPham } from "@/lib/cautrucdata";
 
 type SanPhamInput = Omit<ISanPham, "id" | "hinh" | "luot_xem">;
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BannerModel, MaGiamGiaModel } from "@/app/lib/models";
-import { IBanner, ICloudinaryUpload } from "@/app/lib/cautrucdata";
+import { BannerModel, MaGiamGiaModel } from "@/lib/models";
+import { IBanner, ICloudinaryUpload } from "@/lib/cautrucdata";
 
 export async function GET(req?: Request) {
   try {

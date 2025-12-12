@@ -3,7 +3,7 @@
 
 import { Suspense, useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { INguoiDung } from "@/app/lib/cautrucdata";
+import { INguoiDung } from "@/lib/cautrucdata";
 
 function NguoiDungContent() {
   const router = useRouter();

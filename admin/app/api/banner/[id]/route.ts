@@ -1,4 +1,4 @@
-import { BannerModel } from "@/app/lib/models";
+import { BannerModel } from "@/lib/models";
 import { NextRequest, NextResponse } from "next/server";
 
 

@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Star } from "lucide-react";
-import { IDanhGia } from "@/app/lib/cautrucdata";
+import { IDanhGia } from "@/lib/cautrucdata";
 import Image from "next/image";
 
 function DanhGiaChiTiet() {

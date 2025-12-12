@@ -1,7 +1,7 @@
 
 import { NextResponse } from "next/server";
-import { DanhGiaModel, NguoiDungModel, BienTheModel, SanPhamModel } from "@/app/lib/models";
-import { IDanhGia } from "@/app/lib/cautrucdata";
+import { DanhGiaModel, NguoiDungModel, BienTheModel, SanPhamModel } from "@/lib/models";
+import { IDanhGia } from "@/lib/cautrucdata";
 
 export async function GET(
   req: Request,
