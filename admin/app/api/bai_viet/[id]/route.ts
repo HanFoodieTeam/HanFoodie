@@ -1,7 +1,7 @@
 // File: app/api/bai_viet/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { BaiVietModel } from "@/app/lib/models";
-import { IBaiViet } from "@/app/lib/cautrucdata";
+import { BaiVietModel } from "@/lib/models";
+import { IBaiViet } from "@/lib/cautrucdata";
 import cloudinaryPkg from "cloudinary";
 
 // ===== Cloudinary Config =====

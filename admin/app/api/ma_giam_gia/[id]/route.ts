@@ -1,4 +1,4 @@
-import { MaGiamGiaModel } from "@/app/lib/models";
+import { MaGiamGiaModel } from "@/lib/models";
 import { NextResponse } from "next/server";
 
 //  Lấy 1 mã giảm giá theo ID

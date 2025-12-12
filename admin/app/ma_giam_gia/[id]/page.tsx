@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { IMaGiamGia } from "@/app/lib/cautrucdata";
+import { IMaGiamGia } from "@/lib/cautrucdata";
 
 export default function SuaMaGiamGia() {
   const router = useRouter();

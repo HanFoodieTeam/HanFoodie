@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { IMaGiamGia } from "@/app/lib/cautrucdata";
+import { IMaGiamGia } from "@/lib/cautrucdata";
 
 type StatusKey = "all" | "upcoming" | "active" | "expired";
 

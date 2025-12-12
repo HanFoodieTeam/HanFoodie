@@ -67,6 +67,7 @@ export interface ISanPham {
   phong_cach?: string | null;
   trang_thai?: string | null;
   id_danh_muc: number;
+  het_mon:  Date |null;
 }
 
 

@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { INguoiDung } from "@/app/lib/cautrucdata";
+import { INguoiDung } from "@/lib/cautrucdata";
 import ThongTin from "./ThongTin";
 import DonHangUser from "./DonHangUser";
 

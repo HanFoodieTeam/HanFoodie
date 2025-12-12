@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { IMonThem } from "@/app/lib/cautrucdata";
+import { IMonThem } from "@/lib/cautrucdata";
 
 export default function ThemMonThem() {
   const router = useRouter();

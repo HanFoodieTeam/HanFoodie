@@ -2,7 +2,7 @@
 
   import { useEffect, useState } from "react";
   import { useRouter, useParams } from "next/navigation";
-  import { IMonThem } from "@/app/lib/cautrucdata";
+  import { IMonThem } from "@/lib/cautrucdata";
 
   export default function SuaMonThem() {
     const router = useRouter();

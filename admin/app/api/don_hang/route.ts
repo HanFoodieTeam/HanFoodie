@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { DonHangModel, NguoiDungModel } from "@/app/lib/models";
-import { IDonHang } from "@/app/lib/cautrucdata";
+import { DonHangModel, NguoiDungModel } from "@/lib/models";
+import { IDonHang } from "@/lib/cautrucdata";
 import { Op, WhereOptions, Sequelize, OrderItem } from "sequelize";
 
 type RangeKey = "all" | "today" | "3days" | "week" | "month" | "year";
