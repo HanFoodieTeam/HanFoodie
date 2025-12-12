@@ -251,7 +251,7 @@ function DonHangPageContent() {
                     {/* Trạng thái vẫn click riêng như cũ */}
                     <td className="px-4 py-3 text-center w-[150px]"
                       onClick={(e) => {
-                        e.stopPropagation();  
+                        e.stopPropagation();
                         handleTrangThaiClick(don);
                       }} >
                       <span className={`px-3 py-1 border rounded-full text-xs font-semibold hover:scale-105 transition-transform ${badgeColors[don.trang_thai]}`}>
