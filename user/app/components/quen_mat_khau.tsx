@@ -66,13 +66,7 @@ export default function QuenMatKhau({ onClose }: QuenMatKhauProps) {
 
       {message && <p className="text-center text-sm">{message}</p>}
 
-      <button
-        type="button"
-        onClick={onClose}
-        className="text-sm text-gray-500 hover:underline mt-2"
-      >
-        Hủy
-      </button>
+      
     </form>
   );
 }

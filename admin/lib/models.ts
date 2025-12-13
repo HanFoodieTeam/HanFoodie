@@ -530,7 +530,7 @@ export const TuyChonModel = db.define(
     an_hien: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 0 },
     id_loai_tuy_chon: { type: DataTypes.INTEGER, allowNull: false },
   },
-  { tableName: "tuy_ chon", timestamps: false }
+  { tableName: "tuy_chon", timestamps: false }// sửa lại bị sai tên bảng
 );
 
 export const YeuThichModel = db.define(
