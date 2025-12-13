@@ -1,8 +1,8 @@
 // File: app/api/bai_viet/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { Op, WhereOptions } from "sequelize";
-import { BaiVietModel } from "@/app/lib/models";
-import { IBaiViet } from "@/app/lib/cautrucdata";
+import { BaiVietModel } from "@/lib/models";
+import { IBaiViet } from "@/lib/cautrucdata";
 import cloudinaryPkg from "cloudinary";
 
 // ===== Cloudinary Config =====

@@ -1,3 +1,77 @@
+export interface IMaGiamGia {
+  id: number;
+  ten: string;
+  gia_tri_giam: number;
+  loai_giam_gia: boolean | null;     // tinyint(1) → boolean trong JS
+  gia_tri_toi_thieu: number;
+  so_luong: number | null;      // có thể null
+  bat_dau: string;              // kiểu DATE trong DB → string ISO
+  ket_thuc: string;             // kiểu DATE trong DB → string ISO
+  an_hien: boolean;
+  ma_so: string;
+  mo_ta: string;
+  gia_tri_giam_toi_da: number | null;
+}
+
+
+
+export interface IDanhGia {
+  id: number;
+  noi_dung: string | null;
+  thoi_gian: string;
+  sao: number;
+  id_nguoi_dung: number;
+  id_bien_the: number;
+  an_hien: boolean | number;
+  an_ten: boolean | number;
+
+  hinh: string | null;
+  nguoi_dung?: { ho_ten: string };
+  bien_the?: {
+    ten: string;
+    san_pham?: { ten: string; hinh?: string };
+  };
+}
+export interface IThongKeDanhGia {
+  san_pham_id: number;
+  ten: string;
+  hinh?: string | null;
+  tong_danh_gia: number;
+  trung_binh: number;
+  sao_1: number;
+  sao_2: number;
+  sao_3: number;
+  sao_4: number;
+  sao_5: number;
+}
+// 🧩 Đánh giá chi tiết (DayDu): mở rộng từ IDanhGia, bao gồm đầy đủ dữ liệu liên kết
+export interface IDanhGiaDayDu extends Omit<IDanhGia, "bien_the"> {
+  bien_the?: IBienThe & {
+    san_pham?: ISanPham;
+  };
+  nguoi_dung?: INguoiDung;
+}
+
+
+
+export interface ISanPham {
+  id: number;
+  ten: string;
+  gia_goc: number;
+  slug: string;
+  hinh?: string | null;
+  mo_ta?: string | null;
+  an_hien: boolean;
+  tag?: string | null;
+  luot_xem: number;
+  phong_cach?: string | null;
+  trang_thai?: string | null;
+  id_danh_muc: number;
+  het_mon:  Date |null;
+}
+
+
+
 // interfaces.ts
 
 export interface IBaiViet {
@@ -31,18 +105,9 @@ export interface IBienThe {
 
 }
 
-export interface IOrderEmail {
-  logoUrl: string;
-  hoTen: string;
-  maDon: string;
-  ngayDat: string;
-  phuongThucThanhToan: string;
-  sanPhamListHtml: string;
-  tongTienHang: number;
-  giamGia: number;
-  tongThanhToan: number;
-  urlDonHang: string;
-}
+
+
+
 export interface IChiTietDonHang {
   id: number;
   don_gia: number;
@@ -52,22 +117,21 @@ export interface IChiTietDonHang {
   id_don_hang: number;
   id_bien_the?: number | null;
   thanh_tien: number;
-  ten_san_pham?: string;
+
+  //  Mối quan hệ với Biến Thể
+  bien_the?: {
+    id: number;
+    ten: string;
+    gia_them?: number | null;
+    san_pham?: {
+      id: number;
+      ten: string;
+      hinh?: string | null;
+    };
+  };
 }
 
-export interface IDanhGia {
-  id: number;
-  noi_dung?: string | null;
-  thoi_gian: string;
-  sao: number;
-  id_nguoi_dung: number;
-  id_bien_the: number;
-  an_hien?: boolean;
-  an_ten?: boolean;
 
-
-  hinh?: string | null;
-}
 
 export interface IDanhMuc {
   id: number;
@@ -120,7 +184,6 @@ export interface IDiaChi {
 // }
 
 export type TrangThaiDonHang =
-  | "cho_thanh_toan"
   | "cho_xac_nhan"
   | "da_xac_nhan"
   | "dang_giao"
@@ -143,26 +206,10 @@ export interface IDonHang {
   so_tien_thanh_toan: number;
   tong_tien_hang: number;
   so_tien_giam: number;
+
+  chi_tiet_don_hang?: IChiTietDonHang[];
+
 }
-// export interface IDonHang {
-//   id: number;
-//   ghi_chu?: string | null; // varchar(255)
-//   id_ma_giam_gia?: number | null; // int
-//   id_nguoi_dung: number; // int
-//   ho_ten_nguoi_nhan: string; // varchar(255)
-//   dia_chi_nguoi_nhan: string; // varchar(255)
-//   sdt_nguoi_nhan: number; // int(11)
-//   ngay_tao: string; // datetime
-//   trang_thai: TrangThaiDonHang; // enum
-//   ma_don: string; // varchar(255)
-//   ngay_cap_nhat: string; // datetime
-//   phuong_thuc_thanh_toan: number; // tinyint(1) ✅ kiểu số (1: COD, 0: Online)
-//   tong_tien_hang: number; // int
-//   so_tien_giam: number; // int
-//   so_tien_thanh_toan: number; // int
-// }
-
-
 
 
 export interface IGioHang {
@@ -211,81 +258,35 @@ export interface ILoaiTuyChon {
   an_hien?: boolean;
 }
 
-export interface IMaGiamGia {
-  id: number;
-  ten: string;
-  gia_tri_giam: number;
-  loai_giam_gia: boolean; // 0: giảm theo tiền, 1: giảm theo %
-  gia_tri_toi_thieu: number;
-  so_luong: number;
-  bat_dau: Date;
-  ket_thuc: Date;
-  an_hien: boolean;
-  ma_so: string;
-  mo_ta?: string;
-  gia_tri_giam_toi_da?: number | null;
-}
+
 
 
 export interface IMonThem {
   id: number;
   ten: string;
   gia_them: number;
-  // loai_mon: number;
+  loai_mon: number;
   trang_thai?: boolean;
+  het_mon: string |null;
 }
-
-// export interface INguoiDung {np
-//   id?: number;
-//   hinh?: string;
-//   ho_ten: string;
-//   sdt?: number | null;
-//   email: string;
-//   tep_khach?: string | null;
-//   mat_khau: string;
-//   trang_thai?: boolean;
-//   ngay_sinh?: string | null;
-//   token_kich_hoat?: string | null;
-//   vai_tro?: boolean;
-//   ngay_tao?:string |Date| null;
-//   kich_hoat:boolean;
-//   han_token:string | null;
-// }
 
 export interface INguoiDung {
-  id?: number;
-  hinh?: string | null;
-  ho_ten: string;
-  sdt?: number | null;
-  email: string;
-  tep_khach?: string | null;
-  mat_khau: string;
-  trang_thai?: boolean;
-  ngay_sinh?: string | null | Date;
-  token_kich_hoat?: string | null;
-  vai_tro?: boolean;
-  ngay_tao?: string | null | Date;
-  kich_hoat: boolean;
-  han_token: Date | string | null;
-}
-
-
-export interface ISanPham {
   id: number;
-  ten: string;
-  gia_goc: number;
-  slug?: string | null;
-  hinh: string;
-  mo_ta: string;
-  an_hien?: boolean;
-  tag?: string | null;
-  luot_xem?: number;
-  phong_cach?: string | null;
-  trang_thai?: string | null;
-  id_danh_muc: number;
+  ho_ten: string;
+  email: string;
+  mat_khau?: string;
+  hinh?: string | null;
+  sdt?: string | null;
+  ngay_sinh?: string | null;
+  vai_tro: boolean;       // true: admin, false: user
+  trang_thai: boolean;    // true: hoạt động, false: khóa
+  token_kich_hoat: boolean;     // xác thực email
+  han_token?: string | null;
+  ngay_tao?: string | null;
+  kich_hoat:boolean;
 
-  so_sao_tb?: number | null;
-
+  don_hang?: IDonHang[]; 
+  dia_chi?: IDiaChi[];    // danh sách địa chỉ giao hàng
 }
 
 export interface ITuyChon {

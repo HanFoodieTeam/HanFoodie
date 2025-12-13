@@ -1,8 +1,8 @@
 
 
 import { NextResponse } from "next/server";
-import { NguoiDungModel } from "@/app/lib/models";
-import { INguoiDung } from "@/app/lib/cautrucdata";
+import { NguoiDungModel } from "@/lib/models";
+import { INguoiDung } from "@/lib/cautrucdata";
 
 export async function GET() {
   try {

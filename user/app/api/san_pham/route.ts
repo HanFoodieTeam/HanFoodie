@@ -35,8 +35,8 @@ import {
   SanPhamModel,
   DanhGiaModel,
   BienTheModel,
-} from "@/app/lib/models";
-import { IDanhMuc, ISanPham } from "@/app/lib/cautrucdata";
+} from "@/lib/models";
+import { IDanhMuc, ISanPham } from "@/lib/cautrucdata";
 
 export async function GET() {
   try {

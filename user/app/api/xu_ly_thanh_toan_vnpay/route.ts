@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GioHangModel, NguoiDungModel, DonHangModel } from "@/app/lib/models";
+import { GioHangModel, NguoiDungModel, DonHangModel } from "@/lib/models";
 import { sendMail } from "@/app/GUI_EMAIL/guiemail_dh";
 import { orderEmailTemplate } from "@/app/GUI_EMAIL/orderEmail";
 

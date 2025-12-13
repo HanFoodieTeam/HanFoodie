@@ -536,7 +536,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/app/hooks/useUser';
 import UserLayout from '@/app/components/UserLayout';
-import { IDiaChi } from '@/app/lib/cautrucdata';
+import { IDiaChi } from '@/lib/cautrucdata';
 import toast from 'react-hot-toast';
 
 export default function DiaChiPage() {

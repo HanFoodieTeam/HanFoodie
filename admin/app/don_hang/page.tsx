@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { IDonHang, TrangThaiDonHang } from "@/app/lib/cautrucdata";
+import { IDonHang, TrangThaiDonHang } from "@/lib/cautrucdata";
 
 //  Cấu hình trạng thái đơn hàng 
 const trangThaiLabels: Record<TrangThaiDonHang, string> = {

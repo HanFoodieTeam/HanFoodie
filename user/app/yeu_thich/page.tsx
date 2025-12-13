@@ -333,7 +333,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
-import { ISanPham } from "../lib/cautrucdata";
+import { ISanPham } from "../../lib/cautrucdata";
 import SanPhamHotSection from "../components/sanphamsection";
 
 const USER_ID = 1;
@@ -430,7 +430,7 @@ export default function YeuThichPage() {
         </div>
       )}
 
-      <div className="mx-auto py-10 space-y-10 max-w-[80%]">
+      <div className="mx-auto py-10 space-y-10 ">
         {/* ===================== DANH SÁCH YÊU THÍCH ===================== */}
         <section>
           <h1 className="text-3xl font-semibold text-[#6A0A0A] mb-8">
@@ -442,7 +442,7 @@ export default function YeuThichPage() {
               Chưa có sản phẩm nào trong danh sách yêu thích.
             </p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {favorites.map((sp) => {
                 const isFavorite = favoriteIds.includes(sp.id);
 

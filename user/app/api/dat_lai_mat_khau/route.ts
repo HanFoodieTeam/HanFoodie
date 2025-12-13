@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "../../lib/query";
+import { query } from "../../../lib/query";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { RowDataPacket } from "mysql2";

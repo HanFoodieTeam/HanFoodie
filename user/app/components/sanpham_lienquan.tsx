@@ -489,7 +489,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
-import { ISanPham } from "../lib/cautrucdata";
+import { ISanPham } from "../../lib/cautrucdata";
 
 const ID_USER = 1;
 

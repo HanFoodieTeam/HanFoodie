@@ -1,8 +1,8 @@
 
 import { NextResponse } from "next/server";
 import { Op, WhereOptions } from "sequelize";
-import { MonThemModel } from "@/app/lib/models";
-import { IMonThem } from "@/app/lib/cautrucdata";
+import { MonThemModel } from "@/lib/models";
+import { IMonThem } from "@/lib/cautrucdata";
 
 //  GET: Danh sách món thêm (lọc, tìm kiếm, phân trang) 
 export async function GET(req: Request) {

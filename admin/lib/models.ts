@@ -40,6 +40,11 @@ export const SanPhamModel = db.define("san_pham", {
   phong_cach: { type: DataTypes.STRING(255), allowNull: true },
   trang_thai: { type: DataTypes.STRING(255), allowNull: true },
   id_danh_muc: { type: DataTypes.INTEGER, allowNull: false },
+  het_mon: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    comment: "Ngày hết món (null = đang bán)",
+  },
 }, {
   tableName: "san_pham",
   timestamps: false,
@@ -502,11 +507,11 @@ export const MonThemModel = db.define(
     gia_them: { type: DataTypes.INTEGER, allowNull: false },
     loai_mon: { type: DataTypes.INTEGER, allowNull: false },
     trang_thai: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 0 },
-het_mon: {
-  type: DataTypes.DATEONLY,
-  allowNull: true, 
-  comment: "Ngày hết món",
-},
+    het_mon: {
+      type: DataTypes.DATEONLY,
+      allowNull: true, 
+      comment: "Ngày hết món",
+    },
   },
   { tableName: "mon_them", timestamps: false }
 );

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BaiVietModel } from "@/app/lib/models";
-import { IBaiViet } from "@/app/lib/cautrucdata";
+import { BaiVietModel } from "@/lib/models";
+import { IBaiViet } from "@/lib/cautrucdata";
 import { Op } from "sequelize";
 
 type RouteContext = { params: Promise<{ id: string }> };

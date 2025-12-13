@@ -2,8 +2,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { Op, WhereOptions } from "sequelize";
-import { DanhMucModel } from "@/app/lib/models";
-import { IDanhMuc } from "@/app/lib/cautrucdata";
+import { DanhMucModel } from "@/lib/models";
+import { IDanhMuc } from "@/lib/cautrucdata";
 import { Buffer } from "buffer";
 import { UploadApiResponse, UploadApiErrorResponse, v2 as cloudinary } from "cloudinary";
 

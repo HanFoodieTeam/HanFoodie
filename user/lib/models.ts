@@ -1,4 +1,3 @@
-
 import { DataTypes, Optional } from "sequelize";
 import { db } from "./database";
 
@@ -32,6 +31,11 @@ export const SanPhamModel = db.define(
     luot_xem: { type: DataTypes.INTEGER, allowNull: true, defaultValue: 0 },
     phong_cach: { type: DataTypes.STRING(255), allowNull: true },
     trang_thai: { type: DataTypes.STRING(255), allowNull: true },
+    het_mon: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+        comment: "Ngày hết món (null = đang bán)",
+      },
     id_danh_muc: {
       type: DataTypes.INTEGER, allowNull: false, references:
       {
@@ -106,7 +110,7 @@ export const NguoiDungModel = db.define<NguoiDungInstance>(
     },
     ngay_tao: {
       type: DataTypes.DATE,
-      allowNull: false,
+allowNull: false,
       defaultValue: DataTypes.NOW,
     },
     kich_hoat: {
@@ -198,7 +202,7 @@ export const ChiTietDonHangModel = db.define(
 
     so_luong: { type: DataTypes.INTEGER, allowNull: false },
     json_tuy_chon: { type: DataTypes.TEXT("long"), allowNull: true },
-    json_mon_them: { type: DataTypes.TEXT("long"), allowNull: true },
+json_mon_them: { type: DataTypes.TEXT("long"), allowNull: true },
     id_don_hang: { type: DataTypes.INTEGER, allowNull: false },
     id_bien_the: { type: DataTypes.INTEGER, allowNull: true },
     thanh_tien: { type: DataTypes.INTEGER, allowNull: false },
@@ -387,7 +391,7 @@ DonHangModel.init(
   {
     sequelize: db, // ✅ dùng sequelize chứ không phải db
     tableName: "don_hang",
-    timestamps: false,
+timestamps: false,
   }
 );
 
@@ -455,8 +459,13 @@ export const MonThemModel = db.define(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     ten: { type: DataTypes.STRING(255), allowNull: false },
     gia_them: { type: DataTypes.INTEGER, allowNull: false },
-    // loai_mon: { type: DataTypes.INTEGER, allowNull: false },
+    loai_mon: { type: DataTypes.INTEGER, allowNull: false },
     trang_thai: { type: DataTypes.TINYINT, allowNull: true, defaultValue: 0 },
+het_mon: {
+  type: DataTypes.DATEONLY,
+  allowNull: true, 
+  comment: "Ngày hết món",
+},
   },
   { tableName: "mon_them", timestamps: false }
 );
@@ -471,7 +480,7 @@ export const TuyChonModel = db.define(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     ten: { type: DataTypes.STRING(255), allowNull: false },
     an_hien: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 0 },
-    id_loai_tuy_chon: { type: DataTypes.INTEGER, allowNull: false },
+id_loai_tuy_chon: { type: DataTypes.INTEGER, allowNull: false },
   },
   { tableName: "tuy_chon", timestamps: false }
 );
@@ -567,4 +576,3 @@ DonHangModel.belongsTo(MaGiamGiaModel, { foreignKey: "id_ma_giam_gia", as: "ma_g
 // DiaChi <-> NguoiDung
 NguoiDungModel.hasMany(DiaChiModel, { foreignKey: "id_nguoi_dung", as: "dia_chi" });
 DiaChiModel.belongsTo(NguoiDungModel, { foreignKey: "id_nguoi_dung", as: "nguoi_dung" });
-

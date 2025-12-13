@@ -1,8 +1,8 @@
 // File: app/api/danh_muc/[id]/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import { DanhMucModel } from "@/app/lib/models";
-import { IDanhMuc } from "@/app/lib/cautrucdata";
+import { DanhMucModel } from "@/lib/models";
+import { IDanhMuc } from "@/lib/cautrucdata";
 import { UploadApiResponse, UploadApiErrorResponse, v2 as cloudinary } from "cloudinary";
 
 // ====================== Cloudinary Config ======================

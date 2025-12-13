@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { IDonHang, TrangThaiDonHang } from "@/app/lib/cautrucdata";
+import { IDonHang, TrangThaiDonHang } from "@/lib/cautrucdata";
 import Image from "next/image";
 
 const trangThaiLabels: Record<TrangThaiDonHang, string> = {
