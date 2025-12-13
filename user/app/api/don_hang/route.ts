@@ -776,9 +776,9 @@ import {
   ChiTietDonHangModel,
   BienTheModel,
   SanPhamModel,
-} from "@/app/lib/models";
+} from "@/lib/models";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { IDonHang, TrangThaiDonHang } from "@/app/lib/cautrucdata";
+import { IDonHang, TrangThaiDonHang } from "@/lib/cautrucdata";
 
 interface TokenPayload extends JwtPayload {
   id: number;

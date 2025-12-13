@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { IDonHang, TrangThaiDonHang } from '@/app/lib/cautrucdata';
+import { IDonHang, TrangThaiDonHang } from '@/lib/cautrucdata';
 import UserLayout from '@/app/components/UserLayout';
 import { useUser } from '@/app/hooks/useUser';
 import Image from 'next/image';

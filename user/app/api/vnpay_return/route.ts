@@ -129,7 +129,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import qs from "qs";
-import { DonHangModel } from "@/app/lib/models";
+import { DonHangModel } from "@/lib/models";
 
 export async function GET(req: NextRequest) {
   const baseUrl = process.env.APP_URL ?? "http://localhost:3000";

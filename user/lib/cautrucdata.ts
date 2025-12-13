@@ -1,4 +1,3 @@
-// interfaces.ts
 
 export interface IBaiViet {
   id: number;
@@ -229,12 +228,14 @@ export interface IMaGiamGia {
 }
 
 
+
 export interface IMonThem {
   id: number;
   ten: string;
   gia_them: number;
-  // loai_mon: number;
+  loai_mon: number;
   trang_thai?: boolean;
+  het_mon: string |null;
 }
 
 // export interface INguoiDung {np
@@ -285,7 +286,7 @@ export interface ISanPham {
   phong_cach?: string | null;
   trang_thai?: string | null;
   id_danh_muc: number;
-
+  het_mon?: string | null;
   so_sao_tb?: number | null;
 
 }

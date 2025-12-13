@@ -1,8 +1,8 @@
 // File: app/api/bai_viet/loai/route.ts
 
 import { NextResponse } from "next/server";
-import { LoaiBaiVietModel } from "@/app/lib/models";
-import { ILoaiBaiViet } from "@/app/lib/cautrucdata";
+import { LoaiBaiVietModel } from "@/lib/models";
+import { ILoaiBaiViet } from "@/lib/cautrucdata";
 
 // Kiểu dữ liệu Raw từ Sequelize (vì an_hien trong DB là number)
 interface RawLoaiBaiViet extends Omit<ILoaiBaiViet, "an_hien"> {

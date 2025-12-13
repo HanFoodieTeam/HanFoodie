@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
-import { NguoiDungModel } from "@/app/lib/models";
+import { NguoiDungModel } from "@/lib/models";
 import bcrypt from "bcryptjs";
-import { INguoiDung } from "@/app/lib/cautrucdata";
+import { INguoiDung } from "@/lib/cautrucdata";
 
 export async function POST(req: Request): Promise<NextResponse> {
   try {

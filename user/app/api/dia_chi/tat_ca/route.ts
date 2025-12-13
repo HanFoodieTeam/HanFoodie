@@ -32,9 +32,9 @@
 //   }
   // }
   import { NextRequest, NextResponse } from "next/server";
-  import { DiaChiModel } from "@/app/lib/models";
-  import { IDiaChi } from "@/app/lib/cautrucdata";
-  import { getUserFromToken } from "@/app/lib/auth";
+  import { DiaChiModel } from "@/lib/models";
+  import { IDiaChi } from "@/lib/cautrucdata";
+  import { getUserFromToken } from "@/lib/auth";
 
   export async function GET(req: NextRequest) {
     try {

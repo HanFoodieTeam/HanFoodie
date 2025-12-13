@@ -201,6 +201,7 @@ export default function UserSidebar() {
   const menus = [
     { href: "/ho_so", label: "Hồ Sơ" },
     { href: `/dia_chi/tat_ca/${user.id}`, label: "Địa Chỉ" },
+    { href: "/doi_mat_khau", label: "Đổi Mật Khẩu" },
     { href: "/don_hang", label: "Đơn Hàng" },
   ];
 

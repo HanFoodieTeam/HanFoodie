@@ -9,7 +9,7 @@ import {
   IBienThe,
   ILoaiTuyChon,
   IMonThem,
-} from "../lib/cautrucdata";
+} from "../../lib/cautrucdata";
 import { useCart } from "../context/giohangcontext";
 import PopupSuaGioHang from "../components/popupsuagiohang";
 import PopupXacThuc from "../components/popup_xac_thuc";

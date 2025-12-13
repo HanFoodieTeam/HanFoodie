@@ -1,5 +1,5 @@
+import { BannerModel } from "@/lib/models";
 import { NextRequest, NextResponse } from "next/server";
-import { BannerModel } from "@/app/lib/models";
 
 export async function GET(req: NextRequest) {
   try {

@@ -1,4 +1,4 @@
-import { SanPhamModel } from "@/app/lib/models";
+import { SanPhamModel } from "@/lib/models";
 import { NextResponse } from "next/server";
 
 export async function GET() {

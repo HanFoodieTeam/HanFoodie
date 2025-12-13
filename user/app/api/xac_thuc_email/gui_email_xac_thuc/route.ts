@@ -1,7 +1,7 @@
 
 import { NextResponse } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { NguoiDungModel } from "@/app/lib/models";
+import { NguoiDungModel } from "@/lib/models";
 import { xacthuc } from "@/app/GUI_EMAIL/xac_thuc_tai_khoan";
 
 interface ActiveTokenPayload extends JwtPayload {

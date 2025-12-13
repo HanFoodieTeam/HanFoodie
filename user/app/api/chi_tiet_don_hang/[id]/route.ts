@@ -5,8 +5,8 @@ import {
   ChiTietDonHangModel,
   SanPhamModel,
   BienTheModel,
-} from "@/app/lib/models";
-import { IDonHang } from "@/app/lib/cautrucdata";
+} from "@/lib/models";
+import { IDonHang } from "@/lib/cautrucdata";
 
 interface TokenPayload extends JwtPayload {
   id: number;

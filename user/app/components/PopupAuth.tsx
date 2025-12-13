@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { INguoiDung } from "@/app/lib/cautrucdata";
+import { INguoiDung } from "@/lib/cautrucdata";
 import LoginForm from "./dangnhap";
 import RegisterForm from "./dang_ky";
 

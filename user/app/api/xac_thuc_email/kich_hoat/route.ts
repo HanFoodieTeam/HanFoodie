@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { NguoiDungModel } from "@/app/lib/models";
+import { NguoiDungModel } from "@/lib/models";
 
 interface VerifyTokenPayload extends JwtPayload {
   id: number;

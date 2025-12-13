@@ -100,10 +100,10 @@
 //   }
 // }
 import { NextResponse } from "next/server";
-import { NguoiDungModel } from "@/app/lib/models";
+import { NguoiDungModel } from "@/lib/models";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { INguoiDung } from "@/app/lib/cautrucdata";
+import { INguoiDung } from "@/lib/cautrucdata";
 
 interface DangKyBody {
   ho_ten: string;

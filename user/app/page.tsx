@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IBaiViet, IBanner, IDanhMuc, ISanPham } from "./lib/cautrucdata";
+
 import DanhMucSection from "./components/danhmucsection";
 import SanPhamHotSection from "./components/sanphamsection";
 import Link from "next/link";
+import { IBaiViet, IBanner, IDanhMuc, ISanPham } from "@/lib/cautrucdata";
 
 export default function TrangChuPage() {
   const [danhMuc, setDanhMuc] = useState<IDanhMuc[]>([]);

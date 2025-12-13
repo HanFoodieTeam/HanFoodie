@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BienTheModel, GioHangModel, SanPhamModel } from "@/app/lib/models";
-import { getUserFromToken } from "@/app/lib/auth";
-import { IGioHang } from "@/app/lib/cautrucdata";
+import { BienTheModel, GioHangModel, SanPhamModel } from "@/lib/models";
+import { getUserFromToken } from "@/lib/auth";
+import { IGioHang } from "@/lib/cautrucdata";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {

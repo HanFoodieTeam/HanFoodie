@@ -1,5 +1,5 @@
+import { DonHangModel } from "@/lib/models";
 import { NextResponse } from "next/server";
-import { DonHangModel } from "@/app/lib/models";
 import { Op } from "sequelize";
 
 export async function GET() {

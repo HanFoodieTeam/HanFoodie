@@ -134,9 +134,9 @@
 
 
 import { NextRequest, NextResponse } from "next/server";
-import { DiaChiModel } from "@/app/lib/models";
-import { getUserFromToken } from "@/app/lib/auth";
-import { IDiaChi } from "@/app/lib/cautrucdata";
+import { DiaChiModel } from "@/lib/models";
+import { getUserFromToken } from "@/lib/auth";
+import { IDiaChi } from "@/lib/cautrucdata";
 
 // 🟢 LẤY DANH SÁCH ĐỊA CHỈ
 export async function GET(req: NextRequest) {

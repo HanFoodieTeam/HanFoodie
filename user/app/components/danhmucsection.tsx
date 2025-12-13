@@ -15,7 +15,7 @@ import {
 
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
-import { IDanhMuc } from "../lib/cautrucdata";
+import { IDanhMuc } from "../../lib/cautrucdata";
 
 // Icon mapping
 const iconMap: Record<string, any> = {

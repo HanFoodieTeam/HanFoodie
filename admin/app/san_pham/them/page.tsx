@@ -21,6 +21,7 @@ export default function ThemSanPhamPage() {
     phong_cach: "",
     trang_thai: "active",
     id_danh_muc: 0,
+    het_mon: null,
   });
 
   // ================= LOAD DANH MỤC =================

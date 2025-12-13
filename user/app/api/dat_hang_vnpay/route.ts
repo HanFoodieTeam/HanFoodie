@@ -157,9 +157,9 @@ import {
   MaGiamGiaModel,
   BienTheModel,
   SanPhamModel,
-} from "@/app/lib/models";
-import { getUserFromToken } from "@/app/lib/auth";
-import { IMonThem } from "@/app/lib/cautrucdata";
+} from "@/lib/models";
+import { getUserFromToken } from "@/lib/auth";
+import { IMonThem } from "@/lib/cautrucdata";
 
 interface IChiTietSP {
   id_bien_the: number;

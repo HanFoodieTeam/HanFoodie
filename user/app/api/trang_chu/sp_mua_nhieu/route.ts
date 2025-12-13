@@ -68,9 +68,9 @@ import {
   BienTheModel,
   SanPhamModel,
   DanhGiaModel,
-} from "@/app/lib/models";
+} from "@/lib/models";
 import { fn, col, literal, Sequelize } from "sequelize";
-import { ISanPham } from "@/app/lib/cautrucdata";
+import { ISanPham } from "@/lib/cautrucdata";
 
 interface IRatingResult {
   so_sao_tb: number | null;

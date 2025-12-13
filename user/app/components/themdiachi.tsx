@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import { IDiaChi } from "@/app/lib/cautrucdata";
+import { IDiaChi } from "@/lib/cautrucdata";
 
 interface Props {
   onClose: () => void;

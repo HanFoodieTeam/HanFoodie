@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { IDiaChi } from "@/app/lib/cautrucdata";
+import { IDiaChi } from "@/lib/cautrucdata";
 
 export default function SuaDiaChi({
   diaChi,

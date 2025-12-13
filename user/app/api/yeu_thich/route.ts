@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { YeuThichModel, SanPhamModel } from "@/app/lib/models";
+import { YeuThichModel, SanPhamModel } from "@/lib/models";
 
 // ================== GET: Lấy danh sách yêu thích của 1 user ==================
 export async function GET(req: Request) {

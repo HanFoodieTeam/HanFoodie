@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { BaiVietModel } from "@/app/lib/models";
+import { BaiVietModel } from "@/lib/models";
 
 export async function GET() {
   try {

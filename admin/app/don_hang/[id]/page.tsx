@@ -288,7 +288,8 @@ const nextTrangThai: Record<TrangThaiDonHang, TrangThaiDonHang | null> = {
 };
 
 export default function DonHangDetail() {
-  const { id } = useParams<{ id: string }>();
+const params = useParams();
+const id = params.id as string;
   const [donHang, setDonHang] = useState<IDonHang | null>(null);
   const [loading, setLoading] = useState(true);
 
