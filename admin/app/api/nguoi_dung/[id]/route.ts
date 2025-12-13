@@ -75,3 +75,30 @@ export async function GET(
     );
   }
 }
+
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const { vai_tro } = await req.json();
+
+    const mgg = await NguoiDungModel.findByPk(id);
+    if (!mgg)
+      return NextResponse.json(
+        { message: "Không tìm thấy mã giảm giá" },
+        { status: 404 }
+      );
+
+    await mgg.update({ vai_tro });
+    return NextResponse.json({ message: "Cập nhật thành công", vai_tro });
+  } catch (err) {
+    console.error("PATCH lỗi:", err);
+    return NextResponse.json(
+      { error: "Lỗi khi cập nhật trạng thái" },
+      { status: 500 }
+    );
+  }
+}

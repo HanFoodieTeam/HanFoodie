@@ -60,7 +60,7 @@ export interface NguoiDungInstance
 export const NguoiDungModel = db.define<NguoiDungInstance>(
 
   "nguoi_dung",
-   {
+  {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -189,6 +189,8 @@ export const BannerModel = db.define(
     mo_ta: { type: DataTypes.STRING(255), allowNull: true },
     link: { type: DataTypes.STRING(255), allowNull: true },
     thu_tu: { type: DataTypes.STRING(255), allowNull: true },
+    an_hien: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 0 },
+    loai: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 0 },
   },
   { tableName: "banner", timestamps: false }
 );
@@ -310,7 +312,7 @@ export class DonHangModel
   declare dia_chi_nguoi_nhan: string;
   declare sdt_nguoi_nhan: number;
   declare ngay_tao: Date;
-  declare trang_thai: "cho_thanh_toan"|"cho_xac_nhan" | "da_xac_nhan" | "dang_giao" | "da_giao" | "da_huy";
+  declare trang_thai: "cho_thanh_toan" | "cho_xac_nhan" | "da_xac_nhan" | "dang_giao" | "da_giao" | "da_huy";
   declare ma_don: string;
   declare ngay_cap_nhat: Date;
   declare phuong_thuc_thanh_toan: boolean;
