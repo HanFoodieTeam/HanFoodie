@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar } from "lucide-react";
-import { IBaiViet } from "@/app/lib/cautrucdata";
+import { IBaiViet } from "@/lib/cautrucdata";
 
 export default function BaiVietChiTietPage() {
   const params = useParams();

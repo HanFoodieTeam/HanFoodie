@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { DanhMucModel, SanPhamModel } from "@/app/lib/models";
+import { DanhMucModel, SanPhamModel } from "@/lib/models";
 import { Sequelize, FindOptions } from "sequelize";
 
 export async function GET() {

@@ -9,7 +9,7 @@ import {
   ILoaiTuyChon,
   ISanPham,
   ITuyChon,
-} from "@/app/lib/cautrucdata";
+} from "@/lib/cautrucdata";
 
 interface ITuyChonMoRong extends ITuyChon {
   gia_them?: number | null;

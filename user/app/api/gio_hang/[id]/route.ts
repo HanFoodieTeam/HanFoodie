@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GioHangModel } from "@/app/lib/models";
-import { getUserFromToken } from "@/app/lib/auth";
+import { GioHangModel } from "@/lib/models";
+import { getUserFromToken } from "@/lib/auth";
 import { Model } from "sequelize";
 
 interface IGioHangRecord extends Model {

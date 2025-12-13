@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Search, Heart, ShoppingBag, User, Menu, X } from "lucide-react";
 import LoginForm from "./dangnhap";
 import RegisterForm from "./dang_ky";
-import { INguoiDung } from "../lib/cautrucdata";
+import { INguoiDung } from "../../lib/cautrucdata";
 import { useCart } from "../context/giohangcontext";
 import QuenMatKhauForm from "./quen_mat_khau";
 

@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
-import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel, BienTheModel, SanPhamModel, NguoiDungModel } from "@/app/lib/models";
-import { db } from "@/app/lib/database";
+import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel, BienTheModel, SanPhamModel, NguoiDungModel } from "@/lib/models";
+import { db } from "@/lib/database";
 import { Transaction } from "sequelize";
-import { getUserFromToken } from "@/app/lib/auth";
-import { IChiTietDonHang } from "@/app/lib/cautrucdata";
+import { getUserFromToken } from "@/lib/auth";
+import { IChiTietDonHang } from "@/lib/cautrucdata";
 import { sendMail } from "../../GUI_EMAIL/guiemail_dh";
 import { orderEmailTemplate } from "@/app/GUI_EMAIL/orderEmail";
 

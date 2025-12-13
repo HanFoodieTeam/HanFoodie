@@ -35,7 +35,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "app/doi_pass/page.txs"  ],
   "exclude": [
     "node_modules"
   ]

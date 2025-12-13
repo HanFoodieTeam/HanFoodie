@@ -157,7 +157,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import DanhMucSection from "../components/danhmucsection";
-import { ISanPham, IDanhMuc } from "../lib/cautrucdata";
+import { ISanPham, IDanhMuc } from "../../lib/cautrucdata";
 
 interface IDanhMucCoSanPham extends IDanhMuc {
   san_pham: ISanPham[];

@@ -16,6 +16,8 @@ function NguoiDungContent() {
   const [allData, setAllData] = useState<INguoiDung[]>([]);
   const [searchInput, setSearchInput] = useState(qParam);
   const [loading, setLoading] = useState(true);
+  const [confirmRoleUser, setConfirmRoleUser] = useState<INguoiDung | null>(null);
+
 
   const pageSize = 10;
 
@@ -92,6 +94,38 @@ function NguoiDungContent() {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const updateRole = async () => {
+    if (!confirmRoleUser) return;
+
+    const id = confirmRoleUser.id;
+    const newRoleNumber = confirmRoleUser.vai_tro ? 0 : 1;
+    const newRoleBoolean = Boolean(newRoleNumber);
+
+    try {
+      const res = await fetch(`/api/nguoi_dung/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vai_tro: newRoleNumber }),
+      });
+
+      if (!res.ok) {
+        alert("Không thể cập nhật vai trò!");
+        return;
+      }
+
+      setAllData((prev) =>
+        prev.map((u) =>
+          u.id === id ? { ...u, vai_tro: newRoleBoolean } : u
+        )
+      );
+    } catch (err) {
+      console.error("Lỗi cập nhật vai trò:", err);
+      alert("Không thể cập nhật vai trò!");
+    } finally {
+      setConfirmRoleUser(null);
+    }
+  };
+
 
   return (
     <div className="p-2">
@@ -179,7 +213,24 @@ function NguoiDungContent() {
                   <td className="px-4 py-3 w-50">{u.ho_ten}</td>
                   <td className="px-4 py-3 w-56">{u.email}</td>
                   <td className="px-4 py-3 w-30">{u.sdt ?? "-"}</td>
-                  <td className="px-4 py-3">{u.vai_tro ? "Admin" : "User"}</td>
+                  <td className="px-4 py-3" onClick={(e) => {
+                    e.stopPropagation();
+                    setConfirmRoleUser(u);
+                  }}
+                  >
+                    <span
+                      className={`
+      px-3 py-1 rounded-full border text-xs font-semibold cursor-pointer select-none 
+      transition-all duration-200 
+      ${u.vai_tro
+                          ? "bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200"
+                          : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+                        }
+    `}>
+                      {u.vai_tro ? "Admin" : "User"}
+                    </span>
+                  </td>
+
                   <td className="px-4 py-3">{u.kich_hoat ? "🟢" : "🔴"}</td>
                   <td className="px-4 py-3">{u.trang_thai ? "🟢" : "🔴"}</td>
                   <td className="px-3 py-2">
@@ -194,6 +245,43 @@ function NguoiDungContent() {
           </tbody>
         </table>
       </div>
+
+      {confirmRoleUser && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[380px]">
+            <h2 className="text-lg font-semibold text-center mb-4">
+              Xác nhận thay đổi vai trò
+            </h2>
+
+            <p className="text-center text-gray-700 mb-6">
+              Bạn có muốn chuyển người dùng
+              <span className="font-semibold"> {confirmRoleUser.ho_ten} </span>
+              thành{" "}
+              <span className="font-semibold text-blue-600">
+                {confirmRoleUser.vai_tro ? "User" : "Admin"}
+              </span>{" "}
+              không?
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={updateRole}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+              >
+                Có
+              </button>
+
+              <button
+                onClick={() => setConfirmRoleUser(null)}
+                className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg"
+              >
+                Không
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* Pagination */}
       <div className="flex justify-center mt-6 gap-2">
@@ -228,7 +316,9 @@ function NguoiDungContent() {
         </button>
       </div>
     </div>
+
   );
+
 }
 
 export default function Page() {

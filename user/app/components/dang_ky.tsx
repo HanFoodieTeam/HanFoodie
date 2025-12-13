@@ -121,7 +121,7 @@
 "use client";
 
 import { useState } from "react";
-import { INguoiDung } from "@/app/lib/cautrucdata";
+import { INguoiDung } from "@/lib/cautrucdata";
 
 interface RegisterFormProps {
   onClose: () => void;

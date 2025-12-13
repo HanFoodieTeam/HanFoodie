@@ -1,4 +1,4 @@
-import { IOrderEmail } from "../lib/cautrucdata";
+import { IOrderEmail } from "../../lib/cautrucdata";
 
 export function orderEmailTemplate({
   logoUrl,

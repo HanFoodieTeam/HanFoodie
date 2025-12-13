@@ -14,7 +14,7 @@ export function getUserFromToken(req: NextRequest): AuthPayload | null {
     if (!authHeader?.startsWith("Bearer ")) return null;
 
     const token = authHeader.split(" ")[1];
-const secret = process.env.JWT_SECRET || "HanFoodieSecretKey123!";
+const secret = process.env.JWT_SECRET || "HanFoodieSecretKey121113!@@f";
     const decoded = jwt.verify(token, secret) as AuthPayload;
 
     return decoded;

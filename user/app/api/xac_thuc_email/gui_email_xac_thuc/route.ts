@@ -1,7 +1,7 @@
 
 import { NextResponse } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { NguoiDungModel } from "@/app/lib/models";
+import { NguoiDungModel } from "@/lib/models";
 import { xacthuc } from "@/app/GUI_EMAIL/xac_thuc_tai_khoan";
 
 interface ActiveTokenPayload extends JwtPayload {
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       han_token: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    const link = `${process.env.APP_URL}/kich_hoat_tai_khoan?token=${tokenActive}`;
+    const link = `${process.env.NEXT_PUBLIC_SITE_URL}/kich_hoat_tai_khoan?token=${tokenActive}`;
 
     await xacthuc(
       decode.email,

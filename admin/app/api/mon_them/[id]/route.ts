@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { MonThemModel } from "@/lib/models";
 
-//  LẤY THEO ID 
 export async function GET(
   req: Request,
   context: { params: Promise<{ id: string }> }
@@ -79,47 +78,8 @@ export async function PUT(
 }
 
 
-// export async function PATCH(
-//   req: Request,
-//   context: { params: Promise<{ id: string }> }
-// ) {
-//   try {
-//     const { id } = await context.params;
-//     const { trang_thai } = (await req.json()) as { trang_thai: boolean };
 
-//     if (typeof trang_thai !== "boolean") {
-//       return NextResponse.json(
-//         { success: false, message: "trang_thai phải là boolean" },
-//         { status: 400 }
-//       );
-//     }
-
-//     const monThem = await MonThemModel.findByPk(id);
-//     if (!monThem) {
-//       return NextResponse.json(
-//         { success: false, message: "Không tìm thấy món thêm" },
-//         { status: 404 }
-//       );
-//     }
-
-//     //  Cập nhật trạng thái (true -> 1, false -> 0)
-//     await monThem.update({ trang_thai: trang_thai ? 1 : 0 });
-
-//     return NextResponse.json({
-//       success: true,
-//       message: "Cập nhật trạng thái thành công",
-//       data: { id, trang_thai },
-//     });
-//   } catch (error) {
-//     console.error(" Lỗi PATCH món thêm:", error);
-//     return NextResponse.json(
-//       { success: false, message: "Lỗi khi cập nhật trạng thái" },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-export async function PATCH(
+  export async function PATCH(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
@@ -136,25 +96,29 @@ export async function PATCH(
       );
     }
 
-    // Đánh dấu hết món hôm nay
+    if (body.trang_thai !== undefined) {
+      await mon.update({ trang_thai: body.trang_thai ? 1 : 0 });
+    }
+
     if (body.het_mon === true) {
       await mon.update({ het_mon: today });
     }
 
-    // Có lại món trong hôm nay → xoá ngày hiện tại
     if (body.co_lai_mon === true) {
       await mon.update({ het_mon: null });
     }
 
     return NextResponse.json({
-      success: true,
-      message: "Cập nhật thành công",
-      data: {
-        id: mon.getDataValue("id"),
-        ten: mon.getDataValue("ten"),
-        het_mon: mon.getDataValue("het_mon"),
-      },
-    });
+  success: true,
+  message: "Cập nhật thành công",
+  data: {
+    id: mon.getDataValue("id"),
+    ten: mon.getDataValue("ten"),
+    trang_thai: mon.getDataValue("trang_thai"),
+    het_mon: mon.getDataValue("het_mon"),
+  },
+});
+
   } catch (err) {
     console.error("PATCH lỗi:", err);
     return NextResponse.json(

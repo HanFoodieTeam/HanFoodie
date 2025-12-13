@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
-import { NguoiDungModel } from "@/app/lib/models";
+import { NguoiDungModel } from "@/lib/models";
 import bcrypt from "bcryptjs";
-import { INguoiDung } from "@/app/lib/cautrucdata";
+import { INguoiDung } from "@/lib/cautrucdata";
 
 export async function POST(req: Request): Promise<NextResponse> {
   try {
@@ -57,14 +57,15 @@ export async function POST(req: Request): Promise<NextResponse> {
     );
 
     // Trả thông tin người dùng (ẩn mật khẩu)
-    const nguoiDungInfo = {
-      id: nguoiDung.getDataValue("id") as number,
-      ho_ten: nguoiDung.getDataValue("ho_ten") as string,
-      email: nguoiDung.getDataValue("email") as string,
-      sdt: nguoiDung.getDataValue("sdt") as number,
-      vai_tro: nguoiDung.getDataValue("vai_tro") as boolean,
-      kich_hoat: nguoiDung.getDataValue("kich_hoat") as boolean,
-    };
+const nguoiDungInfo = {
+  id: nguoiDung.getDataValue("id"),
+  ho_ten: nguoiDung.getDataValue("ho_ten"),
+  email: nguoiDung.getDataValue("email"),
+  sdt: nguoiDung.getDataValue("sdt"),
+  vai_tro: Boolean(nguoiDung.getDataValue("vai_tro")), // 👈 CHỖ QUAN TRỌNG
+  kich_hoat: Boolean(nguoiDung.getDataValue("kich_hoat")),
+};
+
 
     return NextResponse.json({
       thong_bao: "Đăng nhập thành công",
