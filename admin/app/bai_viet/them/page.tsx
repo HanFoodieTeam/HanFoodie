@@ -33,8 +33,8 @@ export default function ThemBaiViet() {
         type === "number"
           ? Number(value)
           : type === "radio"
-          ? value === "true"
-          : value,
+            ? value === "true"
+            : value,
     }));
   };
 
@@ -156,6 +156,8 @@ export default function ThemBaiViet() {
           {hinhFile && (
             <Image
               src={URL.createObjectURL(hinhFile)}
+              width={96}
+              height={96}
               className="w-24 h-24 object-cover rounded mt-2 border"
               alt="Preview"
             />
