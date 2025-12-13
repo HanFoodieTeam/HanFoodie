@@ -1,0 +1,245 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+
+export default function ThemBaiViet() {
+  const router = useRouter();
+
+  const [form, setForm] = useState({
+    tieu_de: "",
+    slug: "",
+    noi_dung: "",
+    id_loai_bv: 1,
+    luot_xem: 0,
+    ngay_dang: new Date().toISOString().slice(0, 10),
+    an_hien: true,
+  });
+
+  const [hinhFile, setHinhFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // ======================== ON CHANGE ========================
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
+
+    setForm((f) => ({
+      ...f,
+      [name]:
+        type === "number"
+          ? Number(value)
+          : type === "radio"
+            ? value === "true"
+            : value,
+    }));
+  };
+
+  // ======================== ON FILE ========================
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setHinhFile(file);
+  };
+
+  // ======================== SUBMIT FORM ========================
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // ------------------- VALIDATE -------------------
+    if (!form.tieu_de.trim()) return setError("Tiêu đề không được để trống!");
+    if (form.tieu_de.trim().length < 5) return setError("Tiêu đề phải có ít nhất 5 ký tự!");
+
+    if (!form.noi_dung.trim()) return setError("Nội dung không được để trống!");
+    if (form.noi_dung.trim().length < 20) return setError("Nội dung phải có ít nhất 20 ký tự!");
+
+    const slugRegex = /^[a-z0-9-]+$/;
+    if (!form.slug.trim()) return setError("Slug không được để trống!");
+    if (!slugRegex.test(form.slug)) return setError("Slug chỉ được chứa chữ thường, số và dấu '-'");
+
+    if (hinhFile && hinhFile.size > 2 * 1024 * 1024) return setError("Hình ảnh không được vượt quá 2MB!");
+    // ------------------------------------------------
+
+    setLoading(true);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append("tieu_de", form.tieu_de);
+    formData.append("slug", form.slug);
+    formData.append("noi_dung", form.noi_dung);
+    formData.append("id_loai_bv", String(form.id_loai_bv));
+    formData.append("luot_xem", String(form.luot_xem));
+    formData.append("ngay_dang", form.ngay_dang);
+    formData.append("an_hien", form.an_hien ? "1" : "0");
+
+    if (hinhFile) {
+      formData.append("hinh", hinhFile);
+    }
+
+    try {
+      const res = await fetch("/api/bai_viet", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Thêm bài viết thành công!");
+        router.push("/bai_viet");
+      } else {
+        alert("Thêm thất bại: " + data.message);
+      }
+    } catch {
+      alert("Lỗi hệ thống!");
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <div className="p-4 bg-white rounded-xl shadow-md max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4 text-center">THÊM BÀI VIẾT</h1>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Tiêu đề */}
+        <div>
+          <label className="block mb-1 font-medium">Tiêu đề</label>
+          <input
+            name="tieu_de"
+            value={form.tieu_de}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* Slug */}
+        <div>
+          <label className="block mb-1 font-medium">Slug</label>
+          <input
+            name="slug"
+            value={form.slug}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* Nội dung */}
+        <div className="md:col-span-2">
+          <label className="block mb-1 font-medium">Nội dung</label>
+          <textarea
+            name="noi_dung"
+            value={form.noi_dung}
+            onChange={handleChange}
+            rows={6}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* Hình ảnh */}
+        <div>
+          <label className="block mb-1 font-medium">Hình ảnh</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="border p-2 rounded w-full"
+          />
+          {hinhFile && (
+            <Image
+              src={URL.createObjectURL(hinhFile)}
+              width={96}
+              height={96}
+              className="w-24 h-24 object-cover rounded mt-2 border"
+              alt="Preview"
+            />
+          )}
+        </div>
+
+        {/* Loại bài viết */}
+        <div>
+          <label className="block mb-1 font-medium">Loại bài viết</label>
+          <select
+            name="id_loai_bv"
+            value={form.id_loai_bv}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          >
+            <option value={1}>Tin tức</option>
+            <option value={2}>Thông báo</option>
+          </select>
+        </div>
+
+        {/* Ngày đăng */}
+        <div>
+          <label className="block mb-1 font-medium">Ngày đăng</label>
+          <input
+            type="date"
+            name="ngay_dang"
+            value={form.ngay_dang}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* Trạng thái */}
+        <div>
+          <label className="block mb-1 font-medium">Trạng thái</label>
+          <div className="flex gap-6">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="an_hien"
+                value="true"
+                checked={form.an_hien === true}
+                onChange={handleChange}
+              />
+              Hiện
+            </label>
+
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="an_hien"
+                value="false"
+                checked={form.an_hien === false}
+                onChange={handleChange}
+              />
+              Ẩn
+            </label>
+          </div>
+        </div>
+
+        {/* Lượt xem */}
+        <div>
+          <label className="block mb-1 font-medium">Lượt xem</label>
+          <input
+            type="number"
+            name="luot_xem"
+            value={form.luot_xem}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* Nút lưu */}
+        <div className="md:col-span-2 flex justify-end">
+          <button
+            disabled={loading}
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg"
+          >
+            {loading ? "Đang lưu..." : "Thêm bài viết"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
