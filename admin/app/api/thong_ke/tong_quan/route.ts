@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/app/lib/database";
+import { db } from "@/lib/database";
 import { QueryTypes } from "sequelize";
 
 interface DashboardRow { tong_doanh_thu: number; ngay?: string; thang?: string; nam?: string }

@@ -401,7 +401,7 @@ import {
   DanhMucModel,
   BienTheModel,
   HinhModel,
-} from "@/app/lib/models";
+} from "@/lib/models";
 interface IBienTheInput {
   id?: number;
   ten: string;

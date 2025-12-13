@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ILoaiBaiViet } from "@/app/lib/cautrucdata";
+import { ILoaiBaiViet } from "@/lib/cautrucdata";
 
 export default function SuaLoaiBaiViet() {
   const router = useRouter();

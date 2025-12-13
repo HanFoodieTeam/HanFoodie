@@ -1,8 +1,8 @@
 // File: app/api/loai_tuy_chon/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { Op, WhereOptions } from "sequelize";
-import { LoaiTuyChonModel } from "@/app/lib/models"; // Model Sequelize cho LoaiTuyChon
-import { ILoaiTuyChon } from "@/app/lib/cautrucdata"; // Interface TypeScript
+import { LoaiTuyChonModel } from "@/lib/models"; // Model Sequelize cho LoaiTuyChon
+import { ILoaiTuyChon } from "@/lib/cautrucdata"; // Interface TypeScript
 
 // Loại bỏ any bằng kiểu JSON của Sequelize
 interface LoaiTuyChonRaw extends Omit<ILoaiTuyChon, "an_hien"> {

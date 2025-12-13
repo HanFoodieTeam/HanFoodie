@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ILoaiTuyChon } from "@/app/lib/cautrucdata";
+import { ILoaiTuyChon } from "@/lib/cautrucdata";
 
 export default function SuaLoaiTuyChon() {
     const router = useRouter();

@@ -1,7 +1,7 @@
 // File: app/api/loai_tuy_chon/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { LoaiTuyChonModel } from "@/app/lib/models";
-import { ILoaiTuyChon } from "@/app/lib/cautrucdata";
+import { LoaiTuyChonModel } from "@/lib/models";
+import { ILoaiTuyChon } from "@/lib/cautrucdata";
 
 // ====================== Kiểu raw lấy từ DB ======================
 // Không extends ILoaiTuyChon nữa, tránh lỗi TypeScript

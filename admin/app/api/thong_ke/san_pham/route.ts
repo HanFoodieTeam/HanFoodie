@@ -1,6 +1,6 @@
 // app/api/thong_ke/san_pham/route.ts
 import { NextResponse } from "next/server";
-import { db } from "@/app/lib/database";
+import { db } from "@/lib/database";
 import { QueryTypes } from "sequelize";
 
 export async function GET(req: Request) {

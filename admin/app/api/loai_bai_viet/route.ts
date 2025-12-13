@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Op, WhereOptions } from "sequelize";
-import { LoaiBaiVietModel } from "@/app/lib/models";
-import { ILoaiBaiViet } from "@/app/lib/cautrucdata";
+import { LoaiBaiVietModel } from "@/lib/models";
+import { ILoaiBaiViet } from "@/lib/cautrucdata";
 
 // Raw từ DB
 interface RawLoaiBaiViet extends Omit<ILoaiBaiViet, "an_hien"> {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LoaiBaiVietModel } from "@/app/lib/models";
-import { ILoaiBaiViet } from "@/app/lib/cautrucdata";
+import { LoaiBaiVietModel } from "@/lib/models";
+import { ILoaiBaiViet } from "@/lib/cautrucdata";
 
 interface RawLoaiBaiViet extends Omit<ILoaiBaiViet, "an_hien"> {
   an_hien: number | boolean | null;

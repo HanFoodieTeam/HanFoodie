@@ -86,10 +86,10 @@ export default function SuaBaiViet() {
     // ------------------- VALIDATE -------------------
     if (!form.tieu_de.trim()) return setError("Tiêu đề không được để trống!");
     if (form.tieu_de.trim().length < 5) return setError("Tiêu đề phải có ít nhất 5 ký tự!");
-    
+
     if (!form.noi_dung.trim()) return setError("Nội dung không được để trống!");
     if (form.noi_dung.trim().length < 20) return setError("Nội dung phải có ít nhất 20 ký tự!");
-    
+
     const slugRegex = /^[a-z0-9-]+$/;
     if (!form.slug.trim()) return setError("Slug không được để trống!");
     if (!slugRegex.test(form.slug)) return setError("Slug chỉ được chứa chữ thường, số và dấu '-'");
@@ -204,13 +204,18 @@ export default function SuaBaiViet() {
 
           {form.hinh && (
             <Image
-              src={form.hinh}
+              src={
+                form.hinh.startsWith("http")
+                  ? form.hinh
+                  : `/${form.hinh.replace(/^\/+/, "")}`
+              }
               alt="Preview"
-              width={128}   
-              height={128}  
+              width={128}
+              height={128}
               className="mt-2 rounded shadow"
             />
           )}
+
 
 
         </div>

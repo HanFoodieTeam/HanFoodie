@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { MaGiamGiaModel } from "@/app/lib/models";
+import { MaGiamGiaModel } from "@/lib/models";
 import { Op } from "sequelize";
 
 export async function GET(req?: Request) {

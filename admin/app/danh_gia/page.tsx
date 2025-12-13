@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, useMemo } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Star, Search, ArrowDownUp } from "lucide-react";
-import type { IThongKeDanhGia } from "@/app/lib/cautrucdata";
+import type { IThongKeDanhGia } from "@/lib/cautrucdata";
 import Link from "next/link";
 import Image from "next/image";
 

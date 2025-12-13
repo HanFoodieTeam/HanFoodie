@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { IDanhMuc } from "@/app/lib/cautrucdata";
+import { IDanhMuc } from "@/lib/cautrucdata";
 import Image from "next/image";
 export default function SuaDanhMuc() {
   const router = useRouter();

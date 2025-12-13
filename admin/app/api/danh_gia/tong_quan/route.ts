@@ -1,7 +1,7 @@
 
 import { NextResponse } from "next/server";
-import { DanhGiaModel, BienTheModel, SanPhamModel } from "@/app/lib/models";
-import  { IThongKeDanhGia, IBienThe, ISanPham } from "@/app/lib/cautrucdata";
+import { DanhGiaModel, BienTheModel, SanPhamModel } from "@/lib/models";
+import  { IThongKeDanhGia, IBienThe, ISanPham } from "@/lib/cautrucdata";
 
 // Interface dữ liệu đánh giá sau khi lấy từ DB
 interface IDanhGiaDayDu {

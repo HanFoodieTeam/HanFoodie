@@ -8,7 +8,7 @@ import {
   ChiTietDonHangModel,
   BienTheModel,
   SanPhamModel,
-} from "@/app/lib/models";
+} from "@/lib/models";
 
 export async function GET(
   req: NextRequest,

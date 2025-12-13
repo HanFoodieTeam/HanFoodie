@@ -406,8 +406,8 @@ import {
   DanhMucModel,
   HinhModel,
   BienTheModel,
-} from "@/app/lib/models";
-import { ISanPham } from "@/app/lib/cautrucdata";
+} from "@/lib/models";
+import { ISanPham } from "@/lib/cautrucdata";
 
 // ================================
 // CONFIG CLOUDINARY

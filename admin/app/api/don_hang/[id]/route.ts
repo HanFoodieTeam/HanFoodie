@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { DonHangModel, NguoiDungModel, ChiTietDonHangModel, BienTheModel, SanPhamModel,
-} from "@/app/lib/models";
-import { IDonHang, TrangThaiDonHang } from "@/app/lib/cautrucdata";
+} from "@/lib/models";
+import { IDonHang, TrangThaiDonHang } from "@/lib/cautrucdata";
 
 //  Hàm parse ID hợp lệ
 function parseId(id: string): number | null {
