@@ -331,10 +331,15 @@ export async function POST(req: NextRequest) {
       testMode: true,
       hashAlgorithm: HashAlgorithm.SHA512,
     });
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0] ??
+      req.headers.get("x-real-ip") ??
+      "127.0.0.1";
+
 
     const urlPay = await vnp.buildPaymentUrl({
       vnp_Amount: soTienThanhToan,
-      vnp_IpAddr: "127.0.0.1",
+      vnp_IpAddr: ip,
       vnp_TxnRef: maDon,
       vnp_OrderInfo: `Thanh_toan_hoa_don:${maDon}`,
       vnp_ReturnUrl: process.env.VNP_RETURN_URL!,

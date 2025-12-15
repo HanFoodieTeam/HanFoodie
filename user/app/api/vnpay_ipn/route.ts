@@ -1,5 +1,5 @@
 
-
+export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
@@ -22,7 +22,11 @@ export async function GET(req: NextRequest) {
     delete vnpParams["vnp_SecureHashType"];
 
     const sortedParams = sortObject(vnpParams);
-    const signData = qs.stringify(sortedParams, { encode: false });
+    const signData = qs.stringify(sortedParams, {
+      encode: true,
+      format: "RFC1738",
+    });
+
 
     const signed = crypto
       .createHmac("sha512", process.env.VNP_HASH_SECRET!)
@@ -43,7 +47,7 @@ export async function GET(req: NextRequest) {
 
     if (rspCode === "00") {
       await donHang.update({
-trang_thai:"cho_xac_nhan",
+        trang_thai: "cho_xac_nhan",
         ngay_cap_nhat: new Date()
       });
     }
