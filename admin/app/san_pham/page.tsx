@@ -2571,7 +2571,7 @@ function SanPhamListContent() {
   // Query params
   const page = Number(searchParams.get("page") || "1");
   const searchQuery = searchParams.get("search") || "";
-  const danh_muc = searchParams.get("danh_muc") || "";
+  const id_danh_muc = searchParams.get("id_danh_muc") || "";
   const min_price = searchParams.get("min_price") || "";
   const max_price = searchParams.get("max_price") || "";
 
@@ -2604,12 +2604,13 @@ function SanPhamListContent() {
       setLoading(true);
 
       const qs = new URLSearchParams({
-        page: String(page),
-        search: searchQuery,
-        danh_muc,
-        min_price,
-        max_price,
-      });
+          page: String(page),
+          search: searchQuery,
+          id_danh_muc,
+          min_price,
+          max_price,
+        });
+
 
       const res = await fetch(`/api/san_pham?${qs.toString()}`);
       const json = await res.json();
@@ -2624,8 +2625,8 @@ function SanPhamListContent() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [page, searchQuery, danh_muc, min_price, max_price]);
+  fetchData();
+}, [page, searchQuery, id_danh_muc, min_price, max_price]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -2660,9 +2661,12 @@ function SanPhamListContent() {
         </div>
 
         <DanhMucSelect
-          value={danh_muc}
-          onChange={(value) => updateQuery({ danh_muc: value, page: "1" })}
+          value={id_danh_muc}
+          onChange={(value) =>
+            updateQuery({ id_danh_muc: value, page: "1" })
+          }
         />
+
 
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-600">Khoảng giá nhanh</label>
@@ -2765,7 +2769,13 @@ function SanPhamListContent() {
                       </Link>
                     </td>
 
-                  <td className="px-4 py-3 text-red-600">{item.gia_goc.toLocaleString("vi-VN")}₫</td>
+                  <td className="px-4 py-3 text-red-600">
+                    <Link
+                        href={`/san_pham/${item.id}`}
+                      >
+                         {item.gia_goc.toLocaleString("vi-VN")}₫
+                      </Link>
+                   </td>
 
                   <td className="px-4 py-3"><Link
                         href={`/san_pham/${item.id}`}
