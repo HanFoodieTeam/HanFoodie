@@ -125,7 +125,7 @@
 //   }
 // }
 
-
+export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import qs from "qs";
@@ -150,7 +150,11 @@ export async function GET(req: NextRequest) {
       Object.entries(vnpParams).sort(([a], [b]) => a.localeCompare(b))
     );
 
-    const signData = qs.stringify(sortedParams, { encode: false });
+    const signData = qs.stringify(sortedParams, {
+      encode: true,
+      format: "RFC1738",
+    });
+
 
     const signed = crypto
       .createHmac("sha512", process.env.VNP_HASH_SECRET!)
@@ -160,6 +164,10 @@ export async function GET(req: NextRequest) {
     const maDon = vnpParams["vnp_TxnRef"];
     const respCode = vnpParams["vnp_ResponseCode"];
     const transStatus = vnpParams["vnp_TransactionStatus"];
+
+    if (secureHash !== signed) {
+      return NextResponse.redirect(`${baseUrl}/dat_hang?status=failed`);
+    }
 
     const thanhCong = respCode === "00" && transStatus === "00";
     if (!thanhCong) {
@@ -172,11 +180,11 @@ export async function GET(req: NextRequest) {
     }
 
     // Cập nhật trạng thái đơn
-    await don.update({
-      trang_thai: "cho_xac_nhan",
-      phuong_thuc_thanh_toan: false,
-      ngay_cap_nhat: new Date(),
-    });
+    // await don.update({
+    //   trang_thai: "cho_xac_nhan",
+    //   phuong_thuc_thanh_toan: false,
+    //   ngay_cap_nhat: new Date(),
+    // });
 
     return NextResponse.redirect(
       `${baseUrl}/dat_hang?status=success&id=${don.id}&maDon=${maDon}`
