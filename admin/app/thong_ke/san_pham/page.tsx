@@ -1,19 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import React, { useEffect, useMemo, useState } from "react";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
+/* ================== TYPES ================== */
 interface SanPhamItem {
   id: number;
   ten: string;
@@ -26,49 +15,42 @@ interface ApiResponse {
   topSanPham: SanPhamItem[];
 }
 
-// Format VNĐ: 12345678 -> 12.345.678 VNĐ
-const formatVND = (value: number | string | bigint) =>
-  value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
+/* ================== FORMAT ================== */
+const formatVND = (value: number) =>
+  value.toLocaleString("vi-VN") + " VNĐ";
 
+/* ================== PAGE ================== */
 export default function SanPhamPage() {
   const today = new Date().toISOString().slice(0, 10);
 
   const [sanPham, setSanPham] = useState<SanPhamItem[]>([]);
   const [from, setFrom] = useState(today);
   const [to, setTo] = useState(today);
-  const [filter, setFilter] = useState<"ngay" | "thang" | "nam">("ngay");
+  const [filterTime, setFilterTime] = useState<"ngay" | "thang" | "nam">("ngay");
+  const [filterTable, setFilterTable] = useState<
+    "all" | "ban_chay" | "ban_cham" | "yeu_thich"
+  >("all");
   const [loading, setLoading] = useState(false);
-  const [maxText, setMaxText] = useState<React.ReactNode>("");
 
+  /* ================== LOAD DATA ================== */
   const loadData = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ from, to, filter });
+      const params = new URLSearchParams({ from, to, filter: filterTime });
       const res = await fetch(`/api/thong_ke/san_pham?${params.toString()}`);
       const json: ApiResponse = await res.json();
-      setSanPham(json.topSanPham);
-
-      if (json.topSanPham.length > 0) {
-        const max = json.topSanPham[0];
-        const min = json.topSanPham[json.topSanPham.length - 1];
-
-        setMaxText(
-          <span className="text-black">
-            <span className="text-green-600 font-semibold">
-              Sản phẩm bán nhiều nhất: {max.ten} ({max.tong_so_luong}) - {formatVND(max.tong_doanh_thu)}
-            </span>{" "}
-            |{" "}
-            <span className="text-red-600 font-semibold">
-              Bán ít nhất: {min.ten} ({min.tong_so_luong}) - {formatVND(min.tong_doanh_thu)}
-            </span>
-          </span>
-        );
-      } else {
-        setMaxText(<span className="text-black">Không có dữ liệu</span>);
-      }
+      setSanPham(
+        Array.isArray(json.topSanPham)
+          ? json.topSanPham.map((sp) => ({
+            ...sp,
+            tong_so_luong: Number(sp.tong_so_luong),
+            tong_doanh_thu: Number(sp.tong_doanh_thu),
+          }))
+          : []
+      );
     } catch (err) {
       console.error(err);
-      setMaxText(<span className="text-red-600 font-semibold">Lỗi load dữ liệu</span>);
+      setSanPham([]);
     } finally {
       setLoading(false);
     }
@@ -76,101 +58,166 @@ export default function SanPhamPage() {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const chartData = {
-    labels: sanPham.map((sp) => sp.ten),
-    datasets: [
-      {
-        label: "Số lượng bán",
-        data: sanPham.map((sp) => sp.tong_so_luong),
-        backgroundColor: "rgba(34,197,94,0.7)", // màu xanh
-      },
-      {
-        label: "Doanh thu",
-        data: sanPham.map((sp) => sp.tong_doanh_thu),
-        backgroundColor: "rgba(59,130,246,0.7)", // màu xanh dương
-      },
-    ],
-  };
+  /* ================== CALCULATE ================== */
+  const banChayNhat = sanPham[0];
+  const banChamNhat = sanPham[sanPham.length - 1];
+  const yeuThichNhat = sanPham.reduce<SanPhamItem | null>(
+    (max, item) =>
+      !max || item.tong_so_luong > max.tong_so_luong ? item : max,
+    null
+  );
 
+  /* ================== FILTER TABLE ================== */
+  const filteredTableData = useMemo(() => {
+    if (filterTable === "ban_chay") return sanPham.slice(0, 5);
+    if (filterTable === "ban_cham") return sanPham.slice(-5);
+    if (filterTable === "yeu_thich")
+      return yeuThichNhat ? [yeuThichNhat] : [];
+    return sanPham;
+  }, [filterTable, sanPham, yeuThichNhat]);
+
+  const labelTime =
+    filterTime === "ngay"
+      ? "Ngày"
+      : filterTime === "thang"
+        ? "Tháng"
+        : "Năm";
+
+  /* ================== UI ================== */
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold mb-4">Thống Kê Sản Phẩm</h1>
+      <h1 className="text-2xl font-bold">Thống Kê Sản Phẩm</h1>
 
-      {/* Bộ lọc */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-3">
-        <div className="flex items-center space-x-2">
-          <label>Từ:</label>
+      {/* ================= FILTER TIME ================= */}
+      <div className="flex flex-wrap items-end gap-4 mb-4">
+        {/* Từ ngày */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Từ ngày</label>
           <input
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="border rounded px-2 py-1"
+            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-        <div className="flex items-center space-x-2">
-          <label>Đến:</label>
+
+        {/* Đến ngày */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Đến ngày</label>
           <input
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="border rounded px-2 py-1"
+            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-        <div className="flex items-center space-x-2">
-          <label>Hiển thị theo:</label>
+
+        {/* Thống kê theo */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Thống kê theo</label>
           <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value as "ngay" | "thang" | "nam")}
-            className="border rounded px-2 py-1"
+            value={filterTime}
+            onChange={(e) =>
+              setFilterTime(e.target.value as "ngay" | "thang" | "nam")
+            }
+            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="ngay">Ngày</option>
             <option value="thang">Tháng</option>
             <option value="nam">Năm</option>
           </select>
         </div>
+
+        {/* Button Xem */}
         <button
           onClick={loadData}
-          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
         >
           Xem
         </button>
       </div>
 
-      {/* Thông báo sản phẩm */}
-      {maxText && <div className="mb-3">{maxText}</div>}
 
-      {/* Biểu đồ cột */}
-      <div className="bg-white shadow rounded-xl p-4 mb-6">
-        {loading ? <p>Đang tải...</p> : <Bar data={chartData} />}
+      {/* ================= BOX ================= */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* BÁN CHẠY */}
+        <Box
+          title={`🔥 BÁN CHẠY NHẤT `} // ${labelTime}
+          item={banChayNhat}
+        />
+        {/* BÁN CHẬM */}
+        <Box
+          title={`🐌 BÁN CHẬM NHẤT `}
+          item={banChamNhat}
+          color="red"
+        />
+        {/* YÊU THÍCH */}
+        <Box
+          title={`❤️ YÊU THÍCH NHẤT `}
+          item={yeuThichNhat}
+          color="pink"
+        />
       </div>
 
-      {/* Bảng chi tiết */}
+      {/* ================= TABLE ================= */}
       <div className="bg-white shadow rounded-xl p-4">
-        <h2 className="text-xl font-semibold mb-3">Thống Kê Chi Tiết</h2>
+        <div className="flex flex-wrap items-center justify-between mb-3 gap-2">
+          <h2 className="text-xl font-semibold">Thống Kê Chi Tiết</h2>
+          <select
+            value={filterTable}
+            onChange={(e) =>
+              setFilterTable(
+                e.target.value as
+                | "all"
+                | "ban_chay"
+                | "ban_cham"
+                | "yeu_thich"
+              )
+            }
+            className="border rounded px-2 py-1"
+          >
+            <option value="all">Tất cả</option>
+            <option value="ban_chay">Bán chạy</option>
+            <option value="ban_cham">Bán chậm</option>
+            <option value="yeu_thich">Yêu thích</option>
+          </select>
+        </div>
+
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
+          <table className="w-full text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="p-2 border-b border-gray-200 text-left">Tên sản phẩm</th>
-                <th className="p-2 border-b border-gray-200 text-right">Số lượng bán</th>
-                <th className="p-2 border-b border-gray-200 text-right">Doanh thu</th>
+                <th className="p-2 text-left">Tên sản phẩm</th>
+                <th className="p-2 text-right">Số lượng bán</th>
+                <th className="p-2 text-right">Doanh thu</th>
               </tr>
             </thead>
             <tbody>
-              {sanPham.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={3} className="text-center p-3">
+                    Đang tải...
+                  </td>
+                </tr>
+              ) : filteredTableData.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="text-center p-3 text-gray-500">
                     Không có dữ liệu
                   </td>
                 </tr>
               ) : (
-                sanPham.map((sp) => (
-                  <tr key={sp.id} className="hover:bg-gray-50 transition">
-                    <td className="p-2 border-b border-gray-200">{sp.ten}</td>
-                    <td className="p-2 border-b border-gray-200 text-right">{sp.tong_so_luong}</td>
-                    <td className="p-2 border-b border-gray-200 text-right">{formatVND(sp.tong_doanh_thu)}</td>
+                filteredTableData.map((sp) => (
+                  <tr key={sp.id} className="hover:bg-gray-50">
+                    <td className="p-2">{sp.ten}</td>
+                    <td className="p-2 text-right">
+                      {sp.tong_so_luong}
+                    </td>
+                    <td className="p-2 text-right">
+                      {formatVND(sp.tong_doanh_thu)}
+                    </td>
                   </tr>
                 ))
               )}
@@ -178,6 +225,40 @@ export default function SanPhamPage() {
           </table>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ================== BOX COMPONENT ================== */
+function Box({
+  title,
+  item,
+  color = "green",
+}: {
+  title: string;
+  item: SanPhamItem | null | undefined;
+  color?: "green" | "red" | "pink";
+}) {
+  const colorMap = {
+    green: "bg-green-50 text-green-700",
+    red: "bg-red-50 text-red-700",
+    pink: "bg-pink-50 text-pink-700",
+  };
+
+  return (
+    <div className={`rounded-xl p-4 shadow ${colorMap[color]}`}>
+      <p className="font-semibold">{title}</p>
+      {item ? (
+        <>
+          <p className="text-lg font-bold mt-1">{item.ten}</p>
+          <p className="text-sm">Số lượng: {item.tong_so_luong}</p>
+          <p className="font-semibold">
+            {formatVND(item.tong_doanh_thu)}
+          </p>
+        </>
+      ) : (
+        <p className="text-gray-500 mt-2">Không có dữ liệu</p>
+      )}
     </div>
   );
 }
