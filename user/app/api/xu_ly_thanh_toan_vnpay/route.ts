@@ -64,8 +64,7 @@ export async function POST(req: NextRequest) {
         </div>`;
     }).join("");
 
-    const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
-    const logoUrl = `${baseUrl}/logOut.png`;
+    const baseUrl = process.env.SITE_URL;
 
     await sendMail(
       user.email,
