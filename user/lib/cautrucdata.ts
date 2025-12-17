@@ -183,6 +183,8 @@ export interface IGioHang {
       ten: string;
       hinh: string;
       gia_goc: number;
+      an_hien: boolean;
+het_mon?: string | null;
     };
   };
 }

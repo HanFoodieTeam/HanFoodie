@@ -246,7 +246,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 
 
-        const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://hanfoodie.io.vn/";
         const urlDonHang = `${baseUrl}/chi_tiet_don_hang/${donHang.id}`;
         const logoUrl = `${baseUrl}/logOut.png`;
         // gửi email khi cod  
@@ -255,7 +255,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 user.email,
                 "Đặt hàng thành công - HanFoodie",
                 orderEmailTemplate({
-                    logoUrl,
                     hoTen: ho_ten_nguoi_nhan,
                     maDon: donHang.ma_don,
                     ngayDat: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
@@ -268,7 +267,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 })
             );
         }
-
 
         return NextResponse.json({
             success: true,
