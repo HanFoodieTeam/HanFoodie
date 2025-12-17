@@ -156,16 +156,16 @@ export default function PopupSuaGioHang({
 
       if (!res.ok) {
         const err = await res.json();
-        alert(`❌ Cập nhật thất bại: ${err.error || "Lỗi không xác định"}`);
+        alert(` Cập nhật thất bại: ${err.error || "Lỗi không xác định"}`);
         return;
       }
 
-      alert("✅ Cập nhật giỏ hàng thành công!");
+      alert(" Cập nhật giỏ hàng thành công!");
       onUpdated?.(); //  reload giỏ hàng trên TrangGioHang
       onClose(); //  đóng popup
     } catch (error) {
       console.error(error);
-      alert("❌ Không thể kết nối đến server!");
+      alert(" Không thể kết nối đến server!");
     } finally {
       setIsSaving(false);
     }

@@ -1,11 +1,16 @@
+export const runtime = "nodejs";
+
+
 import { NextResponse, NextRequest } from "next/server";
 import { DonHangModel, ChiTietDonHangModel, MaGiamGiaModel, GioHangModel, BienTheModel, SanPhamModel, NguoiDungModel } from "@/lib/models";
 import { db } from "@/lib/database";
 import { Transaction } from "sequelize";
 import { getUserFromToken } from "@/lib/auth";
 import { IChiTietDonHang } from "@/lib/cautrucdata";
-import { sendMail } from "../../GUI_EMAIL/guiemail_dh";
+// import { sendMail } from "../../GUI_EMAIL/guiemail_dh";
 import { orderEmailTemplate } from "@/app/GUI_EMAIL/orderEmail";
+import { sendEmail } from "@/lib/sendEmail";
+
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
     const t: Transaction = await db.transaction();
@@ -246,20 +251,38 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 
 
-        const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
+        const baseUrl = process.env.SITE_URL ?? "https://hanfoodie.io.vn/";
         const urlDonHang = `${baseUrl}/chi_tiet_don_hang/${donHang.id}`;
         const logoUrl = `${baseUrl}/logOut.png`;
         // gửi email khi cod  
+        // if (phuong_thuc_thanh_toan === true) {
+        //     await sendMail(
+        //         user.email,
+        //         "Đặt hàng thành công - HanFoodie",
+        //         orderEmailTemplate({
+        //             hoTen: ho_ten_nguoi_nhan,
+        //             maDon: donHang.ma_don,
+        //             ngayDat: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
+        //             phuongThucThanhToan: phuong_thuc_thanh_toan ? "Thanh toán khi nhận hàng" : "Thanh toán online",
+        //             sanPhamListHtml,
+        //             tongTienHang: tong_tien_hang,
+        //             giamGia: so_tien_giam,
+        //             tongThanhToan: so_tien_thanh_toan,
+        //             urlDonHang
+        //         })
+        //     );
+        // }
+        console.log(" Chuẩn bị gửi email cho:", user.email);
+
         if (phuong_thuc_thanh_toan === true) {
-            await sendMail(
+            const result = await sendEmail(
                 user.email,
                 "Đặt hàng thành công - HanFoodie",
                 orderEmailTemplate({
-                    logoUrl,
                     hoTen: ho_ten_nguoi_nhan,
                     maDon: donHang.ma_don,
                     ngayDat: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
-                    phuongThucThanhToan: phuong_thuc_thanh_toan ? "Thanh toán khi nhận hàng" : "Thanh toán online",
+                    phuongThucThanhToan: "Thanh toán khi nhận hàng",
                     sanPhamListHtml,
                     tongTienHang: tong_tien_hang,
                     giamGia: so_tien_giam,
@@ -267,8 +290,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                     urlDonHang
                 })
             );
-        }
 
+            console.log("✅ Resend response:", result);
+        }
 
         return NextResponse.json({
             success: true,

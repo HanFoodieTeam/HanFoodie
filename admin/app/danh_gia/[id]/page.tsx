@@ -2,9 +2,10 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { Star } from "lucide-react";
 import { IDanhGia } from "@/lib/cautrucdata";
 import Image from "next/image";
+import { Star, Eye, EyeOff } from "lucide-react";
+
 
 function DanhGiaChiTiet() {
   const { id } = useParams();
@@ -21,6 +22,8 @@ function DanhGiaChiTiet() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState(true);
   const [tenSanPham, setTenSanPham] = useState<string>("");
+  const [showFullNames, setShowFullNames] = useState<Record<number, boolean>>({});
+
 
   const [confirmAnHien, setConfirmAnHien] = useState<IDanhGia | null>(null);
 
@@ -182,10 +185,37 @@ function DanhGiaChiTiet() {
                     <Image src={(dg?.hinh || "/noing.png").trim()} alt="" width={90} height={90} className="rounded-lg object-cover" />
                   </td>
 
-                  <td className="px-5 py-3 text-center">
-                    {dg.an_ten === 0
-                      ? maskName(dg.nguoi_dung?.ho_ten ?? "")
-                      : dg.nguoi_dung?.ho_ten ?? "Ẩn danh"}
+                  <td className="px-5 py-3 text-center w-[180px]">
+                    {(() => {
+                      const hoTen = dg.nguoi_dung?.ho_ten ?? "Ẩn danh";
+                      const isHidden = dg.an_ten === 0;
+                      const isShow = showFullNames[dg.id] ?? false;
+
+                      if (!isHidden) {
+                        return <span>{hoTen}</span>;
+                      }
+
+                      return (
+                        <div className="flex items-center justify-center gap-2">
+                          <span>
+                            {isShow ? hoTen : maskName(hoTen)}
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setShowFullNames((prev) => ({
+                                ...prev,
+                                [dg.id]: !isShow,
+                              }))
+                            }
+                            className="text-gray-500 hover:text-gray-800"
+                            title={isShow ? "Ẩn tên" : "Hiện tên"}>
+                            {isShow ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
+                        </div>
+                      );
+                    })()}
                   </td>
 
                   <td className="px-5 py-3 text-center">

@@ -34,12 +34,9 @@ import Topbar from "./components/Topbar";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi">
-      {/* màu nền cho children  */}
       <body className="flex h-screen bg-gray-50"> 
-        {/* Sidebar */}
         <Sidebar />
 
-        {/* Main content */}
         <div className="flex flex-col flex-1 overflow-hidden">
           <Topbar />
           <main className="flex-1 overflow-auto p-3">{children}</main>

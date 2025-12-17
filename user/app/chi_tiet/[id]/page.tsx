@@ -1245,11 +1245,12 @@ const isHetMon = san_pham.het_mon !== null;
                     key={img.id}
                     src={img.hinh}
                     onMouseEnter={() => !isHetMon && setMainImage(img.hinh)}
-                    className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 transition ${
-                      img.hinh === mainImage
-                        ? "border-red-500 scale-105"
-                        : "border-transparent hover:border-gray-300"
-                    } ${isHetMon ? "opacity-50 grayscale cursor-not-allowed" : ""}`}
+                    className={`w-20 h-20 object-cover rounded-lg border-2 transition ${
+  img.hinh === mainImage
+    ? "border-red-500 scale-105"
+    : "border-transparent hover:border-gray-300"
+} ${isHetMon ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+
                   />
                 ))
               ) : (
@@ -1260,13 +1261,22 @@ const isHetMon = san_pham.het_mon !== null;
               )}
             </div>
 
-            <img
-              src={mainImage}
-              alt={san_pham.ten}
-              className={`w-[500px] h-[400px] object-cover rounded-xl shadow-lg transition-all ${
-                isHetMon ? "opacity-50 grayscale" : "opacity-100"
-              }`}
-            />
+            <div className="relative w-[500px] h-[400px] rounded-xl shadow-lg overflow-hidden">
+  <img
+    src={mainImage}
+    alt={san_pham.ten}
+    className="w-full h-full object-cover"
+  />
+
+  {isHetMon && (
+    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+      <span className="text-white text-3xl font-bold tracking-widest">
+        HẾT MÓN
+      </span>
+    </div>
+  )}
+</div>
+
           </div>
 
           <div className="flex flex-col justify-between relative">
@@ -1300,14 +1310,17 @@ const isHetMon = san_pham.het_mon !== null;
             </div>
 
             <button
-              onClick={() => setOpenPopup(true)}
-              disabled={isHetMon}
-              className={`${
-                isHetMon ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
-              } text-white px-6 py-2 rounded-full shadow-md mt-4`}
-            >
-              {isHetMon ? "Hết món" : "Thêm vào giỏ hàng"}
-            </button>
+  onClick={() => !isHetMon && setOpenPopup(true)}
+  disabled={isHetMon}
+  className={`text-white px-6 py-2 rounded-full shadow-md mt-4 transition ${
+    isHetMon
+      ? "bg-red-300 cursor-not-allowed"
+      : "bg-red-500 hover:bg-red-600"
+  }`}
+>
+  Thêm vào giỏ hàng
+</button>
+
           </div>
         </div>
 

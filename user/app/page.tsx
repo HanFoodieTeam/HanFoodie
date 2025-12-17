@@ -92,15 +92,12 @@ export default function TrangChuPage() {
     );
   };
 
-
-
   if (loading)
     return (
       <div className="pt-[80px] text-center py-16 text-gray-500">
         Đang tải dữ liệu...
       </div>
     );
-
   return (<>
     <main className="">
 
@@ -122,21 +119,18 @@ export default function TrangChuPage() {
                 onError={(e) => (e.currentTarget.src = "/noimg.png")}
               />
             )}
-            {/* Nút lùi */}
             <button
               onClick={handlePrev}
               className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full">
               ❮
             </button>
 
-            {/* Nút tới */}
             <button
               onClick={handleNext}
               className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full" >
               ❯
             </button>
 
-            {/* Indicator dots */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
               {bannerChinh.map((_, index) => (
                 <button
@@ -209,9 +203,6 @@ export default function TrangChuPage() {
         {/* COMBO   */}
         <section className="relative z-10">
           <h2 className="text-lg font-semibold mb-3">Combo hấp dẫn</h2>
-
-
-
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {combo.slice(0, 6).map((sp) => (
               <Link
@@ -244,9 +235,15 @@ export default function TrangChuPage() {
                     </p>
                   </div>
 
-                  <p className="text-[14px] font-semibold text-red-600 mt-1">
-                    {sp.gia_goc?.toLocaleString("vi-VN")}đ
-                  </p>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-[13px] text-gray-400">
+                    </span>
+
+                    <span className="text-[16px] font-semibold text-red-600">
+                      {sp.gia_goc?.toLocaleString("vi-VN")}đ
+                    </span>
+                  </div>
+
                 </div>
               </Link>
             ))}
@@ -288,11 +285,16 @@ export default function TrangChuPage() {
                     {(bv.noi_dung ?? "").slice(0, 120)}
                   </p>
 
-                  <p className="text-[12px] text-gray-400 mt-2">
-                    {bv.ngay_dang
-                      ? new Date(bv.ngay_dang).toLocaleDateString("vi-VN")
-                      : "Đang cập nhật"}
-                  </p>
+                  <div className="flex items-center justify-between text-[12px] text-gray-400 mt-2">
+                    <span>
+                      {bv.ngay_dang
+                        ? new Date(bv.ngay_dang).toLocaleDateString("vi-VN")
+                        : "Đang cập nhật"}
+                    </span>
+
+                    <span>{bv.luot_xem} lượt xem</span>
+                  </div>
+
                 </div>
               </a>
             ))}

@@ -217,7 +217,6 @@ export async function POST(req: NextRequest) {
       0
     );
 
-    // ===== SINH MÃ ĐƠN THEO LOGIC Ở ROUTE COD =====
     let prefix = "SP";
     let idSanPham = 0;
 
@@ -251,17 +250,15 @@ export async function POST(req: NextRequest) {
     );
     const day = String(vnTime.getDate()).padStart(2, "0");
     const month = String(vnTime.getMonth() + 1).padStart(2, "0");
-    const year = String(vnTime.getFullYear()).slice(-2); // (giống route trên, dù không dùng)
+    const year = String(vnTime.getFullYear()).slice(-2); 
     const hour = String(vnTime.getHours()).padStart(2, "0");
     const minute = String(vnTime.getMinutes()).padStart(2, "0");
     const second = String(vnTime.getSeconds()).padStart(2, "0");
 
     const maDon = `${idSanPham}${prefix}${day}${month}${hour}${minute}${second}${user.id}`;
-    // ===== HẾT PHẦN SINH MÃ ĐƠN =====
 
     const now = new Date();
 
-    // Tính lại giảm giá từ backend
     let soTienGiam = 0;
 
     if (id_ma_giam_gia) {
@@ -309,7 +306,6 @@ export async function POST(req: NextRequest) {
       ngay_cap_nhat: now,
     });
 
-    // Lưu chi tiết đơn hàng cho VNPay
     for (const sp of danh_sach_san_pham) {
       const thanh_tien = sp.don_gia * sp.so_luong;
 
@@ -331,10 +327,16 @@ export async function POST(req: NextRequest) {
       testMode: true,
       hashAlgorithm: HashAlgorithm.SHA512,
     });
+    const ip =
+      process.env.NODE_ENV === "development"
+        ? "127.0.0.1"
+        : req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+
+
 
     const urlPay = await vnp.buildPaymentUrl({
       vnp_Amount: soTienThanhToan,
-      vnp_IpAddr: "127.0.0.1",
+      vnp_IpAddr: ip,
       vnp_TxnRef: maDon,
       vnp_OrderInfo: `Thanh_toan_hoa_don:${maDon}`,
       vnp_ReturnUrl: process.env.VNP_RETURN_URL!,

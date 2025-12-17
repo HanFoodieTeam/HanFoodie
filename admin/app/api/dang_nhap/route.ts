@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
         id: user.getDataValue("id"),
         email: user.getDataValue("email"),
         vai_tro: role,
-         ten: user.getDataValue("ho_ten"),
+        ten: user.getDataValue("ho_ten"),
       },
       secret,
       { expiresIn: "7d" }
@@ -77,13 +77,13 @@ export async function POST(req: NextRequest) {
       message: "Đăng nhập thành công",
     });
 
-  res.cookies.set("token", token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",        // 👈 THAY "strict" BẰNG "lax"
-  maxAge: 60 * 60 * 24 * 7,
-  path: "/",
-});
+    res.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
 
 
 

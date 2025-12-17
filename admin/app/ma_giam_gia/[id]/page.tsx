@@ -7,6 +7,50 @@ import { IMaGiamGia } from "@/lib/cautrucdata";
 export default function SuaMaGiamGia() {
   const router = useRouter();
   const { id } = useParams();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    // 1️⃣ Validate ngày
+    if (form.ket_thuc && form.bat_dau) {
+      if (new Date(form.ket_thuc) < new Date(form.bat_dau)) {
+        newErrors.ket_thuc = "Ngày kết thúc không được nhỏ hơn ngày bắt đầu";
+      }
+    }
+
+    // 2️⃣ Giảm theo %
+    if (form.loai_giam_gia) {
+      if (form.gia_tri_giam <= 0 || form.gia_tri_giam >= 100) {
+        newErrors.gia_tri_giam =
+          "Giảm theo % phải lớn hơn 0 và nhỏ hơn 100";
+      }
+
+      if (
+        form.gia_tri_giam_toi_da !== null &&
+        form.gia_tri_giam_toi_da <= 0
+      ) {
+        newErrors.gia_tri_giam_toi_da =
+          "Giá trị giảm tối đa phải lớn hơn 0";
+      }
+    }
+
+    // 3️⃣ Giảm theo tiền
+    if (!form.loai_giam_gia) {
+      if (form.gia_tri_giam <= 0) {
+        newErrors.gia_tri_giam = "Giá trị giảm phải lớn hơn 0";
+      }
+
+      if (form.gia_tri_giam > form.gia_tri_toi_thieu) {
+        newErrors.gia_tri_giam =
+          "Giá trị giảm không được lớn hơn giá trị tối thiểu đơn hàng";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
 
   const [form, setForm] = useState<IMaGiamGia>({
     id: 0,
@@ -92,27 +136,50 @@ export default function SuaMaGiamGia() {
   };
 
   // --- 3️ Validate & Submit ---
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setError(null);
+
+  //   //  Validate ngày
+  //   if (new Date(form.ket_thuc) < new Date(form.bat_dau)) {
+  //     setError(" Ngày kết thúc không được nhỏ hơn ngày bắt đầu.");
+  //     return;
+  //   }
+
+  //   //  Validate phần trăm
+  //   if (form.loai_giam_gia && form.gia_tri_giam > 100) {
+  //     setError(" Giá trị giảm phần trăm không được vượt quá 100%.");
+  //     return;
+  //   }
+
+  //   //  Validate giảm tiền
+  //   if (!form.loai_giam_gia && form.gia_tri_giam > form.gia_tri_toi_thieu) {
+  //     setError(" Giá trị giảm không thể lớn hơn giá trị tối thiểu đơn hàng.");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   const res = await fetch(`/api/ma_giam_gia/${id}`, {
+  //     method: "PUT",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify(form),
+  //   });
+
+  //   if (res.ok) {
+  //     alert(" Cập nhật mã giảm giá thành công!");
+  //     router.push("/ma_giam_gia");
+  //   } else {
+  //     alert(" Cập nhật thất bại, vui lòng kiểm tra lại!");
+  //   }
+
+  //   setLoading(false);
+  // };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    //  Validate ngày
-    if (new Date(form.ket_thuc) < new Date(form.bat_dau)) {
-      setError(" Ngày kết thúc không được nhỏ hơn ngày bắt đầu.");
-      return;
-    }
-
-    //  Validate phần trăm
-    if (form.loai_giam_gia && form.gia_tri_giam > 100) {
-      setError(" Giá trị giảm phần trăm không được vượt quá 100%.");
-      return;
-    }
-
-    //  Validate giảm tiền
-    if (!form.loai_giam_gia && form.gia_tri_giam > form.gia_tri_toi_thieu) {
-      setError(" Giá trị giảm không thể lớn hơn giá trị tối thiểu đơn hàng.");
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
 
@@ -123,10 +190,10 @@ export default function SuaMaGiamGia() {
     });
 
     if (res.ok) {
-      alert(" Cập nhật mã giảm giá thành công!");
+      alert("Cập nhật mã giảm giá thành công!");
       router.push("/ma_giam_gia");
     } else {
-      alert(" Cập nhật thất bại, vui lòng kiểm tra lại!");
+      alert("Cập nhật thất bại, vui lòng kiểm tra lại!");
     }
 
     setLoading(false);
@@ -191,6 +258,12 @@ export default function SuaMaGiamGia() {
                 <p className="text-lg">Giá trị giảm (%)</p>
                 <input type="number" name="gia_tri_giam" value={form.gia_tri_giam} onChange={handleChange} required min={1} max={100}
                   className="border border-gray-300 p-2 w-full rounded" />
+                {errors.gia_tri_giam && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.gia_tri_giam}
+                  </p>
+                )}
+
               </div>
               <div className="w-1/2">
                 <p className="text-lg">Giảm tối đa (VNĐ)</p>
@@ -210,6 +283,12 @@ export default function SuaMaGiamGia() {
               <p className="text-lg">Giá trị giảm (VNĐ)</p>
               <input type="text" name="gia_tri_giam" value={form.gia_tri_giam ? formatNumber(form.gia_tri_giam) : ""}
                 onChange={handleChange} required placeholder="VD: 30.000" />
+              {errors.gia_tri_giam_toi_da && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.gia_tri_giam_toi_da}
+                </p>
+              )}
+
             </div>
           )}
         </div>
@@ -243,6 +322,10 @@ export default function SuaMaGiamGia() {
             <p className="text-lg">Ngày kết thúc</p>
             <input type="date" name="ket_thuc" value={form.ket_thuc} onChange={handleChange} required
               className="border border-gray-300 p-2 w-full rounded" />
+            {errors.ket_thuc && (
+              <p className="text-red-500 text-sm mt-1">{errors.ket_thuc}</p>
+            )}
+
           </div>
         </div>
 
@@ -250,7 +333,7 @@ export default function SuaMaGiamGia() {
         <div>
           <p className="text-lg"> Mô tả</p>
           <textarea name="mo_ta" value={form.mo_ta ?? ""} onChange={handleChange} rows={3}
-            className="border border-gray-300 p-2 w-full rounded" placeholder='VD: {"quantity": 3} hoặc "Áp dụng cho sản phẩm X"' />
+            className="border border-gray-300 p-2 w-full rounded" placeholder='Mô tả"' />
         </div>
 
         {/* Ẩn / Hiện */}
