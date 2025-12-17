@@ -71,7 +71,6 @@ export async function POST(req: NextRequest) {
       user.email,
       "Thanh toán thành công - HanFoodie",
       orderEmailTemplate({
-        logoUrl,
         hoTen: don.ho_ten_nguoi_nhan,
         maDon,
         ngayDat: new Date().toLocaleString("vi-VN"),

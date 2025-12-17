@@ -16,7 +16,6 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    //  Tìm người dùng theo email
     const nguoiDung = await NguoiDungModel.findOne({ where: { email } });
     if (!nguoiDung) {
       return NextResponse.json(
@@ -25,7 +24,6 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    //  So sánh mật khẩu
     const matKhauDB = nguoiDung.getDataValue("mat_khau") as string;
     const hopLe = await bcrypt.compare(mat_khau, matKhauDB);
     if (!hopLe) {
@@ -44,7 +42,6 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
 
-    // Tạo JWT token
     const secret = process.env.JWT_SECRET || "HanFoodieSecretKey123!";
     const token = jwt.sign(
       {
@@ -53,18 +50,17 @@ export async function POST(req: Request): Promise<NextResponse> {
         vai_tro: nguoiDung.getDataValue("vai_tro"),
       },
       secret,
-      { expiresIn: "7d" } // Token hết hạn sau 7 ngày
+      { expiresIn: "7d" }
     );
 
-    // Trả thông tin người dùng (ẩn mật khẩu)
-const nguoiDungInfo = {
-  id: nguoiDung.getDataValue("id"),
-  ho_ten: nguoiDung.getDataValue("ho_ten"),
-  email: nguoiDung.getDataValue("email"),
-  sdt: nguoiDung.getDataValue("sdt"),
-  vai_tro: Boolean(nguoiDung.getDataValue("vai_tro")), // 👈 CHỖ QUAN TRỌNG
-  kich_hoat: Boolean(nguoiDung.getDataValue("kich_hoat")),
-};
+    const nguoiDungInfo = {
+      id: nguoiDung.getDataValue("id"),
+      ho_ten: nguoiDung.getDataValue("ho_ten"),
+      email: nguoiDung.getDataValue("email"),
+      sdt: nguoiDung.getDataValue("sdt"),
+      vai_tro: Boolean(nguoiDung.getDataValue("vai_tro")),
+      kich_hoat: Boolean(nguoiDung.getDataValue("kich_hoat")),
+    };
 
 
     return NextResponse.json({

@@ -33,7 +33,6 @@ export interface IBienThe {
 }
 
 export interface IOrderEmail {
-  logoUrl: string;
   hoTen: string;
   maDon: string;
   ngayDat: string;

@@ -1,7 +1,6 @@
 import { IOrderEmail } from "../../lib/cautrucdata";
 
 export function orderEmailTemplate({
-  logoUrl,
   hoTen,
   maDon,
   ngayDat,
@@ -15,9 +14,14 @@ export function orderEmailTemplate({
   return `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background: #ffffff; border-radius: 8px; padding: 20px;">
       
-      <div style="text-align: center; margin-bottom: 20px;">
-          <img src="${logoUrl}" alt="HanFoodie" width="120" />
+     <div style="text-align:center; margin-bottom:20px;">
+        <img
+          src="https://res.cloudinary.com/dsvfxehui/image/upload/v1765961064/logo-removebg-preview_gbz7wk.png"
+          alt="HanFoodie"
+          width="220"
+          style=" display:block; margin:0 auto; max-width:220px; height:auto;"/>
       </div>
+
 
       <h2 style="text-align:center; color:#6A0A0A">XÁC NHẬN ĐẶT HÀNG THÀNH CÔNG</h2>    
 
