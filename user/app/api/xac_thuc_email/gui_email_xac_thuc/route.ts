@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       han_token: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    const link = `${process.env.NEXT_PUBLIC_SITE_URL}/kich_hoat_tai_khoan?token=${tokenActive}`;
+    const link = `${process.env.SITE_URL}/kich_hoat_tai_khoan?token=${tokenActive}`;
 
     await xacthuc(
       decode.email,

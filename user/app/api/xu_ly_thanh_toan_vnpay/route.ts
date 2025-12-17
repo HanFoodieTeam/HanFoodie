@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       orderEmailTemplate({
         hoTen: don.ho_ten_nguoi_nhan,
         maDon,
-        ngayDat: new Date().toLocaleString("vi-VN"),
+        ngayDat: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
         phuongThucThanhToan: "Thanh toán online",
         sanPhamListHtml,
         tongTienHang: don.tong_tien_hang,
