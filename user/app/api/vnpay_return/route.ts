@@ -125,52 +125,132 @@
 //   }
 // }
 
+// export const runtime = "nodejs";
+// import { NextRequest, NextResponse } from "next/server";
+// import crypto from "crypto";
+// import qs from "qs";
+// import { DonHangModel } from "@/lib/models";
+
+// export async function GET(req: NextRequest) {
+//   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+//   try {
+//     const url = new URL(req.url);
+
+//     const vnpParams: Record<string, string> = Object.fromEntries(
+//       url.searchParams.entries()
+//     );
+
+//     const secureHash = vnpParams["vnp_SecureHash"];
+//     delete vnpParams["vnp_SecureHash"];
+//     delete vnpParams["vnp_SecureHashType"];
+//     delete vnpParams["vnp_Command"];
+
+// //     const sortedParams = Object.fromEntries(
+// //       Object.entries(vnpParams).sort(([a], [b]) => a.localeCompare(b))
+// //     );
+
+// //     const signData = qs.stringify(sortedParams, {
+// //   encode: false,
+// // });
+
+
+// const sortedKeys = Object.keys(vnpParams).sort();
+
+// const signData = sortedKeys
+//   .map((key) => `${key}=${vnpParams[key]}`)
+//   .join("&");
+
+
+//     const signed = crypto
+//       .createHmac("sha512", process.env.VNP_HASH_SECRET!)
+//       .update(signData)
+//       .digest("hex");
+
+//     const maDon = vnpParams["vnp_TxnRef"];
+//     const respCode = vnpParams["vnp_ResponseCode"];
+//     const transStatus = vnpParams["vnp_TransactionStatus"];
+
+//     if (secureHash !== signed) {
+//       console.log("secureHash:",secureHash)
+//             console.log("signed:",signed)
+
+//       return NextResponse.redirect(`${baseUrl}/dat_hang?status=failed`);
+//     }
+
+//     const thanhCong = respCode === "00" && transStatus === "00";
+//     if (!thanhCong) {
+//       return NextResponse.redirect(`${baseUrl}/dat_hang?status=failed`);
+//     }
+
+//     const don = await DonHangModel.findOne({ where: { ma_don: maDon } });
+//     if (!don) {
+//       return NextResponse.redirect(`${baseUrl}/dat_hang?status=notfound`);
+//     }
+
+//     // Cập nhật trạng thái đơn
+//     // await don.update({
+//     //   trang_thai: "cho_xac_nhan",
+//     //   phuong_thuc_thanh_toan: false,
+//     //   ngay_cap_nhat: new Date(),
+//     // });
+
+//     return NextResponse.redirect(
+//       `${baseUrl}/dat_hang?status=success&id=${don.id}&maDon=${maDon}`
+//     );
+
+//   } catch (error) {
+//     console.error("Lỗi xử lý xác thực VNPay:", error);
+//     return NextResponse.redirect(`${baseUrl}/dat_hang?status=error`);
+//   }
+// }
+
+
 export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import qs from "qs";
 import { DonHangModel } from "@/lib/models";
 
 export async function GET(req: NextRequest) {
-  const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ;
 
   try {
     const url = new URL(req.url);
 
-    const vnpParams: Record<string, string> = Object.fromEntries(
-      url.searchParams.entries()
+    const params = new URLSearchParams(url.searchParams);
+    const secureHash = params.get("vnp_SecureHash");
+
+    if (!secureHash) {
+      return NextResponse.redirect(`${baseUrl}/dat_hang?status=failed`);
+    }
+
+    params.delete("vnp_SecureHash");
+    params.delete("vnp_SecureHashType");
+
+    const sortedParams = new URLSearchParams(
+      [...params.entries()].sort(([a], [b]) => a.localeCompare(b))
     );
 
-    const secureHash = vnpParams["vnp_SecureHash"];
-    delete vnpParams["vnp_SecureHash"];
-    delete vnpParams["vnp_SecureHashType"];
-    delete vnpParams["vnp_Command"];
-
-    const sortedParams = Object.fromEntries(
-      Object.entries(vnpParams).sort(([a], [b]) => a.localeCompare(b))
-    );
-
-    const signData = qs.stringify(sortedParams, {
-      encode: true,
-      format: "RFC1738",
-    });
-
+    const signData = sortedParams.toString();
 
     const signed = crypto
       .createHmac("sha512", process.env.VNP_HASH_SECRET!)
       .update(signData)
       .digest("hex");
 
-    const maDon = vnpParams["vnp_TxnRef"];
-    const respCode = vnpParams["vnp_ResponseCode"];
-    const transStatus = vnpParams["vnp_TransactionStatus"];
-
-    if (secureHash !== signed) {
+     console.log("secureHash:", secureHash);
+      console.log("signed:", signed);
+    if (signed !== secureHash) {
       return NextResponse.redirect(`${baseUrl}/dat_hang?status=failed`);
     }
 
-    const thanhCong = respCode === "00" && transStatus === "00";
-    if (!thanhCong) {
+    const respCode = sortedParams.get("vnp_ResponseCode");
+    const transStatus = sortedParams.get("vnp_TransactionStatus");
+    const maDon = sortedParams.get("vnp_TxnRef");
+
+    if (respCode !== "00" || transStatus !== "00" || !maDon) {
       return NextResponse.redirect(`${baseUrl}/dat_hang?status=failed`);
     }
 
@@ -179,17 +259,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/dat_hang?status=notfound`);
     }
 
-    // Cập nhật trạng thái đơn
-    // await don.update({
-    //   trang_thai: "cho_xac_nhan",
-    //   phuong_thuc_thanh_toan: false,
-    //   ngay_cap_nhat: new Date(),
-    // });
+    await don.update({
+      trang_thai: "cho_xac_nhan",
+      ngay_cap_nhat: new Date(),
+    });
 
     return NextResponse.redirect(
       `${baseUrl}/dat_hang?status=success&id=${don.id}&maDon=${maDon}`
     );
-
   } catch (error) {
     console.error("Lỗi xử lý xác thực VNPay:", error);
     return NextResponse.redirect(`${baseUrl}/dat_hang?status=error`);
