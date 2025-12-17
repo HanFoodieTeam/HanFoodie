@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GioHangModel, NguoiDungModel, DonHangModel } from "@/lib/models";
-import { sendMail } from "@/app/GUI_EMAIL/guiemail_dh";
 import { orderEmailTemplate } from "@/app/GUI_EMAIL/orderEmail";
+import { sendEmail } from "@/lib/sendEmail";
 
 interface IMonThem { ten: string; gia_them?: number }
 interface IJsonTuyChon { [key: string]: string }
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       const sp = item.bien_the.san_pham;
       const tenBienThe = item.bien_the.ten;
 
-      const textTuyChon = item.json_tuy_chon 
+      const textTuyChon = item.json_tuy_chon
         ? Object.entries(item.json_tuy_chon).map(([k, v]) => `${k}: ${v}`).join(", ")
         : "";
 
@@ -58,17 +58,17 @@ export async function POST(req: NextRequest) {
             ${textMonThem ? `Món thêm: ${textMonThem}<br/>` : ""}
             Số lượng: ${item.so_luong}<br/>
             Giá: ${(
-              (sp.gia_goc ?? 0) + (item.bien_the.gia_them ?? 0)
-            ).toLocaleString()}đ
+          (sp.gia_goc ?? 0) + (item.bien_the.gia_them ?? 0)
+        ).toLocaleString()}đ
           </div>
         </div>`;
     }).join("");
 
     const baseUrl = process.env.SITE_URL;
-
-    await sendMail(
+    console.log(" Bắt đầu gửi mail tới:", user.email);
+    await sendEmail(
       user.email,
-      "Thanh toán thành công - HanFoodie",
+      "Đặt hàng thành công - HanFoodie",
       orderEmailTemplate({
         hoTen: don.ho_ten_nguoi_nhan,
         maDon,
@@ -81,6 +81,7 @@ export async function POST(req: NextRequest) {
         urlDonHang: `${baseUrl}/chi_tiet_don_hang/${idDon}`,
       })
     );
+    console.log("✅ Gửi mail thành công");
 
     const idsXoa = danhSach.map(sp => sp.id_gio_hang);
     await GioHangModel.destroy({ where: { id: idsXoa } });
