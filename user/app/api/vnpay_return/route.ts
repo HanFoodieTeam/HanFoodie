@@ -214,7 +214,7 @@ import { DonHangModel } from "@/lib/models";
 
 export async function GET(req: NextRequest) {
   const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ;
+    process.env.SITE_URL ;
 
   try {
     const url = new URL(req.url);

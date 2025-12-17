@@ -15,7 +15,6 @@ import QuenMatKhauForm from "./quen_mat_khau";
 export default function Header() {
   const { count } = useCart();
   const [showRegister, setShowRegister] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -67,18 +66,14 @@ export default function Header() {
     <>
       <header
         style={{ "--header-h": "72px" } as React.CSSProperties}
-        className="fixed top-0 left-0 w-full bg-[#6A0A0A] text-white shadow-md z-50 h-[72px]"
-      >
+        className="fixed top-0 left-0 w-full bg-[#6A0A0A] text-white shadow-md z-50 h-[72px]">
         <div
           className="container mx-auto flex justify-between items-center h-full px-4 
-                     max-w-[80%] max-[950px]:max-w-[100%]"
-        >
-          {/* LOGO */}
+                     max-w-[80%] max-[950px]:max-w-[100%]">
           <Link href="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="HanFoodie Logo" className="h-16 w-auto" />
           </Link>
 
-          {/* NAV DESKTOP */}
           <nav className="hidden md:flex space-x-8 text-lg">
             <Link href="/">Trang chủ</Link>
             <Link href="/san_pham">Sản phẩm</Link>
@@ -86,7 +81,6 @@ export default function Header() {
             <Link href="/lien_he">Liên hệ</Link>
           </nav>
 
-          {/* ICONS DESKTOP */}
           <div className="hidden md:flex items-center space-x-5">
             <button onClick={() => setShowSearch((v) => !v)}>
               <Search className="w-6 h-6" />
@@ -105,17 +99,14 @@ export default function Header() {
               )}
             </Link>
 
-            {/* USER DROPDOWN (desktop) */}
             <div
               ref={menuRef}
               className="relative"
               onMouseEnter={openWithDelay}
-              onMouseLeave={closeWithDelay}
-            >
+              onMouseLeave={closeWithDelay}>
               <button
                 onClick={() => setUserOpen((p) => !p)}
-                className="hover:text-gray-200 transition flex items-center p-1 rounded"
-              >
+                className="hover:text-gray-200 transition flex items-center p-1 rounded">
                 {nguoiDung ? (
                   <span className="font-semibold text-base">{nguoiDung.ho_ten}</span>
                 ) : (
@@ -129,8 +120,7 @@ export default function Header() {
                     ? "opacity-100 visible translate-y-0 scale-100"
                     : "opacity-0 invisible translate-y-1 scale-95"
                   }
-                transition-all duration-150`}
-              >
+                transition-all duration-150`}>
                 <div className="py-1">
                   {nguoiDung ? (
                     <>
@@ -139,25 +129,23 @@ export default function Header() {
                       </Link>
                       <Link
                         href="/doi_mat_khau"
-                        className="flex px-4 py-2 hover:bg-gray-200 rounded-lg"
-                      >
+                        className="flex px-4 py-2 hover:bg-gray-200 rounded-lg">
                         Đổi mật khẩu
                       </Link>
                       <button
                         onClick={handleDangXuat}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
-                      >
+                        className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg">
                         Đăng xuất
                       </button>
                     </>
                   ) : (
                     <>
-                     <button
-  onClick={() => { setIsLogin(false); setShowAuth(true); }}
-  className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
->
-  Đăng ký
-</button>
+                      <button
+                        onClick={() => { setIsLogin(false); setShowAuth(true); }}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
+                      >
+                        Đăng ký
+                      </button>
 
                       <button
                         onClick={() => { setIsLogin(true); setShowAuth(true); }}
@@ -261,12 +249,12 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                 <button
-  onClick={() => { setIsLogin(false); setShowAuth(true); }}
-  className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
->
-  Đăng ký
-</button>
+                  <button
+                    onClick={() => { setIsLogin(false); setShowAuth(true); }}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-200 rounded-lg"
+                  >
+                    Đăng ký
+                  </button>
                   <button
                     onClick={() => {
                       setIsLogin(true); setShowAuth(true);
@@ -321,51 +309,51 @@ export default function Header() {
 
 
 
-{/* POPUP AUTH */}
-{showAuth && (
-  <div
-    className="fixed inset-0 z-[999] flex items-center justify-center bg-black/25"
-    onClick={() => setShowAuth(false)}
-  >
-    <div
-      className="relative bg-white rounded-2xl shadow-xl w-[400px] max-w-[90%] p-4"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        onClick={() => setShowAuth(false)}
-        className="absolute top-2 right-2 text-gray-500 hover:text-black"
-      >
-        <X className="w-5 h-5" />
-      </button>
+      {/* POPUP AUTH */}
+      {showAuth && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/25"
+          onClick={() => setShowAuth(false)}
+        >
+          <div
+            className="relative bg-white rounded-2xl shadow-xl w-[400px] max-w-[90%] p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowAuth(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            >
+              <X className="w-5 h-5" />
+            </button>
 
-      {isLogin ? (
-        <LoginForm
-          onClose={() => setShowAuth(false)}
-          onLoginSuccess={(nguoiDungMoi) => {
-            setNguoiDung(nguoiDungMoi);
-            localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
-            setShowAuth(false);
-          }}
-          onSwitchToRegister={() => {
-            setIsLogin(false); 
-          }}
-        />
-      ) : (
-        <RegisterForm
-          onClose={() => setShowAuth(false)}
-          onRegisterSuccess={(nguoiDungMoi) => {
-            setNguoiDung(nguoiDungMoi);
-            localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
-            setShowAuth(false);
-          }}
-          onSwitchToLogin={() => {
-            setIsLogin(true); // 
-          }}
-        />
+            {isLogin ? (
+              <LoginForm
+                onClose={() => setShowAuth(false)}
+                onLoginSuccess={(nguoiDungMoi) => {
+                  setNguoiDung(nguoiDungMoi);
+                  localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
+                  setShowAuth(false);
+                }}
+                onSwitchToRegister={() => {
+                  setIsLogin(false);
+                }}
+              />
+            ) : (
+              <RegisterForm
+                onClose={() => setShowAuth(false)}
+                onRegisterSuccess={(nguoiDungMoi) => {
+                  setNguoiDung(nguoiDungMoi);
+                  localStorage.setItem("nguoi_dung", JSON.stringify(nguoiDungMoi));
+                  setShowAuth(false);
+                }}
+                onSwitchToLogin={() => {
+                  setIsLogin(true); // 
+                }}
+              />
+            )}
+          </div>
+        </div>
       )}
-    </div>
-  </div>
-)}
 
       {/* POPUP REGISTER */}
       {showRegister && (
@@ -393,7 +381,7 @@ export default function Header() {
               }}
               onSwitchToLogin={() => {
                 setShowRegister(false);
-                setShowAuth(true); 
+                setShowAuth(true);
               }}
             />
 

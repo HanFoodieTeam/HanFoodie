@@ -20,7 +20,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             {
               model: SanPhamModel,
               as: "san_pham",
-              attributes: ["id", "ten", "hinh", "gia_goc"],
+              attributes: ["id", "ten", "hinh", "gia_goc", "an_hien", "het_mon"],
+
             },
           ],
         },

@@ -191,8 +191,22 @@ export default function TrangGioHang() {
 
   //  Đặt hàng
   const handleDatHang = () => {
+    // const selected = gioHang
+    //   .filter((item) => selectedItems.includes(item.id))
+    //   .map((item) => ({
+    //     id_gio_hang: item.id,
+    //     so_luong: item.so_luong,
+    //     bien_the: item.bien_the,
+    //     json_mon_them: item.json_mon_them,
+    //     json_tuy_chon: item.json_tuy_chon,
+    //   }));
+
     const selected = gioHang
-      .filter((item) => selectedItems.includes(item.id))
+      .filter(
+        (item) =>
+          selectedItems.includes(item.id) &&
+          !isHetMonByDate(item.bien_the?.san_pham?.het_mon)
+      )
       .map((item) => ({
         id_gio_hang: item.id,
         so_luong: item.so_luong,
@@ -200,6 +214,7 @@ export default function TrangGioHang() {
         json_mon_them: item.json_mon_them,
         json_tuy_chon: item.json_tuy_chon,
       }));
+
     // kiểm tra nếu người dùng kích hoạt rồi mới lưu đơn hàng tạm
     const userData = localStorage.getItem("nguoi_dung");
     const user = userData ? JSON.parse(userData) : null;
@@ -211,6 +226,19 @@ export default function TrangGioHang() {
     localStorage.setItem("donHangTam", JSON.stringify(selected));
     router.push("/dat_hang");
   };
+
+
+  function isHetMonByDate(hetMon?: string | null): boolean {
+    if (!hetMon) return false; // null => còn bán
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const hetMonDate = new Date(hetMon);
+    hetMonDate.setHours(0, 0, 0, 0);
+
+    return hetMonDate >= today;
+  }
 
   //  Loading
   if (loading)
@@ -244,6 +272,8 @@ export default function TrangGioHang() {
             <div className="space-y-3">
               {gioHang.map((item) => {
                 const sp = item.bien_the?.san_pham;
+
+                const isHetMon = isHetMonByDate(sp?.het_mon);
                 const giaGoc = sp?.gia_goc ?? 0;
                 const giaThem = item.bien_the?.gia_them ?? 0;
                 const monThemSum =
@@ -256,12 +286,17 @@ export default function TrangGioHang() {
                 const checked = selectedItems.includes(item.id);
 
                 return (
-                  <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition">
-                    <input type="checkbox" checked={checked} onChange={() => toggleSelect(item.id)} className="w-4 h-4 accent-[#e8594f]" />
-                    {/* <img
-                      src={sp?.hinh || "/noing.png"}
-                      alt={sp?.ten || "Sản phẩm"}
-                      className="w-[90px] h-[100px] rounded-lg object-cover" /> */}
+                  <div
+                    key={item.id}
+                    className={`flex items-center gap-4 p-3 rounded-xl bg-white shadow-sm transition
+                     ${isHetMon ? "opacity-55 pointer-events-none" : "hover:shadow-md"}`}>
+                    <input type="checkbox" checked={checked} disabled={isHetMon}
+                      onChange={() => {
+                        if (!isHetMon) toggleSelect(item.id);
+                      }}
+                      className={`w-4 h-4 accent-[#e8594f]
+                       ${isHetMon ? "opacity-50 cursor-not-allowed" : ""}`} />
+
 
 
                     <Image
@@ -293,9 +328,19 @@ export default function TrangGioHang() {
                         </p>
                       ) : null}
 
-                      <button onClick={() => handleEdit(item)} className="text-[#e8594f] text-sm font-medium mt-1 hover:underline">
-                        Chỉnh sửa món
-                      </button>
+                      {isHetMon ? (
+                        <div className="mt-1 text-sm font-semibold text-red-600 pointer-events-auto">
+                          🚫 Hết món
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="text-[#e8594f] text-sm font-medium mt-1 hover:underline"
+                        >
+                          Chỉnh sửa món
+                        </button>
+                      )}
+
                     </div>
 
                     <div className="flex flex-col items-end gap-2 justify-between h-full">
@@ -418,7 +463,6 @@ export default function TrangGioHang() {
           )}
 
 
-          {/* Chọn tất cả */}
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -428,7 +472,6 @@ export default function TrangGioHang() {
             <span className="text-base font-medium">Tất cả</span>
           </div>
 
-          {/* Tổng tiền (ấn vào để mở popup) */}
 
           <div
             onClick={() => setShowThongTin(!showThongTin)}
@@ -439,7 +482,6 @@ export default function TrangGioHang() {
             <p className="text-[12px] text-gray-500">Chi tiết ▼</p>
           </div>
 
-          {/* Nút mua hàng */}
 
           <button
             onClick={handleDatHang}
@@ -466,8 +508,7 @@ export default function TrangGioHang() {
               await fetchCart();
               await reloadCart();
               setShowPopup(false);
-            }}
-          />
+            }}/>
         )}
       </div>
     </div>

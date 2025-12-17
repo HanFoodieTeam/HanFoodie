@@ -64,14 +64,12 @@ export async function POST(req: NextRequest) {
         </div>`;
     }).join("");
 
-    const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
-    const logoUrl = `${baseUrl}/logOut.png`;
+    const baseUrl = process.env.SITE_URL;
 
     await sendMail(
       user.email,
       "Thanh toán thành công - HanFoodie",
       orderEmailTemplate({
-        logoUrl,
         hoTen: don.ho_ten_nguoi_nhan,
         maDon,
         ngayDat: new Date().toLocaleString("vi-VN"),

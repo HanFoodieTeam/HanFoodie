@@ -33,7 +33,6 @@ export interface IBienThe {
 }
 
 export interface IOrderEmail {
-  logoUrl: string;
   hoTen: string;
   maDon: string;
   ngayDat: string;
@@ -184,6 +183,8 @@ export interface IGioHang {
       ten: string;
       hinh: string;
       gia_goc: number;
+      an_hien: boolean;
+het_mon?: string | null;
     };
   };
 }
