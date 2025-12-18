@@ -1,6 +1,7 @@
 import { IOrderEmail } from "../../lib/cautrucdata";
 
 export function orderEmailTemplate({
+  Urlimg,
   hoTen,
   maDon,
   ngayDat,
@@ -16,7 +17,7 @@ export function orderEmailTemplate({
       
      <div style="text-align:center; margin-bottom:20px;">
         <img
-          src="https://res.cloudinary.com/dsvfxehui/image/upload/v1765961064/logo-removebg-preview_gbz7wk.png"
+          src="${Urlimg}"
           alt="HanFoodie"
           width="220"
           style=" display:block; margin:0 auto; max-width:220px; height:auto;"/>

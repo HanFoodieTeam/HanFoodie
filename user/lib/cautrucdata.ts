@@ -33,6 +33,7 @@ export interface IBienThe {
 }
 
 export interface IOrderEmail {
+  Urlimg: String;
   hoTen: string;
   maDon: string;
   ngayDat: string;
