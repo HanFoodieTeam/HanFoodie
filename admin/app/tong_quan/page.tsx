@@ -123,14 +123,20 @@ export default function TongQuanPage() {
       title: "Đơn hàng",
       value: data.tongSoDon,
       icon: <FaShoppingCart className="text-3xl text-blue-500" />,
-      link: "/thong_ke/don_hang",
+      link: "/thong_ke/doanh_thu",
     },
     {
       title: "Doanh thu",
-      value: `${data.tongDoanhThu.toLocaleString("vi-VN")} VNĐ`,
+      value: (
+        <span className="text-lg font-semibold">
+          {Number(data.tongDoanhThu).toLocaleString("vi-VN")}{" "}
+          <span className="text-sm font-normal">VNĐ</span>
+        </span>
+      ),
       icon: <FaMoneyBillWave className="text-3xl text-indigo-500" />,
       link: "/thong_ke/doanh_thu",
-    },
+    }
+
   ];
 
   return (
@@ -154,7 +160,7 @@ export default function TongQuanPage() {
 
       {/* Biểu đồ doanh thu từ trước tới nay */}
       <div className="bg-white shadow rounded-xl p-4">
-        <h2 className="text-xl font-semibold mb-3">Doanh thu từ trước tới nay</h2>
+        <h2 className="text-xl font-semibold mb-3">Biến Động Doanh Thu</h2>
         <Line data={chartData} options={chartOptions} />
       </div>
     </div>
