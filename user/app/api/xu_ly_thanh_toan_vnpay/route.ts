@@ -66,10 +66,14 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = process.env.SITE_URL;
     console.log(" Bắt đầu gửi mail tới:", user.email);
+    const Urlimg =
+      process.env.Urlimg ??
+      "https://res.cloudinary.com/dsvfxehui/image/upload/v1765961064/logo-removebg-preview_gbz7wk.png";
     await sendEmail(
       user.email,
       "Đặt hàng thành công - HanFoodie",
       orderEmailTemplate({
+        Urlimg,
         hoTen: don.ho_ten_nguoi_nhan,
         maDon,
         ngayDat: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
