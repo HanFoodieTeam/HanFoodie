@@ -130,8 +130,8 @@ function DonHangPageContent() {
 
   //  Render 
   return (
-    <div className="p-2 bg-gray-50 min-h-screen">
-      <div className="mx-auto bg-white rounded-2xl shadow-md p-4">
+    <div className=" bg-gray-50 min-h-screen">
+      <div className="mx-auto bg-white rounded-2xl shadow-md p-2">
         {/* Header */}
         <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
           <h1 className="text-2xl font-bold text-gray-800">Quản lý đơn hàng</h1>

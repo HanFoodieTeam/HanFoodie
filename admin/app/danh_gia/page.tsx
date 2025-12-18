@@ -116,9 +116,9 @@ function DanhGiaTable() {
 
 
   return (
-    <div className="p-2">
+    <div className="">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
-        <h1 className="text-3xl font-bold text-gray-800">
+        <h1 className="text-2xl font-bold text-gray-800">
           Thống kê đánh giá sản phẩm
         </h1>
 
