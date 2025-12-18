@@ -50,7 +50,7 @@ export default function UserDetailPage() {
   if (!user) return <div className="p-6 text-red-600">Không tìm thấy người dùng!</div>;
 
   return (
-    <div className="p-2 bg-gray-50 min-h-screen">
+    <div className=" bg-gray-50 min-h-screen">
       <div className="mx-auto bg-white shadow-lg rounded-xl p-6">
 
         <h1 className="text-2xl font-bold mb-4 text-gray-800">

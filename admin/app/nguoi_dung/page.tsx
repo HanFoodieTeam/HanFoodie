@@ -128,7 +128,7 @@ function NguoiDungContent() {
 
 
   return (
-    <div className="p-2">
+    <div className="">
       {/* Header */}
       <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
 

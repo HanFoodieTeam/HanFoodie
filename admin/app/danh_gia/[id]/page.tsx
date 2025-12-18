@@ -120,7 +120,7 @@ function DanhGiaChiTiet() {
   };
 
   return (
-    <div className="p-2">
+    <div className="">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">
