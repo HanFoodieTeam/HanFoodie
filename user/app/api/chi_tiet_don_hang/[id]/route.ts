@@ -5,6 +5,7 @@ import {
   ChiTietDonHangModel,
   SanPhamModel,
   BienTheModel,
+  DanhGiaModel,
 } from "@/lib/models";
 import { IDonHang } from "@/lib/cautrucdata";
 
@@ -65,8 +66,39 @@ export async function GET(
         { status: 404 }
       );
 
-    const ketQua = don.toJSON() as IDonHang;
-    return NextResponse.json(ketQua, { status: 200 });
+    const raw = don.toJSON() as IDonHang & {
+  chi_tiet_don_hang?: {
+    id: number;
+    id_bien_the?: number | null;
+  }[];
+};
+
+const chiTietWithDanhGia = await Promise.all(
+  (raw.chi_tiet_don_hang ?? []).map(async (ct) => {
+    const daDanhGia = ct.id_bien_the
+      ? await DanhGiaModel.findOne({
+          where: {
+            id_nguoi_dung: nguoiDung.id,
+            id_bien_the: ct.id_bien_the,
+          },
+        })
+      : null;
+
+    return {
+      ...ct,
+      da_danh_gia: !!daDanhGia,
+    };
+  })
+);
+
+return NextResponse.json(
+  {
+    ...raw,
+    chi_tiet_don_hang: chiTietWithDanhGia,
+  },
+  { status: 200 }
+);
+
   } catch (err) {
     console.error("🔥 Lỗi lấy chi tiết đơn hàng:", err);
     return NextResponse.json({ thong_bao: "Lỗi server" }, { status: 500 });

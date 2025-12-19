@@ -8,10 +8,12 @@ import UserLayout from "@/app/components/UserLayout";
 import { useUser } from "@/app/hooks/useUser";
 import type { IDonHang, IChiTietDonHang } from "@/lib/cautrucdata";
 
+
 // Mở rộng ChiTietDonHang để kèm bien_the + parsed json fields
 export interface IChiTietDonHangMoRong
   extends Omit<IChiTietDonHang, "json_tuy_chon" | "json_mon_them"> {
-  bien_the?: {
+    da_danh_gia?: boolean;
+    bien_the?: {
     id: number;
     ten: string;
     gia_them?: number | null;
@@ -51,6 +53,7 @@ export default function ChiTietDonHangPage() {
       setLoading(false);
       return;
     }
+    
 
     let isMounted = true;
 
@@ -80,9 +83,14 @@ export default function ChiTietDonHangPage() {
 
         const chiTiet = fetched.chi_tiet_don_hang ?? [];
         chiTiet.forEach((sp) => {
-          initialForm[sp.id] = { sao: 5, noi_dung: "", daDanhGia: false };
+          initialForm[sp.id] = {
+            sao: 5,
+            noi_dung: "",
+            daDanhGia: sp.da_danh_gia ?? false, // ✅ QUAN TRỌNG
+          };
           initialAnh[sp.id] = [];
         });
+
 
         setReviewForm(initialForm);
         setAnhReview(initialAnh);
@@ -114,69 +122,64 @@ export default function ChiTietDonHangPage() {
       .chi_tiet_don_hang ?? [];
 
   // gửi đánh giá (FormData, nhiều ảnh)
-  async function guiDanhGia(sp: IChiTietDonHangMoRong) {
-    const formState = reviewForm[sp.id];
-    if (!formState || !formState.noi_dung.trim()) {
+   async function guiDanhGia(sp: IChiTietDonHangMoRong) {
+    const form = reviewForm[sp.id];
+    if (!form?.noi_dung.trim()) {
       toast.error("Vui lòng nhập nội dung đánh giá");
       return;
     }
 
     const token = localStorage.getItem("token");
-    if (!token) {
+    if (!token || !user) {
       toast.error("Bạn chưa đăng nhập");
       return;
     }
 
     const fd = new FormData();
-    fd.append("noi_dung", formState.noi_dung);
-    fd.append("sao", String(formState.sao));
-    fd.append("id_nguoi_dung", String(user?.id ?? ""));
-    if (sp.bien_the?.san_pham?.id) fd.append("id_san_pham", String(sp.bien_the.san_pham.id));
+    fd.append("noi_dung", form.noi_dung);
+    fd.append("sao", String(form.sao));
+    fd.append("id_nguoi_dung", String(user.id));
+
     if (sp.bien_the?.id) fd.append("id_bien_the", String(sp.bien_the.id));
+    if (sp.bien_the?.san_pham?.id)
+      fd.append("id_san_pham", String(sp.bien_the.san_pham.id));
 
-    const files = anhReview[sp.id] ?? [];
-    files.forEach((file) => fd.append("hinh", file));
+    // nhiều ảnh
+    (anhReview[sp.id] ?? []).forEach((f) => fd.append("hinh", f));
 
-    try {
-      const res = await fetch("/api/danh_gia", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` }, // don't set Content-Type for FormData
-        body: fd,
-      });
+    const res = await fetch("/api/danh_gia", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: fd,
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        toast.error(data?.message || "Lỗi khi gửi đánh giá");
-        return;
-      }
-
-      toast.success("Đã gửi đánh giá thành công!");
-      // mark as reviewed
-      setReviewForm((prev) => ({
-        ...prev,
-        [sp.id]: { ...prev[sp.id], daDanhGia: true },
-      }));
-      // clear previews and files
-      setAnhReview((prev) => ({ ...prev, [sp.id]: [] }));
-    } catch (err) {
-      console.error("Lỗi gửi đánh giá:", err);
-      toast.error("Lỗi kết nối, thử lại sau");
+    if (!res.ok) {
+      toast.error(data.message || "Lỗi gửi đánh giá");
+      return;
     }
+
+    toast.success("Đã gửi đánh giá");
+
+    setReviewForm((prev) => ({
+      ...prev,
+      [sp.id]: { ...prev[sp.id], daDanhGia: true },
+    }));
+    setAnhReview((prev) => ({ ...prev, [sp.id]: [] }));
   }
 
-  // helper: update single file selection for a product
   function handleFilesChange(spId: number, files: FileList | null) {
-    const arr: File[] = files ? Array.from(files) : [];
-    setAnhReview((prev) => ({ ...prev, [spId]: arr }));
+    setAnhReview((prev) => ({
+      ...prev,
+      [spId]: files ? Array.from(files) : [],
+    }));
   }
 
   // Trạng thái timeline
 type TrangThaiTimeline =
   | 'cho_xac_nhan'
   | 'da_xac_nhan'
-  | 'dang_xu_ly'
-  | 'da_giao_van_chuyen'
   | 'dang_giao'
   | 'da_giao'
   | 'da_huy';
@@ -184,8 +187,6 @@ type TrangThaiTimeline =
 const trangThaiSteps: { label: string; key: TrangThaiTimeline }[] = [
   { label: 'Đơn hàng chờ xác nhận', key: 'cho_xac_nhan' },
   { label: 'Đơn hàng đã xác nhận', key: 'da_xac_nhan' },
-  { label: 'Người gửi đang xử lý đơn hàng', key: 'dang_xu_ly' },
-  { label: 'Đã giao cho đơn vị vận chuyển', key: 'da_giao_van_chuyen' },
   { label: 'Đang giao tới bạn', key: 'dang_giao' },
   { label: 'Đơn hàng đã hoàn thành', key: 'da_giao' },
   { label: 'Đơn hàng đã hủy', key: 'da_huy' },
@@ -200,26 +201,35 @@ const trangThaiSteps: { label: string; key: TrangThaiTimeline }[] = [
           Chi tiết đơn hàng #{donHang.ma_don}
         </h2>
 
-        <div className="grid grid-cols-2 gap-3 mb-6 text-sm">
-          <p>
-            <strong>Ngày đặt:</strong>{" "}
-            {new Date(donHang.ngay_tao).toLocaleString("vi-VN")}
-          </p>
-          <p>
-            <strong>Người nhận:</strong> {donHang.ho_ten_nguoi_nhan}
-          </p>
-          <p>
-            <strong>Điện thoại:</strong> {donHang.sdt_nguoi_nhan}
-          </p>
-          <p className="col-span-2">
-            <strong>Địa chỉ:</strong> {donHang.dia_chi_nguoi_nhan}
-          </p>
-          {donHang.ghi_chu && (
-            <p className="col-span-2">
-              <strong>Ghi chú:</strong> {donHang.ghi_chu}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
+          <div className="space-y-2">
+            <p>
+              <strong>Ngày đặt:</strong>{" "}
+              {new Date(donHang.ngay_tao).toLocaleString("vi-VN")}
             </p>
-          )}
+
+            <p>
+              <strong>Điện thoại:</strong> {donHang.sdt_nguoi_nhan}
+            </p>
+
+            {donHang.ghi_chu && (
+              <p>
+                <strong>Ghi chú:</strong> {donHang.ghi_chu}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <p>
+              <strong>Người nhận:</strong> {donHang.ho_ten_nguoi_nhan}
+            </p>
+
+            <p>
+              <strong>Địa chỉ:</strong> {donHang.dia_chi_nguoi_nhan}
+            </p>
+          </div>
         </div>
+
 
         <div className="border-t pt-4">
           {chiTiet.map((sp) => {
@@ -270,6 +280,8 @@ const trangThaiSteps: { label: string; key: TrangThaiTimeline }[] = [
   const thanhTien = donGia * sp.so_luong;
 
   const form = reviewForm[sp.id];
+  const daDanhGia = form?.daDanhGia ?? false;
+
 
   return (
     <div
@@ -355,85 +367,86 @@ const trangThaiSteps: { label: string; key: TrangThaiTimeline }[] = [
       </div>
 
       {/* ================= ĐÁNH GIÁ ================= */}
-      {donHang.trang_thai === "da_giao" && (
-        <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-          <p className="font-medium mb-2">Đánh giá sản phẩm</p>
+      {donHang.trang_thai === "da_giao" && !daDanhGia && (
+          <div className="mt-3 bg-gray-100 p-3 rounded">
 
-          <div className="flex gap-1 mb-2">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <Star
-                key={s}
-                size={22}
-                onClick={() =>
-                  setReviewForm((prev) => ({
-                    ...prev,
-                    [sp.id]: { ...prev[sp.id], sao: s },
-                  }))
-                }
-                className={
-                  (form?.sao ?? 0) >= s
-                    ? "text-yellow-500 cursor-pointer"
-                    : "text-gray-400 cursor-pointer"
-                }
-                fill={(form?.sao ?? 0) >= s ? "yellow" : "none"}
-              />
-            ))}
-          </div>
+                  {/* SAO */}
+                  <div className="flex gap-1 mb-2">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        size={22}
+                        onClick={() =>
+                          setReviewForm((prev) => ({
+                            ...prev,
+                            [sp.id]: { ...prev[sp.id], sao: s },
+                          }))
+                        }
+                        className={
+                          (form?.sao ?? 0) >= s
+                            ? "text-yellow-500 cursor-pointer"
+                            : "text-gray-400 cursor-pointer"
+                        }
+                        fill={(form?.sao ?? 0) >= s ? "yellow" : "none"}
+                      />
+                    ))}
+                  </div>
 
-          <textarea
-            value={form?.noi_dung ?? ""}
-            onChange={(e) =>
-              setReviewForm((prev) => ({
-                ...prev,
-                [sp.id]: { ...prev[sp.id], noi_dung: e.target.value },
-              }))
-            }
-            placeholder="Hãy chia sẻ cảm nhận của bạn..."
-            className="w-full p-2 border rounded-lg"
-          />
-          {/* Upload hình đánh giá */}
-            <div className="mt-3">
-              <label className="block text-sm font-medium mb-1">
-                Hình ảnh đánh giá 
-              </label>
-
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => handleFilesChange(sp.id, e.target.files)}
-                className="block w-full text-sm
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-lg file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-[#6A0A0A] file:text-white
-                  hover:file:bg-[#8B1A1A]"
-              />
-            </div>
-            {/* Preview ảnh */}
-            {(anhReview[sp.id]?.length ?? 0) > 0 && (
-              <div className="flex flex-wrap gap-3 mt-3">
-                {anhReview[sp.id].map((file, idx) => (
-                  <img
-                    key={idx}
-                    src={URL.createObjectURL(file)}
-                    className="w-20 h-20 object-cover rounded-lg border"
-                    alt="review preview"
+                  {/* NỘI DUNG */}
+                  <textarea
+                    value={form?.noi_dung ?? ""}
+                    onChange={(e) =>
+                      setReviewForm((prev) => ({
+                        ...prev,
+                        [sp.id]: {
+                          ...prev[sp.id],
+                          noi_dung: e.target.value,
+                        },
+                      }))
+                    }
+                    className="w-full p-2 rounded border"
+                    placeholder="Nhận xét của bạn..."
                   />
-                ))}
-              </div>
-            )}
+
+                  {/* ẢNH */}
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="mt-2"
+                    onChange={(e) =>
+                      handleFilesChange(sp.id, e.target.files)
+                    }
+                  />
+
+                  {/* PREVIEW */}
+                  {anhReview[sp.id]?.length > 0 && (
+                    <div className="flex gap-2 mt-2 flex-wrap">
+                      {anhReview[sp.id].map((f, i) => (
+                        <img
+                          key={i}
+                          src={URL.createObjectURL(f)}
+                          className="w-16 h-16 object-cover rounded border"
+                        />
+                      ))}
+                    </div>
+                  )}
 
 
-          <button
-            onClick={() => guiDanhGia(sp)}
-            className="mt-3 px-4 py-2 bg-[#6A0A0A] text-white rounded-lg"
-          >
-            Gửi đánh giá
-          </button>
-          
-        </div>
-      )}
+                <button
+                  disabled={daDanhGia}
+                  onClick={() => guiDanhGia(sp)}
+                  className={`mt-3 px-4 py-2 rounded ${
+                    daDanhGia
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-[#6A0A0A] text-white"
+                  }`}
+                >
+                  {daDanhGia ? "Đã đánh giá" : "Gửi đánh giá"}
+                </button>
+
+                </div>
+      )},  
     </div>
   );
 })}
