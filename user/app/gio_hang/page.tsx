@@ -14,6 +14,7 @@ import { useCart } from "../context/giohangcontext";
 import PopupSuaGioHang from "../components/popupsuagiohang";
 import PopupXacThuc from "../components/popup_xac_thuc";
 import Image from "next/image";
+import Link from "next/link";
 
 interface PopupData {
   san_pham: ISanPham;
@@ -298,20 +299,24 @@ export default function TrangGioHang() {
                        ${isHetMon ? "opacity-50 cursor-not-allowed" : ""}`} />
 
 
-
-                    <Image
-                      src={sp?.hinh?.trim() || "/noing.png"}
-                      alt={sp?.ten || "Sản phẩm"}
-                      width={900}
-                      height={100}
-                      className="rounded-lg object-cover !w-[80px] !h-[100px]" />
+                    <Link href={`/chi_tiet/${item.bien_the?.san_pham?.id}`} className="block">
+                      <Image
+                        src={sp?.hinh?.trim() || "/noing.png"}
+                        alt={sp?.ten || "Sản phẩm"}
+                        width={900}
+                        height={100}
+                        className="rounded-lg object-cover !w-[80px] !h-[100px]" />
+                    </Link>
 
                     <div className="flex-1">
+                      <Link href={`/chi_tiet/${item.bien_the?.san_pham?.id}`} className="block">
 
-                      <h2 className="font-semibold text-[15px]">{sp?.ten}</h2>
-                      <p className="text-sm text-gray-600">
-                        {item.bien_the?.ten}
-                      </p>
+
+                        <h2 className="font-semibold text-[15px]">{sp?.ten}</h2>
+                        <p className="text-sm text-gray-600">
+                          {item.bien_the?.ten}
+                        </p>
+                      </Link>
 
                       {item.json_tuy_chon &&
                         Object.keys(item.json_tuy_chon).length > 0 && (
@@ -508,7 +513,7 @@ export default function TrangGioHang() {
               await fetchCart();
               await reloadCart();
               setShowPopup(false);
-            }}/>
+            }} />
         )}
       </div>
     </div>
