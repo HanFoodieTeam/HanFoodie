@@ -23,7 +23,7 @@ export default function Topbar() {
 
   return (
     <header className="h-15 bg-white shadow flex items-center justify-between px-4 relative">
-      <h1 className="text-lg font-semibold">HanFoodie</h1>
+      <h1 className="text-lg font-semibold"></h1>
 
       <div className="relative">
         {/* Nút bấm */}
