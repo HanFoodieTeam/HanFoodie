@@ -250,11 +250,7 @@ const Sidebar = () => {
           <span>Quản lý người dùng</span>
         </Link>
 
-        {/* Cài đặt */}
-        <Link href="/settings" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-200">
-          <Settings size={18} />
-          <span>Cài đặt</span>
-        </Link>
+       
       </nav>
     </aside>
   );
