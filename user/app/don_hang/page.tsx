@@ -250,14 +250,24 @@ export default function DonHangPage() {
                 </div>
 
                 <p className="text-sm text-gray-600 mb-3">
-                  Ngày đặt: {new Date(dh.ngay_tao).toLocaleDateString('vi-VN')}
+                  Thời gian đặt:{' '}
+                  {new Date(dh.ngay_tao).toLocaleString('vi-VN', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })}
                 </p>
+
 
                 <div className="space-y-2">
                   {dsSanPham.map((sp, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-4 border rounded-lg p-3 hover:bg-gray-50 transition"
+                      className="border border-gray-200 p-4 rounded-xl bg-white shadow-sm mb-4 hover:shadow-md transition"
                     >
                       <Image
                         src={xuLyAnh(sp.hinh)}
