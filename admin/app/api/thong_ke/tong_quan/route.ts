@@ -2,60 +2,104 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { QueryTypes } from "sequelize";
 
-interface DashboardRow { tong_doanh_thu: number; ngay?: string; thang?: string; nam?: string }
-interface SoLuongRow { tong: number }
+type FilterType = "ngay" | "thang" | "nam";
 
-export async function GET() {
+interface DashboardRow {
+  tong_doanh_thu: number;
+  ngay?: string;
+  thang?: string;
+  nam?: string;
+}
+
+interface SoLuongRow {
+  tong: number;
+}
+
+export async function GET(req: Request) {
   try {
-    // Tổng doanh thu từ trước tới nay
-    const tongDoanhThu = await db.query<DashboardRow>(
-      `SELECT COALESCE(SUM(so_tien_thanh_toan),0) AS tong_doanh_thu FROM don_hang`,
+    const url = new URL(req.url);
+    const searchParams = url.searchParams;
+
+    const filter = (searchParams.get("filter") as FilterType) ?? "ngay";
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
+
+    let whereDate = "";
+    if (from && to) {
+      whereDate = `WHERE ngay_tao BETWEEN '${from} 00:00:00' AND '${to} 23:59:59'`;
+    }
+
+    /* Thong ke tong */
+
+    const [tongDoanhThu] = await db.query<DashboardRow>(
+      `SELECT COALESCE(SUM(so_tien_thanh_toan),0) AS tong_doanh_thu
+       FROM don_hang ${whereDate}`,
       { type: QueryTypes.SELECT }
     );
 
-    // Tổng số đơn từ trước tới nay
-    const tongDon = await db.query<SoLuongRow>(
-      `SELECT COUNT(*) AS tong FROM don_hang`,
+    const [tongDon] = await db.query<SoLuongRow>(
+      `SELECT COUNT(*) AS tong FROM don_hang ${whereDate}`,
       { type: QueryTypes.SELECT }
     );
 
-    // Tổng số người dùng
-    const tongNguoiDung = await db.query<SoLuongRow>(
+    const [tongNguoiDung] = await db.query<SoLuongRow>(
       `SELECT COUNT(*) AS tong FROM nguoi_dung`,
       { type: QueryTypes.SELECT }
     );
 
-    // Tổng số sản phẩm
-    const tongSanPham = await db.query<SoLuongRow>(
+    const [tongSanPham] = await db.query<SoLuongRow>(
       `SELECT COUNT(*) AS tong FROM san_pham`,
       { type: QueryTypes.SELECT }
     );
 
-    // Tổng số đánh giá
-    const tongDanhGia = await db.query<SoLuongRow>(
+    const [tongDanhGia] = await db.query<SoLuongRow>(
       `SELECT COUNT(*) AS tong FROM danh_gia`,
       { type: QueryTypes.SELECT }
     );
 
-    // Doanh thu theo ngày từ trước tới nay
-    const doanhThuTheoNgay = await db.query<DashboardRow>(
-      `SELECT DATE(ngay_tao) AS ngay, COALESCE(SUM(so_tien_thanh_toan),0) AS tong_doanh_thu
+    /* Bieu do */
+
+    let selectTime: string;
+    let groupBy: string;
+
+    if (filter === "thang") {
+      selectTime = `DATE_FORMAT(ngay_tao, '%Y-%m') AS thang`;
+      groupBy = `YEAR(ngay_tao), MONTH(ngay_tao)`;
+    } else if (filter === "nam") {
+      selectTime = `YEAR(ngay_tao) AS nam`;
+      groupBy = `YEAR(ngay_tao)`;
+    } else {
+      selectTime = `DATE(ngay_tao) AS ngay`;
+      groupBy = `DATE(ngay_tao)`;
+    }
+
+    const doanhThu = await db.query<DashboardRow>(
+      `SELECT ${selectTime},
+              COALESCE(SUM(so_tien_thanh_toan),0) AS tong_doanh_thu
        FROM don_hang
-       GROUP BY DATE(ngay_tao)
-       ORDER BY DATE(ngay_tao) ASC`,
+       ${whereDate}
+       GROUP BY ${groupBy}
+       ORDER BY ${groupBy} ASC`,
       { type: QueryTypes.SELECT }
     );
 
     return NextResponse.json({
-      tong_doanh_thu: tongDoanhThu[0]?.tong_doanh_thu ?? 0,
-      tong_don: tongDon[0]?.tong ?? 0,
-      tong_nguoi_dung: tongNguoiDung[0]?.tong ?? 0,
-      tong_san_pham: tongSanPham[0]?.tong ?? 0,
-      tong_danh_gia: tongDanhGia[0]?.tong ?? 0,
-      doanh_thu_theo_ngay: doanhThuTheoNgay
+      tong_doanh_thu: tongDoanhThu?.tong_doanh_thu ?? 0,
+      tong_don: tongDon?.tong ?? 0,
+      tong_nguoi_dung: tongNguoiDung?.tong ?? 0,
+      tong_san_pham: tongSanPham?.tong ?? 0,
+      tong_danh_gia: tongDanhGia?.tong ?? 0,
+      filter,
+      from,
+      to,
+      doanh_thu: doanhThu,
     });
+
   } catch (error) {
-    console.error("🔥 Lỗi thống kê tổng quan:", error);
-    return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
+    console.error(" Lỗi thống kê tổng quan:", error);
+    return NextResponse.json(
+      { error: "Lỗi server" },
+      { status: 500 }
+    );
   }
 }

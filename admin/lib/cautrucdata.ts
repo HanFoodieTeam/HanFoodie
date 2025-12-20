@@ -148,6 +148,9 @@ export interface IDanhMuc {
   hinh?: string | null;
   thu_tu: number;
   so_san_pham: number;
+  
+  loai_tuy_chon_ids: number[];
+  mon_them_ids: number[];
 }
 
 export interface IDanhMucLoaiTuyChon {

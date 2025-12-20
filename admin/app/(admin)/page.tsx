@@ -1,11 +1,6 @@
+// app/page.tsx
+import { redirect } from "next/navigation";
 
-
-export default async function Home() {
-
-
-
-  return (
-   <h2>hello</h2>
-
-  )
+export default function Home() {
+  redirect("/tong_quan");
 }

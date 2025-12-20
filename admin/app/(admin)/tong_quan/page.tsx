@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Line } from "react-chartjs-2";
 import {
@@ -9,51 +9,82 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  Title,
   Tooltip,
   Legend,
   Filler,
+  TooltipItem,
 } from "chart.js";
-import { FaShoppingCart, FaStar, FaBoxOpen, FaMoneyBillWave } from "react-icons/fa";
+import {
+  FaShoppingCart,
+  FaStar,
+  FaBoxOpen,
+  FaMoneyBillWave,
+} from "react-icons/fa";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
+/* chart register */
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  Filler
+);
+
+/* ===== types ===== */
+
+type FilterType = "ngay" | "thang" | "nam";
 
 interface DoanhThuItem {
-  ngay: string;
+  ngay?: string;
+  thang?: string;
+  nam?: string;
   tong_doanh_thu: number;
 }
 
 interface TongQuanData {
   tongSanPham: number;
   tongDanhGia: number;
-  spHetHang: number;
   tongDoanhThu: number;
   tongSoDon: number;
   doanhThu: DoanhThuItem[];
 }
 
+/* ===== page ===== */
+
 export default function TongQuanPage() {
   const [data, setData] = useState<TongQuanData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const loadData = async () => {
+  const [filter, setFilter] = useState<FilterType>("ngay");
+  const [from, setFrom] = useState<string>("");
+  const [to, setTo] = useState<string>("");
+
+  /* load data */
+  const loadData = async (): Promise<void> => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/thong_ke/tong_quan`);
-      const json = await res.json();
+      const params = new URLSearchParams({
+        filter,
+        ...(from && { from }),
+        ...(to && { to }),
+      });
 
-      const doanhThu: DoanhThuItem[] = json.doanh_thu_theo_ngay ?? [];
+      const res = await fetch(`/api/thong_ke/tong_quan?${params.toString()}`);
+      if (!res.ok) throw new Error("fetch error");
+
+      const json = await res.json();
 
       setData({
         tongSanPham: json.tong_san_pham ?? 0,
         tongDanhGia: json.tong_danh_gia ?? 0,
-        spHetHang: json.spHetHang ?? 0,
         tongDoanhThu: json.tong_doanh_thu ?? 0,
         tongSoDon: json.tong_don ?? 0,
-        doanhThu,
+        doanhThu: json.doanh_thu ?? [],
       });
     } catch (err) {
-      console.error("Lỗi loadData tong_quan:", err);
+      console.error("tong_quan error:", err);
       setData(null);
     } finally {
       setLoading(false);
@@ -62,106 +93,150 @@ export default function TongQuanPage() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [filter, from, to]);
 
-  if (loading) return <div className="p-6 text-lg">Đang tải dữ liệu...</div>;
-  if (!data) return <div className="p-6 text-red-600">Không thể tải dữ liệu.</div>;
+  if (loading) return <div className="p-[5px] text-sm">Đang tải…</div>;
+  if (!data) return <div className="p-[5px] text-red-600">Không có dữ liệu</div>;
+
+  /* ===== chart ===== */
+
+  const labels = data.doanhThu.map((d) =>
+    filter === "thang"
+      ? d.thang ?? ""
+      : filter === "nam"
+      ? d.nam ?? ""
+      : d.ngay ?? ""
+  );
 
   const chartData = {
-    labels: data.doanhThu.map((d) => d.ngay),
+    labels,
     datasets: [
       {
-        label: "Doanh thu (VNĐ)",
         data: data.doanhThu.map((d) => d.tong_doanh_thu),
         fill: true,
-        backgroundColor: "rgba(34,197,94,0.2)",
+        backgroundColor: "rgba(34,197,94,0.15)",
         borderColor: "rgba(34,197,94,1)",
-        tension: 0.3,
+        tension: 0.35,
       },
     ],
   };
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
+      legend: { display: false },
       tooltip: {
         callbacks: {
-          label: function (context: any) {
-            return Number(context.raw).toLocaleString("vi-VN") + " VNĐ";
-          },
+          label: (ctx: TooltipItem<"line">) =>
+            `${Number(ctx.raw).toLocaleString("vi-VN")} VNĐ`,
         },
-      },
-      legend: {
-        display: false,
       },
     },
     scales: {
       y: {
         ticks: {
-          callback: function (value: any) {
-            return Number(value).toLocaleString("vi-VN") + " VNĐ";
-          },
+          callback: (v: number | string) =>
+            Number(v).toLocaleString("vi-VN") + " VNĐ",
         },
       },
     },
   };
 
+  /* ===== cards ===== */
+
   const cards = [
     {
       title: "Sản phẩm",
       value: data.tongSanPham,
-      icon: <FaBoxOpen className="text-3xl text-green-500" />,
+      icon: <FaBoxOpen className="text-green-500 text-2xl" />,
       link: "/thong_ke/san_pham",
     },
     {
       title: "Đánh giá",
       value: data.tongDanhGia,
-      icon: <FaStar className="text-3xl text-yellow-400" />,
+      icon: <FaStar className="text-yellow-400 text-2xl" />,
       link: "/thong_ke/danh_gia",
     },
     {
       title: "Đơn hàng",
       value: data.tongSoDon,
-      icon: <FaShoppingCart className="text-3xl text-blue-500" />,
+      icon: <FaShoppingCart className="text-blue-500 text-2xl" />,
       link: "/thong_ke/doanh_thu",
     },
     {
       title: "Doanh thu",
-      value: (
-        <span className="text-lg font-semibold">
-          {Number(data.tongDoanhThu).toLocaleString("vi-VN")}{" "}
-          <span className="text-sm font-normal">VNĐ</span>
-        </span>
-      ),
-      icon: <FaMoneyBillWave className="text-3xl text-indigo-500" />,
+      value: `${Number(data.tongDoanhThu).toLocaleString("vi-VN")} VNĐ`,
+      icon: <FaMoneyBillWave className="text-indigo-500 text-2xl" />,
       link: "/thong_ke/doanh_thu",
-    }
-
+    },
   ];
 
-  return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Tổng Quan Hệ Thống</h1>
+  /* ===== render ===== */
 
-      {/* Card thống kê */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        {cards.map((c, idx) => (
-          <Link key={idx} href={c.link}>
-            <div className="p-4 bg-white shadow rounded-xl text-black hover:shadow-lg hover:scale-105 transition transform cursor-pointer flex items-center space-x-4">
-              <div>{c.icon}</div>
+  return (
+    <div className="w-full min-h-screen px-[5px] py-[5px] space-y-3">
+      <h1 className="text-lg font-semibold">Tổng quan hệ thống</h1>
+
+      {/* stat boxes */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        {cards.map((c, i) => (
+          <Link key={i} href={c.link}>
+            <div
+              className="
+                flex items-center gap-3
+                p-3
+                min-h-[70px]          /* ↓ giảm ~100px so với trước */
+                bg-white rounded-md
+                shadow-sm hover:shadow transition
+              "
+            >
+              {c.icon}
               <div>
-                <p className="text-sm">{c.title}</p>
-                <p className="text-lg font-semibold">{c.value}</p>
+                <p className="text-sm text-gray-500">{c.title}</p>
+                <p className="text-xl font-semibold leading-tight">
+                  {c.value}
+                </p>
               </div>
             </div>
           </Link>
         ))}
       </div>
 
-      {/* Biểu đồ doanh thu từ trước tới nay */}
-      <div className="bg-white shadow rounded-xl p-4">
-        <h2 className="text-xl font-semibold mb-3">Biến Động Doanh Thu</h2>
-        <Line data={chartData} options={chartOptions} />
+      {/* chart */}
+      <div className="bg-white rounded-md shadow-sm p-3">
+        {/* filters */}
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value as FilterType)}
+            className="border rounded px-2 py-1 text-sm"
+          >
+            <option value="ngay">Ngày</option>
+            <option value="thang">Tháng</option>
+            <option value="nam">Năm</option>
+          </select>
+
+          <span className="text-sm">Từ</span>
+          <input
+            type="date"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+            className="border rounded px-2 py-1 text-sm"
+          />
+          <span className="text-sm">Tới</span>
+          <input
+            type="date"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            className="border rounded px-2 py-1 text-sm"
+          />
+        </div>
+
+        {/* chart area */}
+        <div className="relative h-[400px] lg:h-[520px]">
+          <Line data={chartData} options={chartOptions} />
+        </div>
       </div>
     </div>
   );

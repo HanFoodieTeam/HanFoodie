@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-/* ================== FORMAT ================== */
+/* Format ngày hiển thị theo filter */
 function formatDateVN(value: string, filter: "ngay" | "thang" | "nam"): string {
-  if (filter === "nam") return value;        // 2025
-  if (filter === "thang") return value;      // 12/2025
+  if (filter === "nam") return value;
+  if (filter === "thang") return value;
 
   const d = new Date(value);
   const day = String(d.getDate()).padStart(2, "0");
@@ -14,18 +14,19 @@ function formatDateVN(value: string, filter: "ngay" | "thang" | "nam"): string {
   return `${day}/${month}/${year}`;
 }
 
+/* Format tiền VNĐ */
 function formatMoneyVN(value: number): string {
   return value.toLocaleString("vi-VN") + " VNĐ";
 }
 
-/* ================== TYPES ================== */
+/* Types */
 interface DoanhThuItem {
   ngay: string;
   tong_doanh_thu: number;
   so_don: number;
 }
 
-/* ================== PAGE ================== */
+/* Page */
 export default function DoanhThuPage() {
   const today = new Date().toISOString().slice(0, 10);
 
@@ -38,7 +39,7 @@ export default function DoanhThuPage() {
   const [maxItem, setMaxItem] = useState<DoanhThuItem | null>(null);
   const [minItem, setMinItem] = useState<DoanhThuItem | null>(null);
 
-  /* ================== LOAD DATA ================== */
+  /* Load data */
   const loadData = async (): Promise<void> => {
     setLoading(true);
     try {
@@ -48,10 +49,10 @@ export default function DoanhThuPage() {
 
       const data: DoanhThuItem[] = Array.isArray(json.doanhThu)
         ? json.doanhThu.map((item: DoanhThuItem) => ({
-          ngay: String(item.ngay),
-          tong_doanh_thu: Number(item.tong_doanh_thu),
-          so_don: Number(item.so_don),
-        }))
+            ngay: String(item.ngay),
+            tong_doanh_thu: Number(item.tong_doanh_thu),
+            so_don: Number(item.so_don),
+          }))
         : [];
 
       setDoanhThu(data);
@@ -67,7 +68,7 @@ export default function DoanhThuPage() {
         setMinItem(null);
       }
     } catch (error) {
-      console.error("Load data error:", error);
+      console.error("Load doanh thu error:", error);
       setDoanhThu([]);
       setMaxItem(null);
       setMinItem(null);
@@ -81,7 +82,7 @@ export default function DoanhThuPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ================== TOTAL ================== */
+  /* Tổng */
   const totalDoanhThu = doanhThu.reduce(
     (sum, item) => sum + item.tong_doanh_thu,
     0
@@ -95,41 +96,43 @@ export default function DoanhThuPage() {
   const label =
     filter === "ngay" ? "Ngày" : filter === "thang" ? "Tháng" : "Năm";
 
-  /* ================== UI ================== */
+  /* UI */
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Thống Kê Doanh Thu</h1>
+    <div className="w-full min-h-screen px-[5px] py-[5px] space-y-4">
+      <h1 className="text-lg md:text-xl font-semibold">
+        Thống kê doanh thu
+      </h1>
 
-      {/* ================= FILTER ================= */}
-      <div className="flex flex-wrap items-end gap-4 mb-4">
+      {/* Bộ lọc */}
+      <div className="flex flex-wrap items-end gap-2">
         <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Từ ngày</label>
+          <label className="text-xs font-medium">Từ ngày</label>
           <input
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border rounded px-2 py-1 text-sm"
           />
         </div>
 
         <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Đến ngày</label>
+          <label className="text-xs font-medium">Đến ngày</label>
           <input
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border rounded px-2 py-1 text-sm"
           />
         </div>
 
         <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Thống kê theo</label>
+          <label className="text-xs font-medium">Thống kê theo</label>
           <select
             value={filter}
             onChange={(e) =>
               setFilter(e.target.value as "ngay" | "thang" | "nam")
             }
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border rounded px-2 py-1 text-sm"
           >
             <option value="ngay">Ngày</option>
             <option value="thang">Tháng</option>
@@ -140,65 +143,65 @@ export default function DoanhThuPage() {
         <button
           onClick={loadData}
           disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 disabled:opacity-50 transition"
+          className="px-4 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
         >
           {loading ? "Đang tải..." : "Xem"}
         </button>
       </div>
 
-
-      {/* ================= SUMMARY ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* MAX */}
-        <div className="rounded-xl p-4 bg-green-50 shadow-lg">
-          <p className="text-sm text-green-700 font-medium">
+      {/* Box tổng quan */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div className="rounded-lg p-4 bg-green-50 shadow-sm">
+          <p className="text-xs text-green-700 font-medium">
             {label} doanh thu cao nhất
           </p>
           {maxItem ? (
             <>
-              <p className="text-lg font-semibold mt-1">
+              <p className="text-sm font-semibold mt-1">
                 {formatDateVN(maxItem.ngay, filter)}
               </p>
-              <p className="text-xl font-bold text-green-800">
+              <p className="text-lg font-bold text-green-800">
                 {formatMoneyVN(maxItem.tong_doanh_thu)}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-xs text-gray-600">
                 Số đơn: {maxItem.so_don}
               </p>
             </>
           ) : (
-            <p className="text-gray-500 mt-2">Không có dữ liệu</p>
+            <p className="text-gray-500 text-sm mt-2">Không có dữ liệu</p>
           )}
         </div>
 
-        {/* MIN */}
-        <div className="rounded-xl p-4 bg-red-50 shadow-lg">
-          <p className="text-sm text-red-700 font-medium">
+        <div className="rounded-lg p-4 bg-red-50 shadow-sm">
+          <p className="text-xs text-red-700 font-medium">
             {label} doanh thu thấp nhất
           </p>
           {minItem ? (
             <>
-              <p className="text-lg font-semibold mt-1">
+              <p className="text-sm font-semibold mt-1">
                 {formatDateVN(minItem.ngay, filter)}
               </p>
-              <p className="text-xl font-bold text-red-800">
+              <p className="text-lg font-bold text-red-800">
                 {formatMoneyVN(minItem.tong_doanh_thu)}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-xs text-gray-600">
                 Số đơn: {minItem.so_don}
               </p>
             </>
           ) : (
-            <p className="text-gray-500 mt-2">Không có dữ liệu</p>
+            <p className="text-gray-500 text-sm mt-2">Không có dữ liệu</p>
           )}
         </div>
       </div>
 
-      {/* ================= TABLE ================= */}
-      <div className="bg-white shadow rounded-xl p-4">
-        <h2 className="text-xl font-semibold mb-3">Tổng hợp doanh thu</h2>
+      {/* Bảng */}
+      <div className="bg-white shadow-sm rounded-lg p-3">
+        <h2 className="text-base font-semibold mb-2">
+          Tổng hợp doanh thu
+        </h2>
+
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="min-w-[520px] w-full text-sm">
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-2 text-left">{label}</th>
@@ -226,6 +229,7 @@ export default function DoanhThuPage() {
                   </tr>
                 ))
               )}
+
               {doanhThu.length > 0 && (
                 <tr className="font-semibold bg-gray-100">
                   <td className="p-2">Tổng</td>

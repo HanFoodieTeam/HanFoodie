@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Editor } from "@tinymce/tinymce-react";
+import BaiVietEditor from "../BaiVietEditor";
 
 export default function ThemBaiViet() {
   const router = useRouter();
@@ -135,13 +137,11 @@ export default function ThemBaiViet() {
         {/* Nội dung */}
         <div className="md:col-span-2">
           <label className="block mb-1 font-medium">Nội dung</label>
-          <textarea
-            name="noi_dung"
+          <BaiVietEditor
             value={form.noi_dung}
-            onChange={handleChange}
-            rows={6}
-            className="border p-2 rounded w-full"
+            onChange={(content) => setForm(prev => ({ ...prev, noi_dung: content }))}
           />
+
         </div>
 
         {/* Hình ảnh */}
