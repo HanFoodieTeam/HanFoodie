@@ -51,7 +51,7 @@ export default function PopupMaGiamGia({ open, onClose, onSelect, tongTien }: Pr
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="bg-white rounded-2xl shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+          className="bg-white rounded-2xl shadow-lg w-full max-w-xl max-h-[80vh] overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between border-b p-4 sticky top-0 bg-white z-10">
             <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -81,7 +81,7 @@ export default function PopupMaGiamGia({ open, onClose, onSelect, tongTien }: Pr
                       ${!hopLe ? "opacity-50 cursor-not-allowed select-none" : "hover:shadow-md cursor-pointer"}
                     `}
                       onClick={() => {
-                        if (!hopLe) return; //  Không cho chọn nếu chưa đủ điều kiện
+                        if (!hopLe) return; 
                         setChon(item.id);
                       }}>
                     <div className="flex-shrink-0 bg-[#e8594f] text-white w-12 h-12 flex items-center justify-center rounded-lg">
@@ -123,7 +123,7 @@ export default function PopupMaGiamGia({ open, onClose, onSelect, tongTien }: Pr
                     </div>
 
                     {chon === item.id && hopLe && (
-                      <CheckCircle2 className="text-[#e8594f]" size={20} />
+                      <CheckCircle2 className="text-[#e8594f]" size={30} />
                     )}
                   </div>
                 );

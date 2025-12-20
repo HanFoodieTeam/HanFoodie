@@ -52,8 +52,8 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
   }, [currentStatus, currentPage]);
 
   const updateFilter = (newStatus: string, newPage = 1) => {
-  router.replace(`?tab=don_hang&status=${newStatus}&page=${newPage}`);
-};
+    router.replace(`?tab=don_hang&status=${newStatus}&page=${newPage}`);
+  };
 
 
   useEffect(() => {
@@ -100,10 +100,9 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
             key={t.key}
             onClick={() => updateFilter(t.key, 1)}
             className={`px-2 py-1 transition ${status === t.key
-                ? "text-blue-600 border-b-2 border-blue-500"
-                : "text-gray-600 hover:text-blue-600"
-              }`}
-          >
+              ? "text-blue-600 border-b-2 border-blue-500"
+              : "text-gray-600 hover:text-blue-600"
+              }`}>
             {t.label}
           </button>
         ))}
@@ -113,24 +112,29 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
         <Link
           key={d.id}
           href={`/don_hang/${d.id}`}
-          className="block border border-gray-200 rounded-xl p-4 bg-white hover:bg-gray-50 hover:shadow-md transition"
-        >
+          className="block border border-gray-200 rounded-xl p-4 bg-white hover:bg-gray-50 hover:shadow-md transition">
           <div className="flex justify-between items-center">
             <p className="font-semibold">
               Mã đơn: <span className="text-blue-600">{d.ma_don}</span>
             </p>
             <span
-              className={`text-xs border px-3 py-1 rounded-full font-medium ${badgeColors[d.trang_thai]
-                }`}
-            >
+              className={`text-sm border px-3 py-1 rounded-full font-medium ${badgeColors[d.trang_thai]
+                }`}>
               {trangThaiLabels[d.trang_thai]}
             </span>
           </div>
 
           <p className="text-sm text-gray-500 mt-1">
             Ngày đặt:{" "}
-            {new Date(d.ngay_tao).toLocaleDateString("vi-VN")}
+            {new Date(d.ngay_tao).toLocaleString("vi-VN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
           </p>
+
 
           <div className="border border-gray-200 rounded-lg p-3 mt-3 space-y-3">
             {d.chi_tiet_don_hang?.map((item) => {
@@ -146,25 +150,24 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
                     alt={product?.ten ?? ""}
                     width={56}
                     height={56}
-                    className="rounded-lg object-cover"
-                  />
-                 
+                    className="rounded-lg object-cover" />
+
 
                   <div className="flex-1">
                     <p className="font-semibold">{product?.ten}</p>
 
                     {item.bien_the?.ten && (
-                      <p className="text-xs text-gray-500">{item.bien_the.ten}</p>
+                      <p className="text-sm text-gray-500">{item.bien_the.ten}</p>
                     )}
 
                     {toppings && toppings.length > 0 && (
-                      <p className="text-xs text-gray-600">
+                      <p className="text-sm text-gray-600">
                         Món thêm: {toppings.map((t) => t.ten).join(", ")}
                       </p>
                     )}
 
                     {options && (
-                      <p className="text-xs text-gray-600">
+                      <p className="text-sm text-gray-600">
                         Tùy chọn:{" "}
                         {Object.entries(options)
                           .map(([k, v]) => `${k}: ${v}`)
@@ -172,7 +175,7 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
                       </p>
                     )}
 
-                    <p className="text-xs text-gray-600">
+                    <p className="text-sm text-gray-600">
                       Số lượng: {item.so_luong}
                     </p>
                   </div>
@@ -207,8 +210,8 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
           <button onClick={() => updateFilter(status, 1)}
             disabled={page === 1}
             className={`px-3 py-1 rounded ${page === 1
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-gray-200 hover:bg-gray-300"
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-gray-200 hover:bg-gray-300"
               }`}>
             Đầu
           </button>
@@ -222,8 +225,8 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
                 <button key={p}
                   onClick={() => updateFilter(status, p)}
                   className={`px-3 py-1 rounded transition ${p === page
-                      ? "bg-blue-500 text-white font-bold scale-105"
-                      : "bg-gray-200 hover:bg-gray-300"
+                    ? "bg-blue-500 text-white font-bold scale-105"
+                    : "bg-gray-200 hover:bg-gray-300"
                     }`} >
                   {p}
                 </button>
@@ -235,8 +238,8 @@ export default function DonHangUser({ orders }: { orders: IDonHang[] }) {
             onClick={() => updateFilter(status, totalPages)}
             disabled={page === totalPages}
             className={`px-3 py-1 rounded ${page === totalPages
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-gray-200 hover:bg-gray-300"
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-gray-200 hover:bg-gray-300"
               }`} >
             Cuối
           </button>
