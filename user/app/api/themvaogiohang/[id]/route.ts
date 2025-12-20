@@ -91,13 +91,16 @@ import {
   MonThemModel,
 } from "@/lib/models";
 
-interface Params {
-  params: { id: string };
-}
 
-export async function GET(req: Request, { params }: Params) {
+
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const idSanPham = Number(params.id);
+    const { id } = await params;
+    const idSanPham = Number(id);
+
     if (!idSanPham) {
       return NextResponse.json(
         { message: "ID sản phẩm không hợp lệ" },
