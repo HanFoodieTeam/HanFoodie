@@ -200,7 +200,7 @@ export default function SuaBaiViet() {
                 setFile(e.target.files[0]);
               }
             }}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 p-2 rounded w-full"
           />
 
           {form.hinh && (
@@ -243,7 +243,7 @@ export default function SuaBaiViet() {
             name="ngay_dang"
             value={form.ngay_dang}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 

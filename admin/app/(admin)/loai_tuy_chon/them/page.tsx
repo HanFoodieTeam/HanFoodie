@@ -26,8 +26,8 @@ export default function ThemLoaiTuyChon() {
         type === "number"
           ? Number(value)
           : type === "radio"
-          ? value === "true"
-          : value,
+            ? value === "true"
+            : value,
     }));
   };
 
@@ -84,7 +84,8 @@ export default function ThemLoaiTuyChon() {
             name="ten"
             value={form.ten}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 p-2 rounded w-full"
+
           />
         </div>
 
@@ -96,7 +97,8 @@ export default function ThemLoaiTuyChon() {
             name="thu_tu"
             value={form.thu_tu}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 p-2 rounded w-full"
+
           />
         </div>
 

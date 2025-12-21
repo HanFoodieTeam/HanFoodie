@@ -87,7 +87,7 @@ function BaiVietListContent() {
       if (!res.ok) throw new Error("Lỗi cập nhật trạng thái");
       setData((prev) => prev.map((bv) => (bv.id === id ? { ...bv, an_hien: newState } : bv)));
     } catch (err) {
-      console.error("❌ PATCH lỗi:", err);
+      console.error(" PATCH lỗi:", err);
       alert("Không thể cập nhật trạng thái!");
     } finally {
       setConfirmItem(null);
@@ -191,15 +191,15 @@ function BaiVietListContent() {
                   </td>
                   <td className="px-3 py-2 text-center">{bv.luot_xem}</td>
                   <td className="px-3 py-2 text-center">{formatDate(bv.ngay_dang)}</td>
-                  <td className="px-3 py-2 text-center">
-                    <button
-                      onClick={() => handleToggleClick(bv)}
-                      title="Bấm để đổi trạng thái"
-                      className={`w-6 h-6 rounded-full border-2 border-gray-300 transition-colors ${
-                        bv.an_hien ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
-                      }`}
-                    ></button>
+                  <td
+                    className="px-3 py-2 text-center cursor-pointer text-2xl"
+                    onClick={() => handleToggleClick(bv)}
+                    title="Bấm để đổi trạng thái"
+                  >
+                    {bv.an_hien ? "✅" : "❌"}
                   </td>
+
+
                   <td className="px-3 py-2 text-center">
                     <Link href={`/bai_viet/${bv.id}`} className="text-blue-600 hover:text-blue-800 font-medium">
                       Sửa

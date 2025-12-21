@@ -54,15 +54,15 @@ export default function ThemLoaiBaiViet() {
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
           <label>Tên loại</label>
-          <input name="ten_loai" value={form.ten_loai} onChange={handleChange} className="border p-2 rounded w-full"/>
+          <input name="ten_loai" value={form.ten_loai} onChange={handleChange}      className="border border-gray-300 p-2 rounded w-full"/>
         </div>
         <div>
           <label>Slug</label>
-          <input name="slug" value={form.slug?? ""} onChange={handleChange} className="border p-2 rounded w-full"/>
+          <input name="slug" value={form.slug?? ""} onChange={handleChange} className="border border-gray-300 p-2 rounded w-full"/>
         </div>
         <div>
           <label>Thứ tự</label>
-          <input type="number" name="thu_tu" value={form.thu_tu} onChange={handleChange} className="border p-2 rounded w-full"/>
+          <input type="number" name="thu_tu" value={form.thu_tu} onChange={handleChange} className="border border-gray-300 p-2 rounded w-full"/>
         </div>
         <div>
           <label>Trạng thái</label>
