@@ -247,15 +247,13 @@ export default function DanhMucList() {
                   <td className="px-3 py-2">{dm.thu_tu}</td>
 
                   <td
-                    className="px-3 py-2 cursor-pointer"
+                    className="px-3 py-2 text-center cursor-pointer text-2xl"
                     onClick={() => handleToggleClick(dm)}
+                    title="Bấm để đổi trạng thái"
                   >
-                    <span
-                      className={`inline-block w-5 h-5 rounded-full ${
-                        dm.an_hien ? "bg-green-500" : "bg-red-500"
-                      }`}
-                    ></span>
+                    {dm.an_hien ? "✅" : "❌"}
                   </td>
+
 
                   <td className="px-3 py-2">
                     <Link
@@ -286,11 +284,10 @@ export default function DanhMucList() {
           <button
             key={p}
             onClick={() => goToPage(p)}
-            className={`px-3 py-1 rounded ${
-              p === page
+            className={`px-3 py-1 rounded ${p === page
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 hover:bg-gray-300"
-            }`}
+              }`}
           >
             {p}
           </button>

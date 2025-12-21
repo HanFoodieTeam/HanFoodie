@@ -174,16 +174,13 @@ function LoaiBaiVietListContent() {
                   <td className="px-3 py-2 font-medium">{item.ten_loai}</td>
                   <td className="px-3 py-2">{item.thu_tu}</td>
                   <td
-                    className="px-3 py-2 cursor-pointer select-none"
+                    className="px-3 py-2 text-center cursor-pointer select-none text-2xl"
                     onClick={() => handleToggleClick(item)}
                     title="Bấm để đổi trạng thái"
                   >
-                    <span
-                      className={`inline-block w-5 h-5 rounded-full border-2 border-gray-300 transition-colors ${
-                        item.an_hien ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
-                      }`}
-                    ></span>
+                    {item.an_hien ? "✅" : "❌"}
                   </td>
+
                   <td className="px-3 py-2">
                     <Link
                       href={`/loai_bai_viet/${item.id}`}

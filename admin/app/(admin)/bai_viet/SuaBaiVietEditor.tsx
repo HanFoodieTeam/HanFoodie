@@ -15,7 +15,7 @@ const Editor = dynamic(
 
 export default function SuaBaiVietEditor({ value, onChange }: Props) {
   return (
-    <div className="border p-2 rounded w-full">
+    <div className="border border-gray-300 p-2 rounded w-full">
       <Editor
         apiKey="b0ltf47z16t202dzee5j66umb4r9m5ypez273jxv802r6t8n" // hoặc key TinyMCE của bạn
         value={value}

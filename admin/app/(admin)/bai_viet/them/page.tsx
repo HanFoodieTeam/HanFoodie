@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Editor } from "@tinymce/tinymce-react";
 import BaiVietEditor from "../BaiVietEditor";
 
 export default function ThemBaiViet() {
@@ -23,46 +22,34 @@ export default function ThemBaiViet() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ======================== ON CHANGE ========================
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-
-    setForm((f) => ({
+    setForm(f => ({
       ...f,
-      [name]:
-        type === "number"
-          ? Number(value)
-          : type === "radio"
-            ? value === "true"
-            : value,
+      [name]: type === "number" ? Number(value) : type === "radio" ? value === "true" : value
     }));
   };
 
-  // ======================== ON FILE ========================
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setHinhFile(file);
   };
 
-  // ======================== SUBMIT FORM ========================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ------------------- VALIDATE -------------------
+    // ===== VALIDATE =====
     if (!form.tieu_de.trim()) return setError("Tiêu đề không được để trống!");
     if (form.tieu_de.trim().length < 5) return setError("Tiêu đề phải có ít nhất 5 ký tự!");
-
     if (!form.noi_dung.trim()) return setError("Nội dung không được để trống!");
     if (form.noi_dung.trim().length < 20) return setError("Nội dung phải có ít nhất 20 ký tự!");
-
     const slugRegex = /^[a-z0-9-]+$/;
     if (!form.slug.trim()) return setError("Slug không được để trống!");
     if (!slugRegex.test(form.slug)) return setError("Slug chỉ được chứa chữ thường, số và dấu '-'");
-
     if (hinhFile && hinhFile.size > 2 * 1024 * 1024) return setError("Hình ảnh không được vượt quá 2MB!");
-    // ------------------------------------------------
+    // ====================
 
     setLoading(true);
     setError(null);
@@ -75,19 +62,11 @@ export default function ThemBaiViet() {
     formData.append("luot_xem", String(form.luot_xem));
     formData.append("ngay_dang", form.ngay_dang);
     formData.append("an_hien", form.an_hien ? "1" : "0");
-
-    if (hinhFile) {
-      formData.append("hinh", hinhFile);
-    }
+    if (hinhFile) formData.append("hinh", hinhFile);
 
     try {
-      const res = await fetch("/api/bai_viet", {
-        method: "POST",
-        body: formData,
-      });
-
+      const res = await fetch("/api/bai_viet", { method: "POST", body: formData });
       const data = await res.json();
-
       if (res.ok) {
         alert("Thêm bài viết thành công!");
         router.push("/bai_viet");
@@ -96,13 +75,13 @@ export default function ThemBaiViet() {
       }
     } catch {
       alert("Lỗi hệ thống!");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-md max-w-4xl mx-auto">
+    <div className="p-6 bg-white rounded-xl shadow-md max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4 text-center">THÊM BÀI VIẾT</h1>
 
       {error && (
@@ -119,7 +98,7 @@ export default function ThemBaiViet() {
             name="tieu_de"
             value={form.tieu_de}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
           />
         </div>
 
@@ -130,7 +109,7 @@ export default function ThemBaiViet() {
             name="slug"
             value={form.slug}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
           />
         </div>
 
@@ -139,9 +118,8 @@ export default function ThemBaiViet() {
           <label className="block mb-1 font-medium">Nội dung</label>
           <BaiVietEditor
             value={form.noi_dung}
-            onChange={(content) => setForm(prev => ({ ...prev, noi_dung: content }))}
+            onChange={content => setForm(prev => ({ ...prev, noi_dung: content }))}
           />
-
         </div>
 
         {/* Hình ảnh */}
@@ -151,7 +129,7 @@ export default function ThemBaiViet() {
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
           />
           {hinhFile && (
             <Image
@@ -171,7 +149,7 @@ export default function ThemBaiViet() {
             name="id_loai_bv"
             value={form.id_loai_bv}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
           >
             <option value={1}>Tin tức</option>
             <option value={2}>Thông báo</option>
@@ -186,7 +164,7 @@ export default function ThemBaiViet() {
             name="ngay_dang"
             value={form.ngay_dang}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
           />
         </div>
 
@@ -204,7 +182,6 @@ export default function ThemBaiViet() {
               />
               Hiện
             </label>
-
             <label className="flex items-center gap-2">
               <input
                 type="radio"
@@ -226,7 +203,7 @@ export default function ThemBaiViet() {
             name="luot_xem"
             value={form.luot_xem}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
           />
         </div>
 
@@ -234,7 +211,7 @@ export default function ThemBaiViet() {
         <div className="md:col-span-2 flex justify-end">
           <button
             disabled={loading}
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg"
+            className="bg-blue-500 hover:bg-amber-500 text-white px-6 py-2 rounded shadow-md"
           >
             {loading ? "Đang lưu..." : "Thêm bài viết"}
           </button>

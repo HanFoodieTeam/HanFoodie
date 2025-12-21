@@ -11,15 +11,20 @@ import RegisterForm from "./dang_ky";
 import { INguoiDung } from "../../lib/cautrucdata";
 import { useCart } from "../context/giohangcontext";
 import QuenMatKhauForm from "./quen_mat_khau";
+import { useRouter } from "next/navigation";
+
 
 export default function Header() {
   const { count } = useCart();
+  const router = useRouter();
   const [showRegister, setShowRegister] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [searchText, setSearchText] = useState("");
+
 
   const [nguoiDung, setNguoiDung] = useState<INguoiDung | null>(null);
   const [showForgot, setShowForgot] = useState(false);
@@ -62,6 +67,22 @@ export default function Header() {
     window.location.reload();
   };
 
+  // đóng tìm kiếm
+  // Thêm ref cho search
+const searchRef = useRef<HTMLDivElement | null>(null);
+
+// Đóng search khi click ra ngoài
+useEffect(() => {
+  const handleClickOutside = (e: MouseEvent) => {
+    if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+      setShowSearch(false);
+    }
+  };
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+
   return (
     <>
       <header
@@ -82,9 +103,45 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center space-x-5">
-            <button onClick={() => setShowSearch((v) => !v)}>
-              <Search className="w-6 h-6" />
-            </button>
+            <div className="relative" ref={searchRef}>
+  <button onClick={() => setShowSearch((v) => !v)}>
+    <Search className="w-6 h-6" />
+  </button>
+
+  <div
+    className={`absolute top-0 right-0 mt-0 w-64 z-50 transform origin-top-right
+      bg-white rounded-md shadow-md overflow-hidden transition-all duration-200
+      ${showSearch ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"}`}
+  >
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (searchText.trim() !== "") {
+          router.push(`/san_pham?search=${encodeURIComponent(searchText)}`);
+          setShowSearch(false);
+          setSearchText("");
+        }
+      }}
+      className="flex"
+    >
+      <input
+        type="text"
+        placeholder="Tìm kiếm..."
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        className="w-full p-2 text-gray-700 placeholder-gray-400 outline-none"
+      />
+      <button
+        type="submit"
+        className="bg-amber-400 px-3 hover:bg-amber-500 transition-colors"
+      >
+        Tìm
+      </button>
+    </form>
+  </div>
+</div>
+
+
 
             <Link href="/yeu_thich">
               <Heart className="w-6 h-6" />

@@ -94,14 +94,14 @@ export default function SuaLoaiTuyChon() {
             const json: { success: boolean; message?: string } = await res.json();
 
             if (res.ok && json.success) {
-                alert("✅ Cập nhật loại tùy chọn thành công!");
+                alert(" Cập nhật loại tùy chọn thành công!");
                 router.push("/loai_tuy_chon");
             } else {
-                alert("❌ Cập nhật thất bại: " + json.message);
+                alert(" Cập nhật thất bại: " + json.message);
             }
         } catch (err) {
             console.error(err);
-            alert("❌ Lỗi khi cập nhật loại tùy chọn!");
+            alert(" Lỗi khi cập nhật loại tùy chọn!");
         } finally {
             setLoading(false);
         }
@@ -133,7 +133,7 @@ export default function SuaLoaiTuyChon() {
                         name="ten"
                         value={form.ten}
                         onChange={handleChange}
-                        className="border p-2 rounded w-full"
+                        className="border border-gray-300 p-2 rounded w-full"
                     />
                 </div>
 
@@ -145,7 +145,7 @@ export default function SuaLoaiTuyChon() {
                         name="thu_tu"
                         value={form.thu_tu ?? 0}
                         onChange={handleChange}
-                        className="border p-2 rounded w-full"
+                        className="border border-gray-300 p-2 rounded w-full"
                     />
                 </div>
 
