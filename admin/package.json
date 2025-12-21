@@ -12,6 +12,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tinymce/tinymce-react": "^6.3.0",
+    "@tiptap/extension-link": "^3.14.0",
+    "@tiptap/extension-text-align": "^3.13.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.8.0",
     "jose": "^6.1.3",

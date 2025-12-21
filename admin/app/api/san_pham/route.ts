@@ -1,13 +1,12 @@
-
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { Op } from "sequelize";
 import {
   SanPhamModel,
-  DanhMucModel,
   HinhModel,
   BienTheModel,
+  DanhMucModel,
 } from "@/lib/models";
-import { ISanPham } from "@/lib/cautrucdata";
 
 // ================================
 // CONFIG CLOUDINARY
@@ -21,10 +20,6 @@ cloudinary.config({
 // ================================
 // GET — Lấy danh sách sản phẩm
 // ================================
-import { Op } from "sequelize";
-
-
-
 interface QueryParams {
   search?: string;
   id_danh_muc?: string;
@@ -36,6 +31,7 @@ interface QueryParams {
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
+    const withDanhMuc = searchParams.get("with_danh_muc") === "1";
 
     const query: QueryParams = {
       search: searchParams.get("search") || "",
@@ -45,50 +41,47 @@ export async function GET(req: Request) {
       page: searchParams.get("page") || "1",
     };
 
-    // PHÂN TRANG
+    // ================= PHÂN TRANG =================
     const page = Number(query.page);
-    const limit = 10; // mỗi trang 10 sp
+    const limit = 10;
     const offset = (page - 1) * limit;
 
-    // LỌC
+    // ================= LỌC =================
     const whereClause: Record<string, unknown> = {};
 
-    // Lọc theo search
+    // Search theo tên
     if (query.search) {
       whereClause.ten = { [Op.like]: `%${query.search}%` };
     }
 
     // Lọc theo danh mục
-   if (query.id_danh_muc && query.id_danh_muc !== "all") {
-  const dm = await DanhMucModel.findOne({
-    where: { id: Number(query.id_danh_muc) }
-  });
-
-  if (dm) {
-    whereClause.id_danh_muc = dm.get("id") as number;
-  }
-}
-
+    if (query.id_danh_muc && query.id_danh_muc !== "all") {
+      whereClause.id_danh_muc = Number(query.id_danh_muc);
+    }
 
     // Lọc theo giá
     if (query.min_price) {
-      whereClause.gia_goc = { ...(whereClause.gia_goc as object), [Op.gte]: Number(query.min_price) };
+      whereClause.gia_goc = {
+        ...(whereClause.gia_goc as object),
+        [Op.gte]: Number(query.min_price),
+      };
     }
 
     if (query.max_price) {
-      whereClause.gia_goc = { ...(whereClause.gia_goc as object), [Op.lte]: Number(query.max_price) };
+      whereClause.gia_goc = {
+        ...(whereClause.gia_goc as object),
+        [Op.lte]: Number(query.max_price),
+      };
     }
 
-    // TOTAL COUNT (không phân trang)
+    // ================= COUNT =================
     const totalItems = await SanPhamModel.count({ where: whereClause });
-
     const totalPages = Math.ceil(totalItems / limit);
 
-    // LẤY DỮ LIỆU CÓ PHÂN TRANG
+    // ================= DATA =================
     const list = await SanPhamModel.findAll({
       where: whereClause,
       include: [
-        { model: DanhMucModel, as: "danh_muc" },
         { model: HinhModel, as: "hinh_anh" },
         { model: BienTheModel, as: "bien_the" },
       ],
@@ -97,9 +90,31 @@ export async function GET(req: Request) {
       offset,
     });
 
+    // ================= RESET HẾT MÓN =================
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (const sp of list) {
+      const hetMon = sp.getDataValue("het_mon") as string | null;
+      if (hetMon && new Date(hetMon) < today) {
+        sp.setDataValue("het_mon", null);
+        await sp.save();
+      }
+    }
+
+    // ================= DANH MỤC =================
+    let danhMuc: unknown[] = [];
+
+    if (withDanhMuc) {
+      danhMuc = await DanhMucModel.findAll({
+        order: [["thu_tu", "ASC"]],
+      });
+    }
+
     return NextResponse.json({
       success: true,
       data: list,
+      danh_muc: withDanhMuc ? danhMuc : undefined,
       totalItems,
       totalPages,
       currentPage: page,
@@ -112,8 +127,6 @@ export async function GET(req: Request) {
     );
   }
 }
-
-
 
 // ================================
 // POST — Thêm sản phẩm
@@ -140,7 +153,7 @@ export async function POST(req: Request) {
 
     const hinhChinhUrl = uploadResult.secure_url;
 
-    // ================= BIẾN THỂ (KHÔNG ANY) =================
+    // ================= BIẾN THỂ =================
     interface BienTheInput {
       ten: string;
       gia_them: number;
@@ -151,28 +164,31 @@ export async function POST(req: Request) {
     const bienTheRaw = form.get("bien_the");
 
     if (typeof bienTheRaw === "string") {
-      const parsed: BienTheInput[] = JSON.parse(bienTheRaw);
-
-      bienTheList = parsed.map((bt) => ({
+      bienTheList = JSON.parse(bienTheRaw).map((bt: BienTheInput) => ({
         ten: bt.ten,
         gia_them: Number(bt.gia_them ?? 0),
         trang_thai: Number(bt.trang_thai),
       }));
     }
 
-    // ================= TẠO SẢN PHẨM =================
+    const luotXemRaw = form.get("luot_xem");
+    const luotXem =
+      typeof luotXemRaw === "string" && !isNaN(Number(luotXemRaw))
+        ? Number(luotXemRaw)
+        : 0;
+
     const sanPham = await SanPhamModel.create({
-      ten: form.get("ten")?.toString() ?? "",
-      slug: form.get("slug")?.toString() ?? "",
+      ten: String(form.get("ten") ?? ""),
+      slug: String(form.get("slug") ?? ""),
       gia_goc: Number(form.get("gia_goc") ?? 0),
-      mo_ta: form.get("mo_ta")?.toString() ?? "",
+      mo_ta: String(form.get("mo_ta") ?? ""),
       an_hien: form.get("an_hien") === "true",
-      tag: form.get("tag")?.toString() ?? "",
-      phong_cach: form.get("phong_cach")?.toString() ?? "",
-      trang_thai: form.get("trang_thai")?.toString() ?? "active",
-      id_danh_muc: Number(form.get("id_danh_muc") ?? 0),
+      tag: String(form.get("tag") ?? ""),
+      phong_cach: String(form.get("phong_cach") ?? ""),
+      trang_thai: String(form.get("trang_thai") ?? "active"),
+      id_danh_muc: Number(form.get("id_danh_muc")),
       hinh: hinhChinhUrl,
-      luot_xem: 0,
+      luot_xem: luotXem,
     });
 
     const sanPhamId = sanPham.getDataValue("id");
@@ -180,9 +196,7 @@ export async function POST(req: Request) {
     // ================= SAVE BIẾN THỂ =================
     for (const bt of bienTheList) {
       await BienTheModel.create({
-        ten: bt.ten,
-        gia_them: bt.gia_them,
-        trang_thai: bt.trang_thai,
+        ...bt,
         id_san_pham: sanPhamId,
       });
     }
