@@ -1,63 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Op, WhereOptions } from "sequelize";
+import { Op, WhereOptions, fn, col } from "sequelize";
 import {
   DanhMucModel,
   DanhMucLoaiTuyChonModel,
   DanhMucMonThemModel,
   LoaiTuyChonModel,
   MonThemModel,
+  SanPhamModel,
 } from "@/lib/models";
 import { IDanhMuc, ILoaiTuyChon, IMonThem } from "@/lib/cautrucdata";
-import cloudinaryPkg from "cloudinary";
-import { Buffer } from "buffer";
 
-// ================= CLOUDINARY =================
-const cloudinary = cloudinaryPkg.v2;
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
-  api_key: process.env.CLOUDINARY_API_KEY!,
-  api_secret: process.env.CLOUDINARY_API_SECRET!,
-  secure: true,
-});
+// Sequelize raw type
+interface DanhMucRaw extends Omit<IDanhMuc, "an_hien" | "so_san_pham"> {
+  an_hien: number | boolean;
+  so_san_pham?: number;
+}
 
-// ================= HELPER =================
-const uploadImage = async (file: File): Promise<string> => {
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream(
-      {
-        folder: "danh_muc",
-        resource_type: "image",
-      },
-      (err, result) => {
-        if (err || !result) {
-          reject(err);
-        } else {
-          resolve(result.secure_url);
-        }
-      }
-    ).end(buffer);
-  });
-};
-
-// ================= GET =================
+// ========================= GET =========================
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
-    const page = Number(url.searchParams.get("page") ?? "1");
-    const limit = Number(url.searchParams.get("limit") ?? "7");
+    const page = Number(url.searchParams.get("page") ?? 1);
+    const limit = Number(url.searchParams.get("limit") ?? 7);
     const offset = (page - 1) * limit;
     const search = url.searchParams.get("search") ?? "";
 
     const where: WhereOptions = {};
     if (search) where["ten"] = { [Op.like]: `%${search}%` };
 
+    // Lấy danh mục + đếm số sản phẩm
     const { count, rows } = await DanhMucModel.findAndCountAll({
       where,
       order: [["thu_tu", "ASC"]],
       limit,
       offset,
+      include: [
+        {
+          model: SanPhamModel,
+          as: "san_pham",
+          attributes: [],
+        },
+      ],
+      attributes: {
+        include: [[fn("COUNT", col("san_pham.id")), "so_san_pham"]],
+      },
+      group: ["DanhMuc.id"],
+      subQuery: false,
     });
 
     const danhMucIds = rows.map((r) => r.getDataValue("id"));
@@ -66,12 +54,10 @@ export async function GET(req: NextRequest) {
     const loaiMaps = await DanhMucLoaiTuyChonModel.findAll({
       where: { id_danh_muc: danhMucIds },
     });
-
     const loaiIds = loaiMaps.map((m) => m.getDataValue("id_loai_tuy_chon"));
     const loaiList = loaiIds.length
       ? await LoaiTuyChonModel.findAll({ where: { id: loaiIds } })
       : [];
-
     const loaiByDanhMuc: Record<number, ILoaiTuyChon[]> = {};
     loaiMaps.forEach((m) => {
       const dmId = m.getDataValue("id_danh_muc");
@@ -87,12 +73,10 @@ export async function GET(req: NextRequest) {
     const monMaps = await DanhMucMonThemModel.findAll({
       where: { id_danh_muc: danhMucIds },
     });
-
     const monIds = monMaps.map((m) => m.getDataValue("id_mon_them"));
     const monList = monIds.length
       ? await MonThemModel.findAll({ where: { id: monIds } })
       : [];
-
     const monByDanhMuc: Record<number, IMonThem[]> = {};
     monMaps.forEach((m) => {
       const dmId = m.getDataValue("id_danh_muc");
@@ -104,11 +88,13 @@ export async function GET(req: NextRequest) {
       monByDanhMuc[dmId].push(mon.toJSON() as IMonThem);
     });
 
-    const data: IDanhMuc[] = rows.map((row) => {
-      const raw = row.toJSON() as IDanhMuc & { an_hien: number | boolean };
+    // Map dữ liệu trả về
+    const data: IDanhMuc[] = (rows as any[]).map((row) => {
+      const raw = row.toJSON() as DanhMucRaw;
       return {
         ...raw,
         an_hien: Boolean(raw.an_hien),
+        so_san_pham: Number(raw.so_san_pham ?? 0),
         loai_tuy_chon: loaiByDanhMuc[raw.id] ?? [],
         mon_them: monByDanhMuc[raw.id] ?? [],
       };
@@ -117,8 +103,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       data,
-      totalItems: count,
-      totalPages: Math.ceil(count / limit),
+      totalItems: count.length ?? 0,
+      totalPages: Math.ceil((count.length ?? 0) / limit),
       currentPage: page,
     });
   } catch (err) {
@@ -130,7 +116,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ================= POST =================
+// ========================= POST =========================
 export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
@@ -144,22 +130,13 @@ export async function POST(req: NextRequest) {
 
     const slug = (form.get("slug") as string) ?? "";
     const thu_tu = Number(form.get("thu_tu") ?? 0);
-    const so_san_pham = Number(form.get("so_san_pham") ?? 0);
     const an_hien = form.get("an_hien") === "1";
-    const file = form.get("hinh") as File | null;
-
-    let hinh: string | null = null;
-    if (file && file.size > 0) {
-      hinh = await uploadImage(file); // ✅ KHÔNG TIMEOUT
-    }
 
     const dm = await DanhMucModel.create({
       ten,
       slug,
       thu_tu,
-      so_san_pham,
       an_hien: an_hien ? 1 : 0,
-      hinh,
     });
 
     const danhMucId = dm.getDataValue("id");
