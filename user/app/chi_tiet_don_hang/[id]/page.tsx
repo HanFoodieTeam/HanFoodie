@@ -123,12 +123,18 @@ export default function ChiTietDonHangPage() {
 
   // gửi đánh giá (FormData, nhiều ảnh)
    async function guiDanhGia(sp: IChiTietDonHangMoRong) {
-    const form = reviewForm[sp.id];
-    if (!form?.noi_dung.trim()) {
-      toast.error("Vui lòng nhập nội dung đánh giá");
-      return;
-    }
+  const form = reviewForm[sp.id];
+  if (!form?.noi_dung.trim()) {
+    toast.error("Vui lòng nhập nội dung đánh giá");
+    return;
+  }
 
+  // ⛔ chặn gửi lại
+  if (form.daDanhGia || dangGuiDanhGia[sp.id]) return;
+
+  setDangGuiDanhGia((prev) => ({ ...prev, [sp.id]: true }));
+
+  try {
     const token = localStorage.getItem("token");
     if (!token || !user) {
       toast.error("Bạn chưa đăng nhập");
@@ -144,7 +150,6 @@ export default function ChiTietDonHangPage() {
     if (sp.bien_the?.san_pham?.id)
       fd.append("id_san_pham", String(sp.bien_the.san_pham.id));
 
-    // nhiều ảnh
     (anhReview[sp.id] ?? []).forEach((f) => fd.append("hinh", f));
 
     const res = await fetch("/api/danh_gia", {
@@ -154,7 +159,6 @@ export default function ChiTietDonHangPage() {
     });
 
     const data = await res.json();
-
     if (!res.ok) {
       toast.error(data.message || "Lỗi gửi đánh giá");
       return;
@@ -166,15 +170,18 @@ export default function ChiTietDonHangPage() {
       ...prev,
       [sp.id]: { ...prev[sp.id], daDanhGia: true },
     }));
-    setAnhReview((prev) => ({ ...prev, [sp.id]: [] }));
-  }
 
-  function handleFilesChange(spId: number, files: FileList | null) {
-    setAnhReview((prev) => ({
-      ...prev,
-      [spId]: files ? Array.from(files) : [],
-    }));
+    setAnhReview((prev) => ({ ...prev, [sp.id]: [] }));
+  } finally {
+    setDangGuiDanhGia((prev) => ({ ...prev, [sp.id]: false }));
   }
+}
+function handleFilesChange(spId: number, files: FileList | null) {
+  setAnhReview((prev) => ({
+    ...prev,
+    [spId]: files ? Array.from(files) : [],
+  }));
+}
 
   // Trạng thái timeline
 type TrangThaiTimeline =
@@ -281,6 +288,7 @@ const trangThaiSteps: { label: string; key: TrangThaiTimeline }[] = [
 
   const form = reviewForm[sp.id];
   const daDanhGia = form?.daDanhGia ?? false;
+  const dangGui = dangGuiDanhGia[sp.id] ?? false;
 
 
   return (
@@ -434,19 +442,24 @@ const trangThaiSteps: { label: string; key: TrangThaiTimeline }[] = [
 
 
                 <button
-                  disabled={daDanhGia}
+                  disabled={daDanhGia || dangGui}
                   onClick={() => guiDanhGia(sp)}
                   className={`mt-3 px-4 py-2 rounded ${
-                    daDanhGia
+                    daDanhGia || dangGui
                       ? "bg-gray-300 cursor-not-allowed"
                       : "bg-[#6A0A0A] text-white"
                   }`}
                 >
-                  {daDanhGia ? "Đã đánh giá" : "Gửi đánh giá"}
+                  {daDanhGia
+                    ? "Đã đánh giá"
+                    : dangGui
+                    ? "Đang gửi..."
+                    : "Gửi đánh giá"}
                 </button>
 
+
                 </div>
-      )},  
+      )}
     </div>
   );
 })}
