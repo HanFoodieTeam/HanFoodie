@@ -18,7 +18,9 @@ function cleanHetMon(value: string | null): string | null {
   if (!value || value === "0000-00-00") return null;
   return value;
 }
-
+/* ───────────────────────────────
+GET: Lấy chi tiết sản phẩm
+──────────────────────────────── */
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
