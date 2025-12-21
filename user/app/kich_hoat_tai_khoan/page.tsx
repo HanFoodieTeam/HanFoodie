@@ -59,8 +59,7 @@ function KichHoatContent() {
       {isDone && (
         <Link
           href="/"
-          className="mt-5 inline-block text-[#6A0A0A] font-medium underline hover:text-red-700"
-        >
+          className="mt-5 inline-block text-[#6A0A0A] font-medium underline hover:text-red-700">
           Về trang chủ
         </Link>
       )}
