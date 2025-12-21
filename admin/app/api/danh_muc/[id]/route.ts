@@ -1,92 +1,106 @@
-// File: app/api/danh_muc/[id]/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
-import { DanhMucModel } from "@/lib/models";
-import { IDanhMuc } from "@/lib/cautrucdata";
-import { UploadApiResponse, UploadApiErrorResponse, v2 as cloudinary } from "cloudinary";
+import {
+  DanhMucModel,
+  DanhMucLoaiTuyChonModel,
+  DanhMucMonThemModel,
+} from "@/lib/models";
+import { v2 as cloudinary } from "cloudinary";
 
-// ====================== Cloudinary Config ======================
+// ================= Cloudinary =================
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
   api_key: process.env.CLOUDINARY_API_KEY!,
   api_secret: process.env.CLOUDINARY_API_SECRET!,
 });
 
-// ====================== Kiểu dữ liệu DB Raw ======================
-interface RawDanhMuc extends Omit<IDanhMuc, "an_hien"> {
-  an_hien: number | boolean | null;
-}
+// ================= Utils =================
+const toNumber = (id: string) => {
+  const n = Number(id);
+  return Number.isNaN(n) ? null : n;
+};
 
-// ====================== Body PUT ======================
-interface UpdateDanhMucFields {
-  ten: string;
-  slug?: string;
-  thu_tu?: number;
-  so_san_pham?: number;
-  an_hien: boolean;
-  hinh?: string | null;
-}
+const parseIds = (raw: FormDataEntryValue | null): number[] => {
+  if (!raw || typeof raw !== "string") return [];
+  try {
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr)
+      ? arr.map(Number).filter((n) => !Number.isNaN(n))
+      : [];
+  } catch {
+    return [];
+  }
+};
 
-// ====================== Body PATCH ======================
-interface PatchDanhMucBody {
-  an_hien: boolean;
-}
-
-// ====================== UPLOAD CLOUDINARY ======================
-async function uploadToCloudinary(
-  file: File
-): Promise<UploadApiResponse | UploadApiErrorResponse> {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-
+const uploadToCloudinary = async (file: File): Promise<string | null> => {
+  const buffer = Buffer.from(await file.arrayBuffer());
   return new Promise((resolve, reject) => {
     cloudinary.uploader
       .upload_stream({ folder: "danh_muc" }, (err, result) => {
         if (err || !result) reject(err);
-        else resolve(result);
+        else resolve(result.secure_url);
       })
       .end(buffer);
   });
-}
-
-// ====================== Format dữ liệu ======================
-function formatDanhMuc(raw: RawDanhMuc): IDanhMuc {
-  return {
-    id: raw.id,
-    ten: raw.ten,
-    slug: raw.slug,
-    hinh: raw.hinh,
-    thu_tu: raw.thu_tu,
-    so_san_pham: raw.so_san_pham,
-    an_hien: Boolean(raw.an_hien),
-  };
-}
+};
 
 // ====================== GET ======================
 export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
-    const numericId = Number(id);
+    const { id } = await params; // 🔥 BẮT BUỘC
+    const numericId = toNumber(id);
 
-    if (isNaN(numericId))
-      return NextResponse.json({ success: false, message: "ID không hợp lệ" });
+    if (!numericId) {
+      return NextResponse.json(
+        { success: false, message: "ID không hợp lệ" },
+        { status: 400 }
+      );
+    }
 
-    const dm = await DanhMucModel.findByPk(numericId);
-    if (!dm)
+    const dm = await DanhMucModel.findByPk(numericId, {
+      include: [
+        {
+          model: DanhMucLoaiTuyChonModel,
+          as: "loai_tuy_chon_map",
+          attributes: ["id_loai_tuy_chon"],
+        },
+        {
+          model: DanhMucMonThemModel,
+          as: "mon_them_map",
+          attributes: ["id_mon_them"],
+        },
+      ],
+    });
+
+    if (!dm) {
       return NextResponse.json(
         { success: false, message: "Không tìm thấy danh mục" },
         { status: 404 }
       );
+    }
+
+    const raw: any = dm.toJSON();
 
     return NextResponse.json({
       success: true,
-      data: formatDanhMuc(dm.toJSON() as RawDanhMuc),
+      data: {
+        id: raw.id,
+        ten: raw.ten,
+        slug: raw.slug,
+        hinh: raw.hinh,
+        thu_tu: raw.thu_tu,
+        so_san_pham: raw.so_san_pham ?? 0,
+        an_hien: Boolean(raw.an_hien),
+        loai_tuy_chon_ids:
+          raw.loai_tuy_chon_map?.map((i: any) => i.id_loai_tuy_chon) ?? [],
+        mon_them_ids:
+          raw.mon_them_map?.map((i: any) => i.id_mon_them) ?? [],
+      },
     });
   } catch (err) {
-    console.error("GET danh_muc lỗi:", err);
+    console.error("GET danh_muc error:", err);
     return NextResponse.json(
       { success: false, message: "Lỗi server" },
       { status: 500 }
@@ -97,141 +111,86 @@ export async function GET(
 // ====================== PUT ======================
 export async function PUT(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
-    const numericId = Number(id);
+    const { id } = await params; // 🔥
+    const numericId = toNumber(id);
 
-    if (isNaN(numericId))
-      return NextResponse.json({ success: false, message: "ID không hợp lệ" });
+    if (!numericId) {
+      return NextResponse.json(
+        { success: false, message: "ID không hợp lệ" },
+        { status: 400 }
+      );
+    }
 
     const dm = await DanhMucModel.findByPk(numericId);
-    if (!dm)
+    if (!dm) {
       return NextResponse.json(
         { success: false, message: "Không tìm thấy danh mục" },
         { status: 404 }
       );
+    }
 
     const form = await req.formData();
-
     const ten = form.get("ten");
-    if (typeof ten !== "string")
+
+    if (typeof ten !== "string" || !ten.trim()) {
       return NextResponse.json(
-        { success: false, message: "Thiếu tên danh mục" },
+        { success: false, message: "Tên danh mục không hợp lệ" },
         { status: 400 }
       );
+    }
 
-    const fields: UpdateDanhMucFields = {
-      ten,
-      slug: typeof form.get("slug") === "string" ? String(form.get("slug")) : undefined,
-      thu_tu: typeof form.get("thu_tu") === "string" ? Number(form.get("thu_tu")) : undefined,
-      so_san_pham: typeof form.get("so_san_pham") === "string" ? Number(form.get("so_san_pham")) : undefined,
-      an_hien: form.get("an_hien") === "1",
-    };
+    const an_hien = form.get("an_hien") === "1";
+    const loai_tuy_chon_ids = parseIds(form.get("loai_tuy_chon_ids"));
+    const mon_them_ids = parseIds(form.get("mon_them_ids"));
 
     let finalImage = dm.getDataValue("hinh") as string | null;
-
-    // Nếu có file → upload Cloudinary
     const file = form.get("hinh");
-    if (file instanceof File && file.size > 0) {
-      const uploadResult = await uploadToCloudinary(file);
 
-      if ("secure_url" in uploadResult) {
-        finalImage = uploadResult.secure_url;
-      }
+    if (file instanceof File && file.size > 0) {
+      finalImage = await uploadToCloudinary(file);
     }
 
     await dm.update({
-      ...fields,
+      ten,
+      slug: typeof form.get("slug") === "string" ? form.get("slug") : null,
+      thu_tu: Number(form.get("thu_tu")) || 0,
+      so_san_pham: Number(form.get("so_san_pham")) || 0,
+      an_hien: an_hien ? 1 : 0,
       hinh: finalImage,
-      an_hien: fields.an_hien ? 1 : 0,
     });
 
-    return NextResponse.json({
-      success: true,
-      message: "Cập nhật thành công",
-      data: formatDanhMuc(dm.toJSON() as RawDanhMuc),
+    await DanhMucLoaiTuyChonModel.destroy({
+      where: { id_danh_muc: numericId },
     });
-  } catch (err) {
-    console.error("PUT danh_muc lỗi:", err);
-    return NextResponse.json(
-      { success: false, message: "Lỗi server" },
-      { status: 500 }
-    );
-  }
-}
 
-// ====================== PATCH ======================
-export async function PATCH(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await context.params;
-    const numericId = Number(id);
-
-    if (isNaN(numericId))
-      return NextResponse.json({ success: false, message: "ID không hợp lệ" });
-
-    const body = (await req.json()) as PatchDanhMucBody;
-
-    if (typeof body.an_hien !== "boolean")
-      return NextResponse.json(
-        { success: false, message: "an_hien phải là boolean" },
-        { status: 400 }
+    if (loai_tuy_chon_ids.length) {
+      await DanhMucLoaiTuyChonModel.bulkCreate(
+        loai_tuy_chon_ids.map((id) => ({
+          id_danh_muc: numericId,
+          id_loai_tuy_chon: id,
+        }))
       );
+    }
 
-    const dm = await DanhMucModel.findByPk(numericId);
-    if (!dm)
-      return NextResponse.json(
-        { success: false, message: "Không tìm thấy danh mục" },
-        { status: 404 }
-      );
-
-    await dm.update({ an_hien: body.an_hien ? 1 : 0 });
-
-    return NextResponse.json({
-      success: true,
-      message: "Cập nhật trạng thái thành công",
-      data: { id: numericId, an_hien: body.an_hien },
+    await DanhMucMonThemModel.destroy({
+      where: { id_danh_muc: numericId },
     });
-  } catch (err) {
-    console.error("PATCH danh_muc lỗi:", err);
-    return NextResponse.json(
-      { success: false, message: "Lỗi server" },
-      { status: 500 }
-    );
-  }
-}
 
-// ====================== DELETE ======================
-export async function DELETE(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await context.params;
-    const numericId = Number(id);
-
-    if (isNaN(numericId))
-      return NextResponse.json({ success: false, message: "ID không hợp lệ" });
-
-    const dm = await DanhMucModel.findByPk(numericId);
-    if (!dm)
-      return NextResponse.json(
-        { success: false, message: "Không tìm thấy danh mục" },
-        { status: 404 }
+    if (mon_them_ids.length) {
+      await DanhMucMonThemModel.bulkCreate(
+        mon_them_ids.map((id) => ({
+          id_danh_muc: numericId,
+          id_mon_them: id,
+        }))
       );
+    }
 
-    await dm.destroy();
-
-    return NextResponse.json({
-      success: true,
-      message: "Xóa danh mục thành công",
-    });
+    return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("DELETE danh_muc lỗi:", err);
+    console.error("PUT danh_muc error:", err);
     return NextResponse.json(
       { success: false, message: "Lỗi server" },
       { status: 500 }

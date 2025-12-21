@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
+import SuaBaiVietEditor from "../SuaBaiVietEditor";
+
 interface IBaiViet {
   id: number;
   tieu_de: string;
@@ -178,14 +180,13 @@ export default function SuaBaiViet() {
         {/* Nội dung */}
         <div className="md:col-span-2">
           <label className="block mb-1 font-medium text-gray-700">Nội dung</label>
-          <textarea
-            name="noi_dung"
+
+          <SuaBaiVietEditor
             value={form.noi_dung}
-            onChange={handleChange}
-            rows={6}
-            className="border border-gray-300 p-2 rounded w-full"
+            onChange={(content) => setForm((prev) => ({ ...prev, noi_dung: content }))}
           />
         </div>
+
 
         {/* Upload hình */}
         <div>
