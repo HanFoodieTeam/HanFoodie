@@ -283,7 +283,7 @@ export default function TrangGioHang() {
   if (loading)
     return (
       <div
-        className="pt-[80px] text-center py-16 text-gray-500"
+        className="pt-[80px] h-[700px] text-center py-16 text-gray-500"
         style={{ "--header-h": "72px" } as React.CSSProperties}>
         Đang tải giỏ hàng...
       </div>
