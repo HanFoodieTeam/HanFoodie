@@ -63,7 +63,7 @@ export function orderEmailTemplate({
           </tr>
       </table>
 
-      <p style="margin-top: 20px; font-size: 13px; text-align: center; color: #888;">
+      <p style="margin-top: 15px; font-size: 13px; text-align: center; color: #888;">
           Cảm ơn bạn đã mua hàng tại HanFoodie 
       </p>
   </div>

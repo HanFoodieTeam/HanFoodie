@@ -47,7 +47,8 @@ export default function TrangGioHang() {
   const [showThongTin, setShowThongTin] = useState(false);
 
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
-
+  const [monThemMap, setMonThemMap] = useState<
+    Record<number, IMonThem[]>>({});
 
 
   //  Lấy giỏ hàng
@@ -69,6 +70,29 @@ export default function TrangGioHang() {
 
       const data: IGioHang[] = await res.json();
       setGioHang(data);
+
+      const uniqueProductIds = Array.from(
+        new Set(
+          data
+            .map((i) => i.bien_the?.san_pham?.id)
+            .filter(Boolean)
+        )
+      ) as number[];
+
+      const map: Record<number, IMonThem[]> = {};
+
+      await Promise.all(
+        uniqueProductIds.map(async (id) => {
+          const res = await fetch(`/api/chi_tiet/${id}`, { cache: "no-store" });
+          if (!res.ok) return;
+
+          const detail = await res.json();
+          map[id] = detail.mon_them ?? [];
+        })
+      );
+
+      setMonThemMap(map);
+
       setCount(data.length);
     } catch (error) {
       console.error("Lỗi tải giỏ hàng:", error);
@@ -76,6 +100,8 @@ export default function TrangGioHang() {
     } finally {
       setLoading(false);
     }
+
+
   };
 
   useEffect(() => {
@@ -89,8 +115,20 @@ export default function TrangGioHang() {
       .reduce((sum, item) => {
         const giaGoc = item.bien_the?.san_pham?.gia_goc ?? 0;
         const giaThem = item.bien_the?.gia_them ?? 0;
+
         const monThemSum =
-          item.json_mon_them?.reduce((s, m) => s + (m.gia_them ?? 0), 0) ?? 0;
+          item.json_mon_them?.reduce((s, m) => {
+            const spId = item.bien_the?.san_pham?.id;
+            if (!spId) return s;
+
+            const current = monThemMap[spId]?.find((x) => x.id === m.id);
+            if (!current) return s;
+            if (isHetMonByDate(current.het_mon)) return s;
+
+            return s + (m.gia_them ?? 0);
+          }, 0) ?? 0;
+
+
         const soLuong = item.so_luong ?? 1;
         return sum + (giaGoc + giaThem + monThemSum) * soLuong;
       }, 0);
@@ -144,7 +182,6 @@ export default function TrangGioHang() {
     }
   };
 
-  //  Xóa sản phẩm
   const removeItem = async (id: number) => {
     if (!confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
     try {
@@ -163,7 +200,6 @@ export default function TrangGioHang() {
     }
   };
 
-  //  Chỉnh sửa món
   const handleEdit = async (item: IGioHang) => {
     try {
       const sp = item.bien_the?.san_pham;
@@ -241,6 +277,8 @@ export default function TrangGioHang() {
     return hetMonDate >= today;
   }
 
+
+
   //  Loading
   if (loading)
     return (
@@ -277,11 +315,20 @@ export default function TrangGioHang() {
                 const isHetMon = isHetMonByDate(sp?.het_mon);
                 const giaGoc = sp?.gia_goc ?? 0;
                 const giaThem = item.bien_the?.gia_them ?? 0;
+
                 const monThemSum =
-                  item.json_mon_them?.reduce(
-                    (s, m) => s + (m.gia_them ?? 0),
-                    0
-                  ) ?? 0;
+                  item.json_mon_them?.reduce((s, m) => {
+                    const spId = item.bien_the?.san_pham?.id;
+                    if (!spId) return s;
+
+                    const current = monThemMap[spId]?.find((x) => x.id === m.id);
+                    if (!current) return s;
+
+                    if (isHetMonByDate(current.het_mon)) return s;
+
+                    return s + (m.gia_them ?? 0);
+                  }, 0) ?? 0;
+
                 const tong =
                   (giaGoc + giaThem + monThemSum) * (item.so_luong ?? 1);
                 const checked = selectedItems.includes(item.id);
@@ -327,11 +374,22 @@ export default function TrangGioHang() {
                           </p>
                         )}
 
-                      {item.json_mon_them?.length ? (
-                        <p className="text-sm text-gray-600">
-                          {item.json_mon_them.map((m) => m.ten).join(", ")}
-                        </p>
-                      ) : null}
+                      {item.json_mon_them && item.json_mon_them.length > 0 && (
+                        <div className="text-sm text-gray-600">
+                          {item.json_mon_them
+                            .filter((m) => {
+                              const spId = item.bien_the?.san_pham?.id;
+                              if (!spId) return false;
+
+                              const current = monThemMap[spId]?.find((x) => x.id === m.id);
+                              if (!current) return false;
+
+                              return !isHetMonByDate(current.het_mon);
+                            })
+                            .map((m) => m.ten)
+                            .join(", ")}
+                        </div>
+                      )}
 
                       {isHetMon ? (
                         <div className="mt-1 text-sm font-semibold text-red-600 pointer-events-auto">
