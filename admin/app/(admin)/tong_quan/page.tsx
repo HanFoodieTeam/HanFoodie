@@ -71,7 +71,10 @@ export default function TongQuanPage() {
         ...(to && { to }),
       });
 
-      const res = await fetch(`/api/thong_ke/tong_quan?${params.toString()}`);
+      const res = await fetch(
+        `${window.location.origin}/api/thong_ke/tong_quan?${params.toString()}`
+      );
+
       if (!res.ok) throw new Error("fetch error");
 
       const json = await res.json();
@@ -104,8 +107,8 @@ export default function TongQuanPage() {
     filter === "thang"
       ? d.thang ?? ""
       : filter === "nam"
-      ? d.nam ?? ""
-      : d.ngay ?? ""
+        ? d.nam ?? ""
+        : d.ngay ?? ""
   );
 
   const chartData = {

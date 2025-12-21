@@ -49,39 +49,22 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params; // 🔥 BẮT BUỘC
+    const { id } = await params;
     const numericId = toNumber(id);
-
-    if (!numericId) {
-      return NextResponse.json(
-        { success: false, message: "ID không hợp lệ" },
-        { status: 400 }
-      );
-    }
+    if (!numericId)
+      return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
 
     const dm = await DanhMucModel.findByPk(numericId, {
       include: [
-        {
-          model: DanhMucLoaiTuyChonModel,
-          as: "loai_tuy_chon_map",
-          attributes: ["id_loai_tuy_chon"],
-        },
-        {
-          model: DanhMucMonThemModel,
-          as: "mon_them_map",
-          attributes: ["id_mon_them"],
-        },
+        { model: DanhMucLoaiTuyChonModel, as: "loai_tuy_chon_map", attributes: ["id_loai_tuy_chon"] },
+        { model: DanhMucMonThemModel, as: "mon_them_map", attributes: ["id_mon_them"] },
       ],
     });
 
-    if (!dm) {
-      return NextResponse.json(
-        { success: false, message: "Không tìm thấy danh mục" },
-        { status: 404 }
-      );
-    }
+    if (!dm)
+      return NextResponse.json({ success: false, message: "Không tìm thấy danh mục" }, { status: 404 });
 
-    const raw: any = dm.toJSON();
+    const raw = dm.toJSON() as any;
 
     return NextResponse.json({
       success: true,
@@ -93,18 +76,13 @@ export async function GET(
         thu_tu: raw.thu_tu,
         so_san_pham: raw.so_san_pham ?? 0,
         an_hien: Boolean(raw.an_hien),
-        loai_tuy_chon_ids:
-          raw.loai_tuy_chon_map?.map((i: any) => i.id_loai_tuy_chon) ?? [],
-        mon_them_ids:
-          raw.mon_them_map?.map((i: any) => i.id_mon_them) ?? [],
+        loai_tuy_chon_ids: raw.loai_tuy_chon_map?.map((i: { id_loai_tuy_chon: number }) => i.id_loai_tuy_chon) ?? [],
+        mon_them_ids: raw.mon_them_map?.map((i: { id_mon_them: number }) => i.id_mon_them) ?? [],
       },
     });
   } catch (err) {
     console.error("GET danh_muc error:", err);
-    return NextResponse.json(
-      { success: false, message: "Lỗi server" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
   }
 }
 
@@ -114,33 +92,19 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params; // 🔥
+    const { id } = await params;
     const numericId = toNumber(id);
-
-    if (!numericId) {
-      return NextResponse.json(
-        { success: false, message: "ID không hợp lệ" },
-        { status: 400 }
-      );
-    }
+    if (!numericId)
+      return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
 
     const dm = await DanhMucModel.findByPk(numericId);
-    if (!dm) {
-      return NextResponse.json(
-        { success: false, message: "Không tìm thấy danh mục" },
-        { status: 404 }
-      );
-    }
+    if (!dm)
+      return NextResponse.json({ success: false, message: "Không tìm thấy danh mục" }, { status: 404 });
 
     const form = await req.formData();
     const ten = form.get("ten");
-
-    if (typeof ten !== "string" || !ten.trim()) {
-      return NextResponse.json(
-        { success: false, message: "Tên danh mục không hợp lệ" },
-        { status: 400 }
-      );
-    }
+    if (typeof ten !== "string" || !ten.trim())
+      return NextResponse.json({ success: false, message: "Tên danh mục không hợp lệ" }, { status: 400 });
 
     const an_hien = form.get("an_hien") === "1";
     const loai_tuy_chon_ids = parseIds(form.get("loai_tuy_chon_ids"));
@@ -148,10 +112,7 @@ export async function PUT(
 
     let finalImage = dm.getDataValue("hinh") as string | null;
     const file = form.get("hinh");
-
-    if (file instanceof File && file.size > 0) {
-      finalImage = await uploadToCloudinary(file);
-    }
+    if (file instanceof File && file.size > 0) finalImage = await uploadToCloudinary(file);
 
     await dm.update({
       ten,
@@ -162,38 +123,56 @@ export async function PUT(
       hinh: finalImage,
     });
 
-    await DanhMucLoaiTuyChonModel.destroy({
-      where: { id_danh_muc: numericId },
-    });
-
-    if (loai_tuy_chon_ids.length) {
+    await DanhMucLoaiTuyChonModel.destroy({ where: { id_danh_muc: numericId } });
+    if (loai_tuy_chon_ids.length)
       await DanhMucLoaiTuyChonModel.bulkCreate(
-        loai_tuy_chon_ids.map((id) => ({
-          id_danh_muc: numericId,
-          id_loai_tuy_chon: id,
-        }))
+        loai_tuy_chon_ids.map((id) => ({ id_danh_muc: numericId, id_loai_tuy_chon: id }))
       );
-    }
 
-    await DanhMucMonThemModel.destroy({
-      where: { id_danh_muc: numericId },
-    });
-
-    if (mon_them_ids.length) {
+    await DanhMucMonThemModel.destroy({ where: { id_danh_muc: numericId } });
+    if (mon_them_ids.length)
       await DanhMucMonThemModel.bulkCreate(
-        mon_them_ids.map((id) => ({
-          id_danh_muc: numericId,
-          id_mon_them: id,
-        }))
+        mon_them_ids.map((id) => ({ id_danh_muc: numericId, id_mon_them: id }))
       );
-    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("PUT danh_muc error:", err);
-    return NextResponse.json(
-      { success: false, message: "Lỗi server" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
+  }
+}
+
+// ====================== PATCH ======================
+// Chỉ toggle an_hien
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const numericId = toNumber(id);
+    if (!numericId)
+      return NextResponse.json({ success: false, message: "ID không hợp lệ" }, { status: 400 });
+
+    const body = await req.json();
+    if (typeof body.an_hien !== "boolean")
+      return NextResponse.json({ success: false, message: "an_hien phải là boolean" }, { status: 400 });
+
+    const dm = await DanhMucModel.findByPk(numericId);
+    if (!dm)
+      return NextResponse.json({ success: false, message: "Không tìm thấy danh mục" }, { status: 404 });
+
+    await dm.update({ an_hien: body.an_hien ? 1 : 0 });
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: dm.getDataValue("id"),
+        an_hien: Boolean(dm.getDataValue("an_hien")),
+      },
+    });
+  } catch (err) {
+    console.error("PATCH danh_muc error:", err);
+    return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
   }
 }

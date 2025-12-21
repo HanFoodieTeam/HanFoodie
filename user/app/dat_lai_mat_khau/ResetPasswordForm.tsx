@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ export default function ResetPasswordForm() {
 
   const [token, setToken] = useState<string>("");
   const [matKhauMoi, setMatKhauMoi] = useState<string>("");
+  const [nhapLaiMatKhau, setNhapLaiMatKhau] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
 
@@ -22,6 +23,16 @@ export default function ResetPasswordForm() {
 
     if (!token) {
       setMessage("Token không hợp lệ");
+      return;
+    }
+
+    if (!matKhauMoi || !nhapLaiMatKhau) {
+      setMessage("Vui lòng nhập đủ mật khẩu");
+      return;
+    }
+
+    if (matKhauMoi !== nhapLaiMatKhau) {
+      setMessage("Mật khẩu nhập lại không khớp");
       return;
     }
 
@@ -54,7 +65,7 @@ export default function ResetPasswordForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-4 p-6 max-w-md mx-auto mt-20"
+      className="flex flex-col gap-4 p-8 max-w-md mx-auto my-5 bg-white rounded-xl shadow-lg"
     >
       <h2 className="text-2xl font-bold text-center mb-4">Đặt lại mật khẩu</h2>
 
@@ -64,7 +75,16 @@ export default function ResetPasswordForm() {
         value={matKhauMoi}
         onChange={(e) => setMatKhauMoi(e.target.value)}
         required
-        className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0A0A]"
+        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0A0A]"
+      />
+
+      <input
+        type="password"
+        placeholder="Nhập lại mật khẩu"
+        value={nhapLaiMatKhau}
+        onChange={(e) => setNhapLaiMatKhau(e.target.value)}
+        required
+        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0A0A]"
       />
 
       <button
