@@ -48,7 +48,6 @@
 //     );
 //   }
 // }
-
 // // =====================
 // // POST TẠO ĐÁNH GIÁ
 // // =====================
@@ -68,7 +67,9 @@
 //       ? Number(form.get("id_san_pham"))
 //       : undefined;
 
+//     // =====================
 //     // VALIDATION
+//     // =====================
 //     if (!id_nguoi_dung)
 //       return NextResponse.json(
 //         { success: false, message: "Bạn cần đăng nhập để đánh giá." },
@@ -81,23 +82,15 @@
 //         { status: 400 }
 //       );
 
-//     // ===========================
-//     // LẤY FILE — CHỈ 1 FILE
-//     // ===========================
-//     const hinhFile = form.get("hinh");
-//     let hinhUrl: string | null = null;
-
-//     if (hinhFile instanceof File && hinhFile.size > 0) {
-//       hinhUrl = await uploadHinh(hinhFile);
-//     }
-
-//     // ===========================
+//     // =====================
 //     // XỬ LÝ BIẾN THỂ
-//     // ===========================
+//     // =====================
 //     let bienTheId = id_bien_the;
 
 //     if (!bienTheId && id_san_pham) {
-//       const exist = await BienTheModel.findOne({ where: { id_san_pham } });
+//       const exist = await BienTheModel.findOne({
+//         where: { id_san_pham },
+//       });
 
 //       if (exist) {
 //         bienTheId = Number(exist.getDataValue("id"));
@@ -111,9 +104,36 @@
 //       }
 //     }
 
-//     // ===========================
-//     // TẠO ĐÁNH GIÁ MỚI
-//     // ===========================
+//     // =====================
+//     // CHECK ĐÃ ĐÁNH GIÁ CHƯA
+//     // =====================
+//     const daDanhGia = await DanhGiaModel.findOne({
+//       where: {
+//         id_nguoi_dung,
+//         id_bien_the: bienTheId ?? null,
+//       },
+//     });
+
+//     if (daDanhGia) {
+//       return NextResponse.json(
+//         { success: false, message: "Sản phẩm này đã được đánh giá." },
+//         { status: 400 }
+//       );
+//     }
+
+//     // =====================
+//     // UPLOAD HÌNH (1 FILE)
+//     // =====================
+//     const hinhFile = form.get("hinh");
+//     let hinhUrl: string | null = null;
+
+//     if (hinhFile instanceof File && hinhFile.size > 0) {
+//       hinhUrl = await uploadHinh(hinhFile);
+//     }
+
+//     // =====================
+//     // TẠO ĐÁNH GIÁ
+//     // =====================
 //     const newDanhGia = await DanhGiaModel.create({
 //       noi_dung,
 //       sao,
@@ -121,23 +141,28 @@
 //       id_bien_the: bienTheId ?? null,
 //       thoi_gian: new Date(),
 //       an_hien: 1,
-//       hinh: hinhUrl,   // <-- chỉ 1 hình
-//       json_hinh: null, // <-- không dùng nữa
+//       hinh: hinhUrl,
+//       json_hinh: null,
 //     });
 
 //     return NextResponse.json(
 //       { success: true, data: newDanhGia.toJSON() as IDanhGia },
 //       { status: 201 }
 //     );
-//   } catch (err: unknown) {
-//     const error = err as ErrorWithMessage;
-//     console.error("Lỗi POST /api/danh_gia:", error.message);
-//     return NextResponse.json(
-//       { success: false, message: error.message },
-//       { status: 500 }
-//     );
-//   }
+//       } catch (err: unknown) {
+//         console.error("Lỗi POST /api/danh_gia:", err);
+
+//         const message =
+//           err instanceof Error ? err.message : "Lỗi server không xác định";
+
+//         return NextResponse.json(
+//           { success: false, message },
+//           { status: 500 }
+//         );
+//       }
+
 // }
+
 
 import { NextResponse } from "next/server";
 import type { IDanhGia } from "@/lib/cautrucdata";

@@ -41,7 +41,6 @@ export default function SanPhamPage() {
 function SanPhamContent() {
   const searchParams = useSearchParams();
   const danhMucSlug = searchParams.get("danh_muc");
-  const searchKeyword = searchParams.get("search")?.toLowerCase();
 
   const [dsDanhMuc, setDsDanhMuc] = useState<IDanhMucCoSanPham[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -97,53 +96,6 @@ function SanPhamContent() {
       });
     }
   }, [danhMucSlug, loading]);
-
-  // =================== HÀM LOẠI BỎ DẤU ===================
-  function removeVietnameseTones(str: string) {
-    return str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/Đ/g, "D");
-  }
-
-  useEffect(() => {
-  if (loading) return;
-
-  const rawKeyword = searchParams.get("search")?.trim();
-  if (!rawKeyword) return;
-
-  const keywordNoTone = removeVietnameseTones(rawKeyword.toLowerCase());
-
-  // Ưu tiên: match danh mục trước
-  let targetDanhMuc = dsDanhMuc.find(dm =>
-    (dm.slug && removeVietnameseTones(dm.slug.toLowerCase()) === keywordNoTone) ||
-    removeVietnameseTones(dm.ten.toLowerCase()).includes(keywordNoTone)
-  );
-
-  // Nếu không tìm danh mục, tìm theo sản phẩm
-  if (!targetDanhMuc) {
-    const keywords = keywordNoTone.split(/\s+/);
-
-    targetDanhMuc = dsDanhMuc.find(dm =>
-      dm.san_pham.some(sp => {
-        const spName = removeVietnameseTones(sp.ten.toLowerCase());
-        return keywords.every(k => spName.includes(k));
-      })
-    );
-  }
-
-  if (targetDanhMuc?.slug) {
-    const el = document.getElementById(`danh-muc-${targetDanhMuc.slug}`);
-    if (el) {
-      el.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }
-}, [dsDanhMuc, loading, searchParams]);
-
 
   // ================== TOGGLE YÊU THÍCH ==================
   const toggleFavorite = async (id_san_pham: number) => {
@@ -221,6 +173,7 @@ function SanPhamContent() {
 
                       <button
                         onClick={() => toggleFavorite(sp.id)}
+                        aria-label={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
                         className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
                       >
                         <Heart
@@ -232,6 +185,7 @@ function SanPhamContent() {
                           }
                         />
                       </button>
+
                     </div>
 
                     <Link href={`/chi_tiet/${sp.id}`} className="block p-4">
