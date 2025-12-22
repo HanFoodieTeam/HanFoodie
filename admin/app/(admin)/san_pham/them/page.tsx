@@ -310,7 +310,7 @@ useEffect(() => {
 
             <div className="border rounded-lg p-2">
               <TinyMCEEditor
-                apiKey="b0ltf47z16t202dzee5j66umb4r9m5ypez273jxv802r6t8n"
+                apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
                 value={form.mo_ta ?? ""}
                 onEditorChange={(content) =>
                   setForm((prev) => ({
