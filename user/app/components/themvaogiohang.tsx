@@ -183,23 +183,73 @@ const tuy_chon = (data.tuy_chon ?? [])
     }
   };
 
-  const handleBuyNow = () => {
-    const userRaw = localStorage.getItem("nguoi_dung");
-    if (!userRaw) {
-      onClose();
-      onActionRequest(() => handleBuyNow());
-      return onRequireLogin("buy");
-    }
+ const handleBuyNow = () => {
+  // 1. Kiểm tra đăng nhập
+  const userRaw = localStorage.getItem("nguoi_dung");
+  if (!userRaw) {
+    onClose();
+    onActionRequest(() => handleBuyNow());
+    return onRequireLogin("buy");
+  }
 
-    const user = JSON.parse(userRaw);
+  const user = JSON.parse(userRaw);
 
-    if (user.kich_hoat === false) {
-      setShowVerifyPopup(true);
-      return;
-    }
+  // 2. Kiểm tra kích hoạt tài khoản
+  if (user.kich_hoat === 0 || user.kich_hoat === false) {
+    setShowVerifyPopup(true);
+    return;
+  }
 
-    window.location.href = "/dat_hang";
-  };
+  // 3. Lấy biến thể đang chọn
+  const bienTheSelected = bien_the.find(
+    (b) => b.id === selectedBienThe
+  );
+
+  if (!bienTheSelected) {
+    alert("Vui lòng chọn biến thể sản phẩm");
+    return;
+  }
+
+  // 4. Build đơn hàng tạm (MUA NGAY)
+  const donHangTam = [
+    {
+      id: Date.now(),          // ✅ id cho UI (React key)
+      id_gio_hang: null,       // ✅ mua ngay
+      so_luong: qty,
+      bien_the: {
+        ...bienTheSelected,
+        // ⚠️ RẤT QUAN TRỌNG: thêm san_pham để trang /dat_hang tính giá
+        san_pham: {
+          ten: san_pham.ten,
+          hinh: san_pham.hinh,
+          gia_goc: san_pham.gia_goc,
+        },
+      },
+      json_mon_them: selectedMonThem
+        .map((id) => {
+          const m = mon_them.find((x) => x.id === id);
+          return m
+            ? { ten: m.ten, gia_them: m.gia_them }
+            : null;
+        })
+        .filter(Boolean),
+      json_tuy_chon: Object.fromEntries(
+        Object.entries(selectedTuyChon).map(([loaiId, tcId]) => {
+          const loai = tuy_chon.find((l) => l.id === Number(loaiId));
+          const tc = loai?.tuy_chon?.find((t) => t.id === tcId);
+          return [loai?.ten ?? "", tc?.ten ?? ""];
+        })
+      ),
+    },
+  ];
+
+  // 5. Lưu vào localStorage
+  localStorage.setItem("donHangTam", JSON.stringify(donHangTam));
+
+  // 6. Điều hướng sang trang đặt hàng
+  window.location.href = "/dat_hang";
+};
+
 
   /* ================== UI (GIỮ NGUYÊN) ================== */
   return (
