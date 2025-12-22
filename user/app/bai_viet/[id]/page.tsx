@@ -30,7 +30,8 @@ export default function BaiVietChiTietPage() {
         }
 
         setBaiViet({ ...json.data, luot_xem: luotXemMoi });
-        if (json.related && Array.isArray(json.related)) setRelatedBaiViet(json.related.slice(0, 4));
+        if (json.related && Array.isArray(json.related))
+          setRelatedBaiViet(json.related.slice(0, 4));
       } catch (err) {
         console.error(err);
       } finally {
@@ -41,19 +42,29 @@ export default function BaiVietChiTietPage() {
     fetchChiTiet();
   }, [params.id]);
 
-  if (loading) return <div className="p-6 text-center text-gray-500">Đang tải bài viết...</div>;
-  if (!baiViet) return <div className="p-6 text-center text-gray-500">Bài viết không tồn tại</div>;
+  if (loading)
+    return (
+      <div className="px-4 py-10 text-center text-gray-500">
+        Đang tải bài viết...
+      </div>
+    );
+
+  if (!baiViet)
+    return (
+      <div className="px-4 py-10 text-center text-gray-500">
+        Bài viết không tồn tại
+      </div>
+    );
 
   return (
-    <main className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-
+    <main className="bg-gray-50 min-h-screen py-8 md:py-12 px-4 md:px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         {/* Cột trái: Chi tiết bài viết */}
-        <div className="lg:col-span-2 flex flex-col gap-6 pr-6 lg:pr-0">
-          <div className="flex items-start gap-6">
-            {/* Hình lớn bên trái */}
+        <div className="md:col-span-2 flex flex-col gap-6 md:pr-6">
+          <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
+            {/* Hình lớn */}
             {baiViet.hinh && (
-              <div className="relative w-48 h-48 flex-shrink-0 rounded-lg overflow-hidden shadow-sm">
+              <div className="relative w-full md:w-48 h-48 flex-shrink-0 rounded-lg overflow-hidden shadow-sm">
                 <Image
                   src={baiViet.hinh}
                   alt={baiViet.tieu_de}
@@ -64,9 +75,9 @@ export default function BaiVietChiTietPage() {
               </div>
             )}
 
-            {/* Tiêu đề bên phải */}
+            {/* Tiêu đề */}
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-[#6A0A0A] mb-2">
+              <h1 className="text-xl md:text-2xl font-bold text-[#6A0A0A] mb-2">
                 {baiViet.tieu_de}
               </h1>
               {baiViet.ngay_dang && (
@@ -78,21 +89,22 @@ export default function BaiVietChiTietPage() {
           </div>
 
           {/* Nội dung bài viết */}
-          <article className="prose prose-lg max-w-full text-gray-800">
+          <article className="prose prose-base md:prose-lg max-w-full text-gray-800">
             <div dangerouslySetInnerHTML={{ __html: baiViet.noi_dung }} />
           </article>
 
-          <p className="text-sm text-gray-500 font-medium mt-4">
+          <p className="text-sm text-gray-500 font-medium mt-2 md:mt-4">
             Lượt xem: {baiViet.luot_xem}
           </p>
         </div>
 
-        {/* Cột phải: Sidebar bài viết liên quan */}
+        {/* Cột phải: Bài viết liên quan */}
         {relatedBaiViet.length > 0 && (
-          <aside className="lg:col-span-1 lg:pl-6 lg:border-l lg:border-gray-300">
-            <h2 className="text-2xl font-semibold text-[#6A0A0A] mb-6">
+          <aside className="md:col-span-1 md:pl-6 md:border-l md:border-gray-300">
+            <h2 className="text-xl md:text-2xl font-semibold text-[#6A0A0A] mb-4 md:mb-6">
               Các bài viết liên quan
             </h2>
+
             <div className="flex flex-col gap-4">
               {relatedBaiViet.map((bv) => (
                 <Link
@@ -100,9 +112,9 @@ export default function BaiVietChiTietPage() {
                   href={`/bai_viet/${bv.id}`}
                   className="group flex border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
                 >
-                  {/* Hình nhỏ bên trái */}
+                  {/* Hình nhỏ */}
                   {bv.hinh ? (
-                    <div className="relative w-24 h-24 flex-shrink-0">
+                    <div className="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
                       <Image
                         src={bv.hinh}
                         alt={bv.tieu_de}
@@ -111,11 +123,12 @@ export default function BaiVietChiTietPage() {
                       />
                     </div>
                   ) : (
-                    <div className="w-24 h-24 flex-shrink-0 bg-gray-100 flex items-center justify-center text-gray-400">
+                    <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-gray-100 flex items-center justify-center text-gray-400">
                       Chưa có ảnh
                     </div>
                   )}
-                  {/* Tiêu đề bên phải */}
+
+                  {/* Tiêu đề */}
                   <div className="p-3 flex-1">
                     <h3 className="text-sm font-semibold line-clamp-2 text-gray-800">
                       {bv.tieu_de}
@@ -128,8 +141,5 @@ export default function BaiVietChiTietPage() {
         )}
       </div>
     </main>
-
-
-
   );
 }

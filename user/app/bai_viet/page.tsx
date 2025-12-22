@@ -35,7 +35,6 @@ export default function BaiVietGrid() {
 
   const limit = 8;
 
-  // Lấy loại bài viết
   useEffect(() => {
     const fetchLoai = async () => {
       try {
@@ -49,7 +48,6 @@ export default function BaiVietGrid() {
     fetchLoai();
   }, []);
 
-  // Lấy bài viết
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -79,32 +77,33 @@ export default function BaiVietGrid() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      {/* Submenu ngang */}
+    <div className="px-4 py-6 md:px-6 max-w-7xl mx-auto">
       {/* Nav danh mục */}
-      <nav className="mb-8 border-b border-gray-300 relative">
-        <div className="flex relative">
+      <nav className="mb-6 md:mb-8 border-b border-gray-300 relative overflow-x-auto md:overflow-visible">
+        <div className="flex relative min-w-max md:min-w-0">
           {/* Indicator */}
           <div
-            className="absolute bottom-0 h-1 bg-[#6A0A0A] transition-all duration-300 rounded"
+            className="hidden md:block absolute bottom-0 h-1 bg-[#6A0A0A] transition-all duration-300 rounded"
             style={{
               width: `${100 / (loaiList.length + 1)}%`,
-              left: `${activeLoai === null
+              left: `${
+                activeLoai === null
                   ? 0
                   : ((loaiList.findIndex((l) => l.id === activeLoai) + 1) *
-                    100) /
-                  (loaiList.length + 1)
-                }%`,
+                      100) /
+                    (loaiList.length + 1)
+              }%`,
             }}
           />
 
           {/* Button Tất cả */}
           <button
             onClick={() => handleSelectLoai(null)}
-            className={`flex-1 py-3 text-center text-sm font-medium transition-colors ${activeLoai === null
+            className={`px-4 md:flex-1 py-3 text-center text-sm font-medium transition-colors whitespace-nowrap ${
+              activeLoai === null
                 ? "bg-[#6A0A0A] text-white font-semibold"
                 : "bg-transparent text-gray-700 hover:text-[#6A0A0A]"
-              }`}
+            }`}
           >
             Tất cả
           </button>
@@ -116,10 +115,11 @@ export default function BaiVietGrid() {
               <button
                 key={loai.id}
                 onClick={() => handleSelectLoai(loai.id)}
-                className={`flex-1 py-3 text-center text-sm font-medium transition-colors ${isActive
+                className={`px-4 md:flex-1 py-3 text-center text-sm font-medium transition-colors whitespace-nowrap ${
+                  isActive
                     ? "bg-[#6A0A0A] text-white font-semibold"
                     : "bg-transparent text-gray-700 hover:text-[#6A0A0A]"
-                  }`}
+                }`}
               >
                 {loai.ten_loai}
               </button>
@@ -128,13 +128,11 @@ export default function BaiVietGrid() {
         </div>
       </nav>
 
-
-
       {/* Lưới bài viết */}
       {loading ? (
         <p className="text-center py-10 text-gray-500">Đang tải...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {baiViets.map((bv) => (
             <Link
               key={bv.id}
@@ -142,7 +140,7 @@ export default function BaiVietGrid() {
               className="block bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 group"
             >
               {bv.hinh ? (
-                <div className="relative w-full h-48">
+                <div className="relative w-full h-40 md:h-48">
                   <Image
                     src={bv.hinh}
                     alt={bv.tieu_de}
@@ -151,18 +149,20 @@ export default function BaiVietGrid() {
                   />
                 </div>
               ) : (
-                <div className="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">
+                <div className="w-full h-40 md:h-48 bg-gray-100 flex items-center justify-center text-gray-400">
                   Chưa có ảnh
                 </div>
               )}
 
               <div className="p-4">
-                <h2 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-[#6A0A0A]">
+                <h2 className="font-semibold text-base md:text-lg mb-2 line-clamp-2 group-hover:text-[#6A0A0A]">
                   {bv.tieu_de}
                 </h2>
                 <div className="flex justify-between text-sm text-gray-500">
                   {bv.ngay_dang && (
-                    <span>{new Date(bv.ngay_dang).toLocaleDateString()}</span>
+                    <span>
+                      {new Date(bv.ngay_dang).toLocaleDateString()}
+                    </span>
                   )}
                   <span>{bv.luot_xem ?? 0} lượt xem</span>
                 </div>
@@ -173,7 +173,7 @@ export default function BaiVietGrid() {
       )}
 
       {/* Phân trang */}
-      <div className="flex justify-center mt-8 gap-2 flex-wrap">
+      <div className="flex justify-center mt-6 md:mt-8 gap-2 flex-wrap">
         <button
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
@@ -186,10 +186,11 @@ export default function BaiVietGrid() {
           <button
             key={num}
             onClick={() => setPage(num)}
-            className={`px-4 py-2 border rounded-md transition ${page === num
-              ? "bg-blue-500 text-white border-blue-500"
-              : "hover:bg-gray-100"
-              }`}
+            className={`px-4 py-2 border rounded-md transition ${
+              page === num
+                ? "bg-blue-500 text-white border-blue-500"
+                : "hover:bg-gray-100"
+            }`}
           >
             {num}
           </button>

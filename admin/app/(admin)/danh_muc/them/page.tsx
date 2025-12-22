@@ -41,10 +41,9 @@ export default function ThemDanhMuc() {
 
   // ================== DROPDOWN STATE ==================
   const [showLoaiTuyChonDropdown, setShowLoaiTuyChonDropdown] = useState(false);
-  const [monThemType, setMonThemType] = useState<0 | 1>(0); // 0=Topping, 1=Món ăn kèm
+  const [monThemType, setMonThemType] = useState<0 | 1>(0);
   const [showMonThemDropdown, setShowMonThemDropdown] = useState(false);
 
-  // Lọc món theo loại
   const filteredMonThem: IMonThem[] = allMonThem.filter(
     (m) => Number(m.loai_mon) === monThemType
   );
@@ -57,17 +56,14 @@ export default function ThemDanhMuc() {
           fetch("/api/loai_tuy_chon"),
           fetch("/api/danh_muc/mon_them"),
         ]);
-
         const loaiJson = await loaiRes.json();
         const monJson = await monRes.json();
-
         setAllLoaiTuyChon(loaiJson.data || []);
         setAllMonThem(monJson.data || []);
       } catch {
         alert("Lỗi tải dữ liệu");
       }
     };
-
     fetchData();
   }, []);
 
@@ -119,7 +115,6 @@ export default function ThemDanhMuc() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ================== VALIDATE ==================
     if (!form.ten.trim()) {
       setError("Tên danh mục không được để trống");
       return;
@@ -143,15 +138,11 @@ export default function ThemDanhMuc() {
         method: "POST",
         body: formData,
       });
-
       const json = await res.json();
-
       if (res.ok && json.success) {
         alert("Thêm danh mục thành công");
         router.push("/danh_muc");
-      } else {
-        alert("Thêm thất bại");
-      }
+      } else alert("Thêm thất bại");
     } catch {
       alert("Lỗi server");
     } finally {
@@ -161,8 +152,10 @@ export default function ThemDanhMuc() {
 
   // ================== UI ==================
   return (
-    <div className="p-6 bg-white rounded-xl shadow-md max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-center">THÊM DANH MỤC</h1>
+    <div className="p-4 md:p-6 bg-white rounded-xl shadow-md max-w-5xl mx-auto">
+      <h1 className="text-xl md:text-2xl font-bold mb-4 text-center">
+        THÊM DANH MỤC
+      </h1>
 
       {error && (
         <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
@@ -172,7 +165,7 @@ export default function ThemDanhMuc() {
 
       <form
         onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5"
       >
         {/* Tên & Slug */}
         <div>
@@ -184,6 +177,7 @@ export default function ThemDanhMuc() {
             className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
           />
         </div>
+
         <div>
           <label className="block mb-1">Slug</label>
           <input
@@ -201,7 +195,7 @@ export default function ThemDanhMuc() {
             type="file"
             accept="image/*"
             onChange={handleUpload}
-            className="border border-gray-300  p-2 rounded w-full"
+            className="border border-gray-300 p-2 rounded w-full"
           />
           {form.hinh && (
             <Image
@@ -223,16 +217,13 @@ export default function ThemDanhMuc() {
             min={0}
             value={form.thu_tu}
             onChange={handleChange}
-            className="border border-gray-300  p-2 rounded w-full"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
-
-
-        {/* Loại tuỳ chọn + Loại món thêm + Món thêm */}
+        {/* Tuỳ chọn & Món thêm */}
         <div className="md:col-span-2 flex flex-col gap-4">
-          <div className="flex gap-4 flex-col md:flex-row">
-            {/* Loại món thêm */}
+          <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <label className="block mb-1">Loại món thêm</label>
               <select
@@ -240,14 +231,13 @@ export default function ThemDanhMuc() {
                 onChange={(e) =>
                   setMonThemType(Number(e.target.value) as 0 | 1)
                 }
-                className="border border-gray-300 p-2 rounded w-full "
+                className="border border-gray-300 p-2 rounded w-full"
               >
                 <option value={0}>Topping</option>
                 <option value={1}>Món ăn kèm</option>
               </select>
             </div>
 
-            {/* Loại tuỳ chọn */}
             <div className="flex-1 relative">
               <label className="block mb-1">Loại tuỳ chọn</label>
               <div
@@ -260,6 +250,7 @@ export default function ThemDanhMuc() {
                   ? `${form.loai_tuy_chon_ids.length} loại đã chọn`
                   : "Chọn loại tuỳ chọn..."}
               </div>
+
               {showLoaiTuyChonDropdown && (
                 <div className="absolute z-10 mt-1 w-full max-h-60 overflow-auto border rounded bg-white shadow-lg p-2">
                   {allLoaiTuyChon.map((l) => (
@@ -278,11 +269,8 @@ export default function ThemDanhMuc() {
                 </div>
               )}
             </div>
-
-
           </div>
 
-          {/* Dropdown món thêm */}
           <div className="relative">
             <label className="block mb-1">Món thêm</label>
             <div
@@ -313,6 +301,7 @@ export default function ThemDanhMuc() {
             )}
           </div>
         </div>
+
         {/* Trạng thái */}
         <div>
           <label className="block mb-1">Trạng thái</label>
@@ -339,11 +328,13 @@ export default function ThemDanhMuc() {
             </label>
           </div>
         </div>
+
         {/* Submit */}
         <div className="md:col-span-2 text-right">
           <button
             disabled={loading}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg shadow-md disabled:opacity-50">
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg shadow-md disabled:opacity-50"
+          >
             {loading ? "Đang lưu..." : "Thêm danh mục"}
           </button>
         </div>
