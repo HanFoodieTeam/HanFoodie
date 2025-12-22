@@ -1,8 +1,6 @@
-// import { NextResponse } from "next/server";
-// import type { IDanhGia } from "@/lib/cautrucdata";
-// import { DanhGiaModel, BienTheModel, NguoiDungModel } from "@/lib/models";
-// import { uploadHinh } from "@/lib/uploadHinh"; // <-- dùng 1 hàm này
 
+<<<<<<< HEAD
+=======
 // export const runtime = "nodejs";
 
 // interface ErrorWithMessage {
@@ -162,6 +160,7 @@
 //       }
 
 // }
+>>>>>>> origin/main
 
 
 import { NextResponse } from "next/server";
