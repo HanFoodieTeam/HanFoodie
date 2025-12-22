@@ -275,9 +275,10 @@ useEffect(() => {
                       <h3 className="font-medium line-clamp-1">
                         {sp.ten}
                       </h3>
-                      <p className="text-sm text-gray-500 truncate">
-                        {sp.mo_ta}
-                      </p>
+                      <div
+                        className="text-sm text-gray-600 line-clamp-2"
+                        dangerouslySetInnerHTML={{ __html: sp.mo_ta || "" }}
+                      />
                     </Link>
 
                     <div className="flex justify-between items-center px-4 pb-4">
