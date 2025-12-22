@@ -139,9 +139,11 @@ const toggleFavorite = async (id: number) => {
                   <h3 className="font-medium text-gray-800 hover:text-[#6A0A0A] line-clamp-1">
                     {sp.ten}
                   </h3>
-                  <p className="text-gray-500 text-sm mt-1 truncate">
-                    {sp.mo_ta}
-                  </p>
+                  <div
+                        className="text-sm text-gray-600 line-clamp-2"
+                        dangerouslySetInnerHTML={{ __html: sp.mo_ta || "" }}
+                      />
+
                 </div>
               </Link>
 
