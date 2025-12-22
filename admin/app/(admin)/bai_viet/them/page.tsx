@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import BaiVietEditor from "../BaiVietEditor";
+
+interface ILoaiBaiViet {
+  id: number;
+  ten_loai: string;
+}
 
 export default function ThemBaiViet() {
   const router = useRouter();
@@ -21,6 +26,26 @@ export default function ThemBaiViet() {
   const [hinhFile, setHinhFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loaiBaiViet, setLoaiBaiViet] = useState<ILoaiBaiViet[]>([]);
+
+  // ================= LOAD LOẠI BÀI VIẾT =================
+  useEffect(() => {
+    const fetchLoaiBaiViet = async () => {
+      try {
+        const res = await fetch("/api/loai_bai_viet");
+        if (!res.ok) throw new Error("Lỗi khi lấy loại bài viết");
+
+        const json = await res.json();
+        // json.data phải là array
+        setLoaiBaiViet(Array.isArray(json.data) ? json.data : []);
+      } catch (err) {
+        console.error(err);
+        setLoaiBaiViet([]);
+      }
+    };
+    fetchLoaiBaiViet();
+  }, []);
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -32,8 +57,8 @@ export default function ThemBaiViet() {
         type === "number"
           ? Number(value)
           : type === "radio"
-          ? value === "true"
-          : value,
+            ? value === "true"
+            : value,
     }));
   };
 
@@ -165,9 +190,15 @@ export default function ThemBaiViet() {
               onChange={handleChange}
               className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
             >
-              <option value={1}>Tin tức</option>
-              <option value={2}>Thông báo</option>
+              {Array.isArray(loaiBaiViet) &&
+                loaiBaiViet.map(loai => (
+                  <option key={loai.id} value={loai.id}>
+                    {loai.ten_loai}
+                  </option>
+                ))}
             </select>
+
+
           </div>
 
           {/* Ngày đăng */}

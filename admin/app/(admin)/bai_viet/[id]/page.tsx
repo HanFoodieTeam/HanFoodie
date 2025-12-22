@@ -5,6 +5,11 @@ import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import SuaBaiVietEditor from "../SuaBaiVietEditor";
 
+interface ILoaiBaiViet {
+  id: number;
+  ten_loai: string;
+}
+
 interface IBaiViet {
   id: number;
   tieu_de: string;
@@ -38,6 +43,26 @@ export default function SuaBaiViet() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loaiBaiViet, setLoaiBaiViet] = useState<ILoaiBaiViet[]>([]);
+
+  // ================= LOAD LOẠI BÀI VIẾT =================
+  useEffect(() => {
+    const fetchLoaiBaiViet = async () => {
+      try {
+        const res = await fetch("/api/loai_bai_viet");
+        if (!res.ok) throw new Error("Lỗi khi lấy loại bài viết");
+
+        const json = await res.json();
+        // json.data phải là array
+        setLoaiBaiViet(Array.isArray(json.data) ? json.data : []);
+      } catch (err) {
+        console.error(err);
+        setLoaiBaiViet([]);
+      }
+    };
+    fetchLoaiBaiViet();
+  }, []);
+
 
   useEffect(() => {
     if (!id) return;
@@ -76,8 +101,8 @@ export default function SuaBaiViet() {
         type === "number"
           ? Number(value)
           : type === "radio"
-          ? value === "true"
-          : value,
+            ? value === "true"
+            : value,
     }));
   };
 
@@ -215,16 +240,22 @@ export default function SuaBaiViet() {
 
           {/* Loại bài viết */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Loại bài viết</label>
+            <label className="block mb-1 font-medium">Loại bài viết</label>
             <select
               name="id_loai_bv"
               value={form.id_loai_bv}
               onChange={handleChange}
-              className="border border-gray-300 p-2 rounded w-full focus:ring-1 focus:ring-blue-400"
+              className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
             >
-              <option value={1}>Tin tức</option>
-              <option value={2}>Thông báo</option>
+              {Array.isArray(loaiBaiViet) &&
+                loaiBaiViet.map(loai => (
+                  <option key={loai.id} value={loai.id}>
+                    {loai.ten_loai}
+                  </option>
+                ))}
             </select>
+
+
           </div>
 
           {/* Ngày đăng */}
