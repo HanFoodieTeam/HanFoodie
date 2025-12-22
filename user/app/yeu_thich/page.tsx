@@ -145,12 +145,12 @@ export default function YeuThichPage() {
           )}
         </section>
 
-        {/* ================= SP HOT ================= */}
+        {/* ================= SP HOT =================
         {spHot.length > 0 && (
           <section>
             <SanPhamHotSection data={spHot} />
           </section>
-        )}
+        )} */}
       </div>
     </main>
   );
