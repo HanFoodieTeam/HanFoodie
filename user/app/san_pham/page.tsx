@@ -6,6 +6,8 @@ import { Heart, Star } from "lucide-react";
 import DanhMucSection from "../components/danhmucsection";
 import { ISanPham, IDanhMuc } from "../../lib/cautrucdata";
 import { useSearchParams } from "next/navigation";
+import { useYeuThich } from "@/app/context/yeuthichcontext";
+
 
 interface IDanhMucCoSanPham extends IDanhMuc {
   san_pham: ISanPham[];
@@ -41,14 +43,13 @@ export default function SanPhamPage() {
 function SanPhamContent() {
   const searchParams = useSearchParams();
   const danhMucSlug = searchParams.get("danh_muc");
-  const searchKeyword = searchParams.get("search")?.toLowerCase();
 
   const [dsDanhMuc, setDsDanhMuc] = useState<IDanhMucCoSanPham[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { reloadYeuThich } = useYeuThich();
 
-  const userId = 1;
 
   // ================== LOAD SẢN PHẨM ==================
   useEffect(() => {
@@ -70,10 +71,16 @@ function SanPhamContent() {
   useEffect(() => {
     async function fetchFavorites() {
       try {
-        const res = await fetch(
-          `/api/yeu_thich?id_nguoi_dung=${userId}`,
-          { cache: "no-store" }
-        );
+        const token = localStorage.getItem("token");
+          if (!token) return;
+
+          const res = await fetch("/api/yeu_thich", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            cache: "no-store",
+          });
+
         const json: { success: boolean; data: IYeuThichItem[] } =
           await res.json();
 
@@ -142,99 +149,68 @@ useEffect(() => {
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/đ/g, "d")
       .replace(/Đ/g, "D");
+
   }
 
-  useEffect(() => {
-  if (loading) return;
+  const isFavorite = favorites.includes(id_san_pham);
 
-  const rawKeyword = searchParams.get("search")?.trim();
-  if (!rawKeyword) return;
-
-  const keywordNoTone = removeVietnameseTones(rawKeyword.toLowerCase());
-
-  // Ưu tiên: match danh mục trước
-  let targetDanhMuc = dsDanhMuc.find(dm =>
-    (dm.slug && removeVietnameseTones(dm.slug.toLowerCase()) === keywordNoTone) ||
-    removeVietnameseTones(dm.ten.toLowerCase()).includes(keywordNoTone)
-  );
-
-  // Nếu không tìm danh mục, tìm theo sản phẩm
-  if (!targetDanhMuc) {
-    const keywords = keywordNoTone.split(/\s+/);
-
-    targetDanhMuc = dsDanhMuc.find(dm =>
-      dm.san_pham.some(sp => {
-        const spName = removeVietnameseTones(sp.ten.toLowerCase());
-        return keywords.every(k => spName.includes(k));
-      })
-    );
-  }
-
-  if (targetDanhMuc?.slug) {
-    const el = document.getElementById(`danh-muc-${targetDanhMuc.slug}`);
-    if (el) {
-      el.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
+  try {
+    if (isFavorite) {
+      await fetch(`/api/yeu_thich?id_san_pham=${id_san_pham}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      setFavorites((prev) => prev.filter((id) => id !== id_san_pham));
+      setToast("Đã xóa khỏi yêu thích");
+    } else {
+      await fetch("/api/yeu_thich", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id_san_pham }),
+      });
+
+      setFavorites((prev) => [...prev, id_san_pham]);
+      setToast("Đã thêm vào yêu thích");
     }
+
+    reloadYeuThich(); // ⭐ CẬP NHẬT HEADER
+    setTimeout(() => setToast(null), 1500);
+  } catch (error) {
+    console.error("Lỗi yêu thích:", error);
   }
-}, [dsDanhMuc, loading, searchParams]);
+};
 
-
-  // ================== TOGGLE YÊU THÍCH ==================
-  const toggleFavorite = async (id_san_pham: number) => {
-    const isFavorite = favorites.includes(id_san_pham);
-
-    try {
-      if (isFavorite) {
-        await fetch(
-          `/api/yeu_thich?id_nguoi_dung=${userId}&id_san_pham=${id_san_pham}`,
-          { method: "DELETE" }
-        );
-        setFavorites((prev) => prev.filter((id) => id !== id_san_pham));
-        setToast("Đã xóa khỏi yêu thích");
-      } else {
-        await fetch("/api/yeu_thich", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_nguoi_dung: userId, id_san_pham }),
-        });
-        setFavorites((prev) => [...prev, id_san_pham]);
-        setToast("Đã thêm vào yêu thích");
-      }
-
-      setTimeout(() => setToast(null), 1500);
-    } catch (error) {
-      console.error("Lỗi yêu thích:", error);
-    }
-  };
 
   if (loading)
     return (
-      <div className="p-6 text-center text-gray-500 mt-[80px]">
+      <div className="p-6 h-[700px] text-center text-gray-500 mt-[80px]">
         Đang tải sản phẩm...
       </div>
     );
 
   return (
     <main className="bg-gray-50 min-h-screen">
-      <div className="sticky top-[80px] z-40 bg-white">
+      <div className="sticky top-[70px] z-40 bg-white">
         <DanhMucSection data={dsDanhMuc} />
       </div>
-
       {toast && (
         <div className="fixed bottom-5 right-5 bg-[#6A0A0A] text-white px-4 py-2 rounded-xl shadow-md z-50">
           {toast}
         </div>
       )}
 
-      <div className="py-0 space-y-12">
+      <div className="py-0">
         {dsDanhMuc.map((dm) => (
           <section
             key={dm.id}
             id={`danh-muc-${dm.slug}`}
-            className="scroll-mt-[140px]"
+            className="scroll-mt-[120px]"
           >
             <h2 className="text-2xl font-bold mb-4 text-[#6A0A0A]">
               {dm.ten}
@@ -258,6 +234,7 @@ useEffect(() => {
 
                       <button
                         onClick={() => toggleFavorite(sp.id)}
+                        aria-label={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
                         className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
                       >
                         <Heart
@@ -269,6 +246,7 @@ useEffect(() => {
                           }
                         />
                       </button>
+
                     </div>
 
                     <Link href={`/chi_tiet/${sp.id}`} className="block p-4">

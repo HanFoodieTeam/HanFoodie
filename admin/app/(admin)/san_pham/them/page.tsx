@@ -1,15 +1,32 @@
 // "use client";
 
 // import { useEffect, useState, ChangeEvent } from "react";
+// import { useRouter } from "next/navigation";
 // import { IDanhMuc, IBienThe, ISanPham } from "@/lib/cautrucdata";
+// import dynamic from "next/dynamic";
+// const TinyMCEEditor = dynamic(
+//   () => import("@tinymce/tinymce-react").then((mod) => mod.Editor),
+//   { ssr: false }
+// );
+
 
 // type SanPhamInput = Omit<ISanPham, "id" | "hinh" | "luot_xem">;
 
+
+
 // export default function ThemSanPhamPage() {
+//   const router = useRouter();
+//   const [keywordDanhMuc, setKeywordDanhMuc] = useState("");
+//   const [showDanhMuc, setShowDanhMuc] = useState(false);
 //   const [danhMuc, setDanhMuc] = useState<IDanhMuc[]>([]);
 //   const [bienThe, setBienThe] = useState<IBienThe[]>([]);
 //   const [hinhChinh, setHinhChinh] = useState<File | null>(null);
 //   const [hinhPhu, setHinhPhu] = useState<File[]>([]);
+//   const [slugDaSua, setSlugDaSua] = useState(false);
+//   const danhMucFilter = danhMuc.filter((dm) =>
+//   dm.ten.toLowerCase().includes(keywordDanhMuc.toLowerCase())
+// );
+
 
 //   const [form, setForm] = useState<SanPhamInput>({
 //     ten: "",
@@ -24,14 +41,27 @@
 //     het_mon: null,
 //   });
 
-//   // ================= LOAD DANH MỤC =================
-//   useEffect(() => {
-//     (async () => {
-//       const res = await fetch("/api/danh_muc");
-//       const data = await res.json();
-//       setDanhMuc(data.data ?? []);
-//     })();
-//   }, []);
+// // ================= LOAD DANH MỤC (TỪ API SẢN PHẨM) =================
+// useEffect(() => {
+//   const loadDanhMuc = async () => {
+//     try {
+//       const res = await fetch("/api/san_pham?with_danh_muc=1");
+//       const json = await res.json();
+
+//       if (json.success && Array.isArray(json.danh_muc)) {
+//         setDanhMuc(json.danh_muc);
+//       } else {
+//         setDanhMuc([]);
+//       }
+//     } catch (err) {
+//       console.error("Lỗi load danh mục", err);
+//       setDanhMuc([]);
+//     }
+//   };
+
+//   loadDanhMuc();
+// }, []);
+
 
 //   // ================= ONCHANGE =================
 //   const onChange = (
@@ -50,7 +80,8 @@
 //     setForm((prev) => {
 //       const updated = { ...prev, [name]: newValue };
 
-//       if (name === "ten") {
+//       // Auto slug khi CHƯA sửa tay
+//       if (name === "ten" && !slugDaSua) {
 //         updated.slug = newValue
 //           .toString()
 //           .toLowerCase()
@@ -71,7 +102,7 @@
 //         id: 0,
 //         ten: "",
 //         gia_them: 0,
-//         trang_thai: true, // 🔥 boolean đúng type
+//         trang_thai: true,
 //         id_san_pham: 0,
 //       },
 //     ]);
@@ -94,11 +125,22 @@
 //   // ========= safe append =========
 //   const safeValue = (v: unknown) =>
 //     v === null || v === undefined ? "" : String(v);
+//   const [dangLuu, setDangLuu] = useState(false);
 
 //   // ================= SUBMIT =================
 //   const submit = async () => {
+//     if (dangLuu) return;
+//     setDangLuu(true);
+
+//     if (form.id_danh_muc === 0) {
+//       alert("Vui lòng chọn danh mục!");
+//       setDangLuu(false);
+//       return;
+//     }
+
 //     if (!hinhChinh) {
 //       alert("Bạn chưa chọn hình chính!");
+//       setDangLuu(false);
 //       return;
 //     }
 
@@ -109,20 +151,19 @@
 //         fd.append(key, safeValue(value));
 //       });
 
-//       // hình chính
 //       fd.append("hinh", hinhChinh);
-
-//       // hình phụ
 //       hinhPhu.forEach((file) => fd.append("hinh_phu", file));
 
-//       // biến thể (convert boolean → number)
-//       const bienTheClean = bienThe.map((bt) => ({
-//         ten: bt.ten,
-//         gia_them: bt.gia_them ?? 0,
-//         trang_thai: bt.trang_thai ? 1 : 0,
-//       }));
-
-//       fd.append("bien_the", JSON.stringify(bienTheClean));
+//       fd.append(
+//         "bien_the",
+//         JSON.stringify(
+//           bienThe.map((bt) => ({
+//             ten: bt.ten,
+//             gia_them: bt.gia_them ?? 0,
+//             trang_thai: bt.trang_thai ? 1 : 0,
+//           }))
+//         )
+//       );
 
 //       const res = await fetch("/api/san_pham", {
 //         method: "POST",
@@ -130,21 +171,27 @@
 //       });
 
 //       const data = await res.json();
-//       alert(data.success ? "Thêm sản phẩm thành công!" : data.message);
+
+//       if (data.success) {
+//         alert("Thêm sản phẩm thành công!");
+//         router.push("/san_pham");
+//       } else {
+//         alert(data.message);
+//         setDangLuu(false);
+//       }
 //     } catch (error) {
 //       console.error(error);
 //       alert("Lỗi server!");
+//       setDangLuu(false);
 //     }
 //   };
 
-//   return (
-//     <div className="min-h-screen bg-gray-50 py-10 px-6">
-//       <div className="max-w-6xl mx-auto bg-white rounded-xl shadow px-10 py-10 space-y-10">
-//         <h1 className="text-4xl font-bold text-center">THÊM SẢN PHẨM</h1>
 
-//         {/* ================= FORM SẢN PHẨM ================= */}
+//   return (
+//     <div className="min-h-screen bg-gray-50">
+//       <div className="w-full min-h-screen bg-white px-8 py-8 space-y-10">
 //         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-//           <div>
+//           <div className="col-span-2">
 //             <label className="font-semibold">Tên sản phẩm</label>
 //             <input
 //               name="ten"
@@ -152,6 +199,21 @@
 //               className="w-full border rounded-lg px-4 py-3"
 //             />
 //           </div>
+
+
+//           <div>
+//             <label className="font-semibold">Lượt xem</label>
+//             <input
+//               type="number"
+//               name="luot_xem"
+//               min={0}
+//               defaultValue={0}
+//               onChange={onChange}
+//               className="w-full border rounded-lg px-4 py-3"
+//               placeholder="Nhập số lượt xem"
+//             />
+//           </div>
+
 
 //           <div>
 //             <label className="font-semibold">Giá gốc</label>
@@ -169,20 +231,25 @@
 //             <input
 //               name="slug"
 //               value={form.slug}
-//               readOnly
-//               className="w-full border bg-gray-100 rounded-lg px-4 py-3"
+//               onChange={(e) => {
+//                 setSlugDaSua(true);
+//                 setForm((prev) => ({ ...prev, slug: e.target.value }));
+//               }}
+//               className="w-full border rounded-lg px-4 py-3"
 //             />
 //           </div>
 
 //           <div>
 //             <label className="font-semibold">Danh mục</label>
+
 //             <select
 //               name="id_danh_muc"
 //               value={form.id_danh_muc}
 //               onChange={onChange}
-//               className="w-full border rounded-lg px-4 py-3"
+//               className="w-full border rounded-lg px-4 py-3 bg-white"
 //             >
 //               <option value={0}>-- Chọn danh mục --</option>
+
 //               {danhMuc.map((dm) => (
 //                 <option key={dm.id} value={dm.id}>
 //                   {dm.ten}
@@ -190,6 +257,9 @@
 //               ))}
 //             </select>
 //           </div>
+
+
+
 
 //           <div>
 //             <label className="font-semibold">Tag</label>
@@ -211,62 +281,90 @@
 
 //           <div className="md:col-span-2">
 //             <label className="font-semibold">Mô tả</label>
-//             <textarea
-//               name="mo_ta"
-//               rows={4}
-//               onChange={onChange}
-//               className="w-full border rounded-lg px-4 py-3"
-//             />
+
+//             <div className="border rounded-lg p-2">
+//               <TinyMCEEditor
+//                 apiKey="YOUR_TINYMCE_API_KEY"
+//                 value={form.mo_ta ?? ""}
+//                 onEditorChange={(content) =>
+//                   setForm((prev) => ({
+//                     ...prev,
+//                     mo_ta: content,
+//                   }))
+//                 }
+//                 init={{
+//                   height: 300,
+//                   menubar: false,
+//                   plugins: [
+//                     "advlist",
+//                     "autolink",
+//                     "lists",
+//                     "link",
+//                     "image",
+//                     "charmap",
+//                     "fullscreen",
+//                     "wordcount",
+//                   ],
+//                   toolbar:
+//                     "undo redo | formatselect | bold italic underline | " +
+//                     "alignleft aligncenter alignright alignjustify | " +
+//                     "bullist numlist outdent indent | link image | removeformat",
+//                   branding: false,
+//                 }}
+//               />
+//             </div>
 //           </div>
+
+
+
+
 //         </div>
 
-// {/* ================= HÌNH ẢNH ================= */}
-// <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-//   {/* HÌNH CHÍNH */}
-//   <div>
-//     <label className="font-semibold">Hình chính</label>
-//     <input
-//       type="file"
-//       onChange={(e) =>
-//         setHinhChinh(e.target.files?.[0] ?? null)
-//       }
-//     />
+//         {/* ================= HÌNH ẢNH ================= */}
+//         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+//           <div>
+//             <label className="font-semibold">Hình chính</label>
+//             <input
+//               type="file"
+//               onChange={(e) =>
+//                 setHinhChinh(e.target.files?.[0] ?? null)
+//               }
+//             />
 
-//     {hinhChinh && (
-//       <img
-//         src={URL.createObjectURL(hinhChinh)}
-//         className="w-40 mt-3 rounded-lg shadow"
-//       />
-//     )}
-//   </div>
+//             {hinhChinh && (
+//               <img
+//                 src={URL.createObjectURL(hinhChinh)}
+//                 className="w-40 mt-3 rounded-lg shadow"
+//               />
+//             )}
+//           </div>
 
-//   {/* HÌNH PHỤ */}
-//   <div>
-//     <label className="font-semibold">Hình phụ (nhiều ảnh)</label>
+//           <div>
+//             <label className="font-semibold">Hình phụ</label>
+//             <input
+//               type="file"
+//               multiple
+//               onChange={(e) => {
+//                 const files = e.target.files
+//                   ? Array.from(e.target.files)
+//                   : [];
+//                 setHinhPhu((prev) => [...prev, ...files]);
+//               }}
+//             />
 
-//     <input
-//       type="file"
-//       multiple
-//       onChange={(e) => {
-//         const files = e.target.files ? Array.from(e.target.files) : [];
-//         setHinhPhu((prev) => [...prev, ...files]); // ⭐ GIỮ ẢNH CŨ + THÊM ẢNH MỚI
-//       }}
-//     />
-
-//     {hinhPhu.length > 0 && (
-//       <div className="flex flex-wrap gap-3 mt-3">
-//         {hinhPhu.map((file, i) => (
-//           <img
-//             key={i}
-//             src={URL.createObjectURL(file)}
-//             className="w-28 h-28 object-cover rounded-lg shadow"
-//           />
-//         ))}
-//       </div>
-//     )}
-//   </div>
-// </div>
-
+//             {hinhPhu.length > 0 && (
+//               <div className="flex flex-wrap gap-3 mt-3">
+//                 {hinhPhu.map((file, i) => (
+//                   <img
+//                     key={i}
+//                     src={URL.createObjectURL(file)}
+//                     className="w-28 h-28 object-cover rounded-lg shadow"
+//                   />
+//                 ))}
+//               </div>
+//             )}
+//           </div>
+//         </div>
 
 //         {/* ================= BIẾN THỂ ================= */}
 //         <div className="space-y-5">
@@ -278,9 +376,7 @@
 //                 className="border rounded-lg px-4 py-2"
 //                 placeholder="Tên biến thể"
 //                 value={bt.ten}
-//                 onChange={(e) =>
-//                   suaBienThe(i, "ten", e.target.value)
-//                 }
+//                 onChange={(e) => suaBienThe(i, "ten", e.target.value)}
 //               />
 
 //               <input
@@ -297,7 +393,7 @@
 //                 }
 //               />
 
-//               <label className="flex items-center gap-2">
+//               {/* <label className="flex items-center gap-2">
 //                 <input
 //                   type="checkbox"
 //                   checked={bt.trang_thai}
@@ -306,7 +402,7 @@
 //                   }
 //                 />
 //                 Bật biến thể
-//               </label>
+//               </label> */}
 
 //               <button
 //                 onClick={() => xoaBienThe(i)}
@@ -319,7 +415,7 @@
 
 //           <button
 //             onClick={themBienThe}
-//             className="bg-black text-white px-6 py-2 rounded-lg"
+//             className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg shadow-md disabled:opacity-50"
 //           >
 //             + Thêm biến thể
 //           </button>
@@ -328,32 +424,54 @@
 //         {/* ================= BUTTON LƯU ================= */}
 //         <div className="text-center pt-6">
 //           <button
-//             onClick={submit}
-//             className="px-12 py-4 bg-black text-white rounded-xl text-lg"
-//           >
-//             Lưu sản phẩm
-//           </button>
+//               onClick={submit}
+//               disabled={dangLuu}
+//               className={`font-medium px-6 py-2 rounded-lg shadow-md ${
+//                 dangLuu
+//                   ? "bg-gray-400 cursor-not-allowed"
+//                   : "bg-blue-500 hover:bg-blue-600 text-white"
+//               }`}
+//             >
+//               {dangLuu ? "Đang lưu..." : "Lưu sản phẩm"}
+//             </button>
+
 //         </div>
 //       </div>
 //     </div>
 //   );
 // }
+
+
+
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { IDanhMuc, IBienThe, ISanPham } from "@/lib/cautrucdata";
+import dynamic from "next/dynamic";
+const TinyMCEEditor = dynamic(
+  () => import("@tinymce/tinymce-react").then((mod) => mod.Editor),
+  { ssr: false }
+);
+
 
 type SanPhamInput = Omit<ISanPham, "id" | "hinh" | "luot_xem">;
 
+
+
 export default function ThemSanPhamPage() {
   const router = useRouter();
-
+  const [keywordDanhMuc, setKeywordDanhMuc] = useState("");
+  const [showDanhMuc, setShowDanhMuc] = useState(false);
   const [danhMuc, setDanhMuc] = useState<IDanhMuc[]>([]);
   const [bienThe, setBienThe] = useState<IBienThe[]>([]);
   const [hinhChinh, setHinhChinh] = useState<File | null>(null);
   const [hinhPhu, setHinhPhu] = useState<File[]>([]);
   const [slugDaSua, setSlugDaSua] = useState(false);
+  const danhMucFilter = danhMuc.filter((dm) =>
+    dm.ten.toLowerCase().includes(keywordDanhMuc.toLowerCase())
+  );
+
 
   const [form, setForm] = useState<SanPhamInput>({
     ten: "",
@@ -368,14 +486,27 @@ export default function ThemSanPhamPage() {
     het_mon: null,
   });
 
-  // ================= LOAD DANH MỤC =================
+  // ================= LOAD DANH MỤC (TỪ API SẢN PHẨM) =================
   useEffect(() => {
-    (async () => {
-      const res = await fetch("/api/danh_muc");
-      const data = await res.json();
-      setDanhMuc(data.data ?? []);
-    })();
+    const loadDanhMuc = async () => {
+      try {
+        const res = await fetch("/api/san_pham?with_danh_muc=1");
+        const json = await res.json();
+
+        if (json.success && Array.isArray(json.danh_muc)) {
+          setDanhMuc(json.danh_muc);
+        } else {
+          setDanhMuc([]);
+        }
+      } catch (err) {
+        console.error("Lỗi load danh mục", err);
+        setDanhMuc([]);
+      }
+    };
+
+    loadDanhMuc();
   }, []);
+
 
   // ================= ONCHANGE =================
   const onChange = (
@@ -394,7 +525,7 @@ export default function ThemSanPhamPage() {
     setForm((prev) => {
       const updated = { ...prev, [name]: newValue };
 
-      // 👉 chỉ auto slug khi CHƯA sửa tay
+      // Auto slug khi CHƯA sửa tay
       if (name === "ten" && !slugDaSua) {
         updated.slug = newValue
           .toString()
@@ -439,11 +570,22 @@ export default function ThemSanPhamPage() {
   // ========= safe append =========
   const safeValue = (v: unknown) =>
     v === null || v === undefined ? "" : String(v);
+  const [dangLuu, setDangLuu] = useState(false);
 
   // ================= SUBMIT =================
   const submit = async () => {
+    if (dangLuu) return;
+    setDangLuu(true);
+
+    if (form.id_danh_muc === 0) {
+      alert("Vui lòng chọn danh mục!");
+      setDangLuu(false);
+      return;
+    }
+
     if (!hinhChinh) {
       alert("Bạn chưa chọn hình chính!");
+      setDangLuu(false);
       return;
     }
 
@@ -457,13 +599,16 @@ export default function ThemSanPhamPage() {
       fd.append("hinh", hinhChinh);
       hinhPhu.forEach((file) => fd.append("hinh_phu", file));
 
-      const bienTheClean = bienThe.map((bt) => ({
-        ten: bt.ten,
-        gia_them: bt.gia_them ?? 0,
-        trang_thai: bt.trang_thai ? 1 : 0,
-      }));
-
-      fd.append("bien_the", JSON.stringify(bienTheClean));
+      fd.append(
+        "bien_the",
+        JSON.stringify(
+          bienThe.map((bt) => ({
+            ten: bt.ten,
+            gia_them: bt.gia_them ?? 0,
+            trang_thai: bt.trang_thai ? 1 : 0,
+          }))
+        )
+      );
 
       const res = await fetch("/api/san_pham", {
         method: "POST",
@@ -474,46 +619,75 @@ export default function ThemSanPhamPage() {
 
       if (data.success) {
         alert("Thêm sản phẩm thành công!");
-        router.push("/san_pham"); // ✅ chuyển sang app/san_pham/page.tsx
+        router.push("/san_pham");
       } else {
         alert(data.message);
+        setDangLuu(false);
       }
     } catch (error) {
       console.error(error);
       alert("Lỗi server!");
+      setDangLuu(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-10 px-6">
-      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow px-10 py-10 space-y-10">
-        <h1 className="text-4xl font-bold text-center">THÊM SẢN PHẨM</h1>
 
-        {/* ================= FORM SẢN PHẨM ================= */}
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="w-full min-h-screen bg-white px-8 py-8 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <label className="font-semibold">Tên sản phẩm</label>
+          <div className="col-span-2">
+            <label htmlFor="ten" className="font-semibold">
+              Tên sản phẩm
+            </label>
             <input
+              id="ten"
               name="ten"
               onChange={onChange}
               className="w-full border rounded-lg px-4 py-3"
             />
+
           </div>
 
+
           <div>
-            <label className="font-semibold">Giá gốc</label>
+            <label htmlFor="luot_xem" className="font-semibold">
+              Lượt xem
+            </label>
             <input
+              id="luot_xem"
+              type="number"
+              name="luot_xem"
+              min={0}
+              defaultValue={0}
+              onChange={onChange}
+              className="w-full border rounded-lg px-4 py-3"
+            />
+
+          </div>
+
+
+          <div>
+            <label htmlFor="gia_goc" className="font-semibold">
+              Giá gốc
+            </label>
+            <input
+              id="gia_goc"
               type="number"
               name="gia_goc"
               value={form.gia_goc}
               onChange={onChange}
               className="w-full border rounded-lg px-4 py-3"
             />
+
           </div>
 
           <div>
-            <label className="font-semibold">Slug</label>
+            <label htmlFor="slug" className="font-semibold">
+              Slug
+            </label>
             <input
+              id="slug"
               name="slug"
               value={form.slug}
               onChange={(e) => {
@@ -522,17 +696,23 @@ export default function ThemSanPhamPage() {
               }}
               className="w-full border rounded-lg px-4 py-3"
             />
+
           </div>
 
           <div>
-            <label className="font-semibold">Danh mục</label>
+            <label htmlFor="id_danh_muc" className="font-semibold">
+              Danh mục
+            </label>
             <select
+              id="id_danh_muc"
               name="id_danh_muc"
               value={form.id_danh_muc}
               onChange={onChange}
-              className="w-full border rounded-lg px-4 py-3"
+              className="w-full border rounded-lg px-4 py-3 bg-white"
             >
+
               <option value={0}>-- Chọn danh mục --</option>
+
               {danhMuc.map((dm) => (
                 <option key={dm.id} value={dm.id}>
                   {dm.ten}
@@ -541,66 +721,113 @@ export default function ThemSanPhamPage() {
             </select>
           </div>
 
+
+
+
           <div>
-            <label className="font-semibold">Tag</label>
+            <label htmlFor="tag" className="font-semibold">
+              Tag
+            </label>
             <input
+              id="tag"
               name="tag"
               onChange={onChange}
               className="w-full border rounded-lg px-4 py-3"
             />
+
           </div>
 
           <div>
-            <label className="font-semibold">Phong cách</label>
+            <label htmlFor="phong_cach" className="font-semibold">
+              Phong cách
+            </label>
             <input
+              id="phong_cach"
               name="phong_cach"
               onChange={onChange}
               className="w-full border rounded-lg px-4 py-3"
             />
+
           </div>
 
           <div className="md:col-span-2">
             <label className="font-semibold">Mô tả</label>
-            <textarea
-              name="mo_ta"
-              rows={4}
-              onChange={onChange}
-              className="w-full border rounded-lg px-4 py-3"
-            />
+
+            <div className="border rounded-lg p-2">
+              <TinyMCEEditor
+                apiKey="b0ltf47z16t202dzee5j66umb4r9m5ypez273jxv802r6t8n"
+                onEditorChange={(content) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    mo_ta: content,
+                  }))
+                }
+                init={{
+                  height: 300,
+                  menubar: false,
+                  plugins: [
+                    "advlist",
+                    "autolink",
+                    "lists",
+                    "link",
+                    "image",
+                    "charmap",
+                    "fullscreen",
+                    "wordcount",
+                  ],
+                  toolbar:
+                    "undo redo | formatselect | bold italic underline | " +
+                    "alignleft aligncenter alignright alignjustify | " +
+                    "bullist numlist outdent indent | link image | removeformat",
+                  branding: false,
+                }}
+              />
+
+            </div>
           </div>
+
+
+
+
         </div>
 
         {/* ================= HÌNH ẢNH ================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <label className="font-semibold">Hình chính</label>
+            <label htmlFor="hinh_chinh" className="font-semibold">
+              Hình chính
+            </label>
             <input
+              id="hinh_chinh"
               type="file"
-              onChange={(e) =>
-                setHinhChinh(e.target.files?.[0] ?? null)
-              }
+              onChange={(e) => setHinhChinh(e.target.files?.[0] ?? null)}
             />
+
 
             {hinhChinh && (
               <img
                 src={URL.createObjectURL(hinhChinh)}
+                alt="Hình chính sản phẩm"
                 className="w-40 mt-3 rounded-lg shadow"
               />
+
             )}
           </div>
 
           <div>
-            <label className="font-semibold">Hình phụ</label>
+            <label htmlFor="hinh_phu" className="font-semibold">
+              Hình phụ
+            </label>
             <input
+              id="hinh_phu"
               type="file"
               multiple
               onChange={(e) => {
-                const files = e.target.files
-                  ? Array.from(e.target.files)
-                  : [];
+                const files = e.target.files ? Array.from(e.target.files) : [];
                 setHinhPhu((prev) => [...prev, ...files]);
               }}
             />
+
 
             {hinhPhu.length > 0 && (
               <div className="flex flex-wrap gap-3 mt-3">
@@ -608,8 +835,10 @@ export default function ThemSanPhamPage() {
                   <img
                     key={i}
                     src={URL.createObjectURL(file)}
+                    alt={`Hình phụ sản phẩm ${i + 1}`}
                     className="w-28 h-28 object-cover rounded-lg shadow"
                   />
+
                 ))}
               </div>
             )}
@@ -643,7 +872,7 @@ export default function ThemSanPhamPage() {
                 }
               />
 
-              <label className="flex items-center gap-2">
+              {/* <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={bt.trang_thai}
@@ -652,7 +881,7 @@ export default function ThemSanPhamPage() {
                   }
                 />
                 Bật biến thể
-              </label>
+              </label> */}
 
               <button
                 onClick={() => xoaBienThe(i)}
@@ -665,7 +894,7 @@ export default function ThemSanPhamPage() {
 
           <button
             onClick={themBienThe}
-            className="bg-black text-white px-6 py-2 rounded-lg"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg shadow-md disabled:opacity-50"
           >
             + Thêm biến thể
           </button>
@@ -675,12 +904,18 @@ export default function ThemSanPhamPage() {
         <div className="text-center pt-6">
           <button
             onClick={submit}
-            className="px-12 py-4 bg-black text-white rounded-xl text-lg"
+            disabled={dangLuu}
+            className={`font-medium px-6 py-2 rounded-lg shadow-md ${dangLuu
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
+              }`}
           >
-            Lưu sản phẩm
+            {dangLuu ? "Đang lưu..." : "Lưu sản phẩm"}
           </button>
+
         </div>
       </div>
     </div>
   );
 }
+

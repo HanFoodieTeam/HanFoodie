@@ -41,7 +41,7 @@ export async function GET(
         "tag",
         "phong_cach",
         "mo_ta",
-        "het_mon", // ✅ Trả về trường het_mon
+        "het_mon", 
         "id_danh_muc",
       ],
       include: [

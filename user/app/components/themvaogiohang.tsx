@@ -55,21 +55,21 @@ export default function ThemVaoGioHang({
 }: ThemVaoGioHangProps) {
   const san_pham = data.san_pham;
 
-  const bien_the = (data.bien_the ?? []).filter(
-    (bt) => bt.trang_thai === true
-  );
+const bien_the = (data.bien_the ?? []).filter(
+  (bt) => bt.trang_thai === true
+);
 
-  const mon_them = (data.mon_them ?? []).filter(
-    (m) => m.trang_thai === true
-  );
+const mon_them = (data.mon_them ?? []).filter(
+  (m) => m.trang_thai === true
+);
 
 
-  const tuy_chon = (data.tuy_chon ?? [])
-    .map((loai) => ({
-      ...loai,
-      tuy_chon: loai.tuy_chon?.filter((tc) => tc.an_hien),
-    }))
-    .filter((loai) => loai.tuy_chon && loai.tuy_chon.length > 0);
+const tuy_chon = (data.tuy_chon ?? [])
+  .map((loai) => ({
+    ...loai,
+    tuy_chon: loai.tuy_chon?.filter((tc) => tc.an_hien ),
+  }))
+  .filter((loai) => loai.tuy_chon && loai.tuy_chon.length > 0);
 
 
   const [qty, setQty] = useState(1);
@@ -183,7 +183,7 @@ export default function ThemVaoGioHang({
     }
   };
 
-const handleBuyNow = () => {
+ const handleBuyNow = () => {
   // 1. Kiểm tra đăng nhập
   const userRaw = localStorage.getItem("nguoi_dung");
   if (!userRaw) {
@@ -251,7 +251,6 @@ const handleBuyNow = () => {
 };
 
 
-
   /* ================== UI (GIỮ NGUYÊN) ================== */
   return (
     <AnimatePresence>
@@ -270,7 +269,7 @@ const handleBuyNow = () => {
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
-          <div className="flex items-start gap-3 p-4 border-b">
+            <div className="flex items-start gap-3 p-4 border-b">
             {/* Ảnh sản phẩm */}
             <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
               {san_pham?.hinh ? (
@@ -403,63 +402,63 @@ const handleBuyNow = () => {
 
             {/* Món thêm */}
             {mon_them.length > 0 && (
-              <div>
-                <h4 className="text-base font-semibold mb-2 border-b pb-2">Món thêm</h4>
-                <div className="space-y-2">
-                  {mon_them.map((m) => {
-                    const checked = selectedMonThem.includes(m.id!);
-                    const isDisabled = !isMonConBan(m.het_mon);
+  <div>
+    <h4 className="text-base font-semibold mb-2 border-b pb-2">Món thêm</h4>
+    <div className="space-y-2">
+      {mon_them.map((m) => {
+        const checked = selectedMonThem.includes(m.id!);
+        const isDisabled = !isMonConBan(m.het_mon);
 
-                    return (
-                      <label
-                        key={m.id}
-                        className={`flex items-center justify-between gap-3 p-2 rounded-md cursor-pointer 
+        return (
+          <label
+            key={m.id}
+            className={`flex items-center justify-between gap-3 p-2 rounded-md cursor-pointer 
               ${isDisabled ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"}
             `}
-                      >
-                        <div className="flex items-center gap-3">
-                          {/* Checkbox vuông */}
-                          <div
-                            className={`w-5 h-5 border flex items-center justify-center rounded-[4px] transition-all duration-150 
+          >
+            <div className="flex items-center gap-3">
+              {/* Checkbox vuông */}
+              <div
+                className={`w-5 h-5 border flex items-center justify-center rounded-[4px] transition-all duration-150 
                   ${checked ? "bg-[#e8594f] border-[#e8594f]" : "bg-white border-gray-300"} 
                   ${isDisabled ? "pointer-events-none" : ""}
                 `}
-                          >
-                            {checked && (
-                              <svg
-                                width="14"
-                                height="14"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="white"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <polyline points="20 6 9 17 4 12" />
-                              </svg>
-                            )}
-                          </div>
-
-                          <span className="text-sm">{m.ten}</span>
-                        </div>
-
-                        <div className="text-sm text-gray-600">+{m.gia_them.toLocaleString("vi-VN")}đ</div>
-
-                        {/* checkbox thật */}
-                        <input
-                          type="checkbox"
-                          className="hidden"
-                          checked={checked}
-                          disabled={isDisabled}
-                          onChange={() => !isDisabled && toggleMonThem(m.id!)}
-                        />
-                      </label>
-                    );
-                  })}
-                </div>
+              >
+                {checked && (
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
               </div>
-            )}
+
+              <span className="text-sm">{m.ten}</span>
+            </div>
+
+            <div className="text-sm text-gray-600">+{m.gia_them.toLocaleString("vi-VN")}đ</div>
+
+            {/* checkbox thật */}
+            <input
+              type="checkbox"
+              className="hidden"
+              checked={checked}
+              disabled={isDisabled}
+              onChange={() => !isDisabled && toggleMonThem(m.id!)}
+            />
+          </label>
+        );
+      })}
+    </div>
+  </div>
+)}
 
           </div>
 
@@ -496,3 +495,4 @@ const handleBuyNow = () => {
     </AnimatePresence>
   );
 }
+        

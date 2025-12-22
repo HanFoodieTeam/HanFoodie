@@ -4,9 +4,9 @@ import { Op } from "sequelize";
 import { v2 as cloudinary } from "cloudinary";
 import {
   SanPhamModel,
-  DanhMucModel,
   BienTheModel,
   HinhModel,
+  DanhMucModel,
 } from "@/lib/models";
 
 interface IBienTheInput {
@@ -36,7 +36,7 @@ async function uploadCloud(file: File): Promise<string> {
 }
 
 // =====================================================
-//                      GET
+//                      GET (ADMIN)
 // =====================================================
 export async function GET(
   req: Request,
@@ -48,20 +48,30 @@ export async function GET(
     const sp = await SanPhamModel.findOne({
       where: { id: Number(id) },
       include: [
-        { model: DanhMucModel, as: "danh_muc" },
         { model: HinhModel, as: "hinh_anh" },
         { model: BienTheModel, as: "bien_the" },
       ],
     });
 
-    if (!sp)
+    if (!sp) {
       return NextResponse.json(
         { success: false, message: "Không tồn tại" },
         { status: 404 }
       );
+    }
 
-    return NextResponse.json({ success: true, data: sp });
+    // ✅ LẤY ĐẦY ĐỦ DANH MỤC (14)
+    const danhMuc = await DanhMucModel.findAll({
+      order: [["thu_tu", "ASC"]],
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: sp,
+      danh_muc: danhMuc,
+    });
   } catch (err) {
+    console.error("GET ERROR:", err);
     return NextResponse.json(
       { success: false, message: "Lỗi server" },
       { status: 500 }
@@ -69,32 +79,60 @@ export async function GET(
   }
 }
 
-export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const { id } = await context.params; 
+export async function PATCH(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-  
-    const body = await request.json();
+    const { id } = await context.params;
+    const body = await req.json();
+    const today = new Date().toISOString().split("T")[0];
+    
+    const sp = await SanPhamModel.findByPk(id);
+    if (!sp) {
+      return NextResponse.json(
+        { success: false, message: "Không tìm thấy sản phẩm" },
+        { status: 404 }
+      );
+    }
 
-    const het_mon_update =
-      body.het_mon === true ? new Date() : body.co_lai_mon === true ? null : undefined;
+    // 👁️ Ẩn / hiện
+    if (body.an_hien !== undefined) {
+      await sp.update({ an_hien: body.an_hien ? 1 : 0 });
+    }
 
-    const updated = await SanPhamModel.update(
-      {
-        an_hien: body.an_hien,
-        het_mon: het_mon_update,
+    // 🚫 Hết món
+    if (body.het_mon === true) {
+      await sp.update({ het_mon: today });
+    }
+
+    // 🔄 Có lại món
+    if (body.co_lai_mon === true) {
+      await sp.update({ het_mon: null });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Cập nhật thành công",
+      data: {
+        id: sp.getDataValue("id"),
+        ten: sp.getDataValue("ten"),
+        an_hien: !!sp.getDataValue("an_hien"),
+        het_mon: sp.getDataValue("het_mon"),
       },
-      { where: { id } }
-    );
-
-    return NextResponse.json({ success: true });
+    });
   } catch (err) {
-    console.log("PATCH ERROR:", err);
-    return NextResponse.json({ success: false }, { status: 500 });
+    console.error("PATCH ERROR:", err);
+    return NextResponse.json(
+      { success: false, message: "Lỗi khi cập nhật" },
+      { status: 500 }
+    );
   }
 }
 
+
 // =====================================================
-//                      PUT
+//                      PUT (ADMIN UPDATE)
 // =====================================================
 export async function PUT(
   req: Request,
@@ -103,7 +141,6 @@ export async function PUT(
   try {
     const { id } = await ctx.params;
     const productId = Number(id);
-
     const form = await req.formData();
 
     // ---------------------------------------------------
@@ -117,8 +154,34 @@ export async function PUT(
     }
 
     // ---------------------------------------------------
-    // 2️⃣ CẬP NHẬT SẢN PHẨM
+    // 2️⃣ LƯỢT XEM (ADMIN SỬA)
     // ---------------------------------------------------
+    const luotXemRaw = form.get("luot_xem");
+    const luot_xem =
+      typeof luotXemRaw === "string" && !isNaN(Number(luotXemRaw))
+        ? Number(luotXemRaw)
+        : undefined;
+
+// ---------------------------------------------------
+// 3️⃣ HẾT MÓN (null | string)
+// ---------------------------------------------------
+const hetMonRaw = form.get("het_mon");
+
+let het_mon: string | null | undefined = undefined;
+
+if (typeof hetMonRaw === "string") {
+  if (hetMonRaw === "true") {
+    // admin tick "Hết món" → set hôm nay
+    het_mon = new Date().toISOString().split("T")[0];
+  } else if (hetMonRaw === "false" || hetMonRaw === "") {
+    // có lại món
+    het_mon = null;
+  } else {
+    // gửi thẳng ngày YYYY-MM-DD
+    het_mon = hetMonRaw;
+  }
+}
+
     await SanPhamModel.update(
       {
         ten: form.get("ten"),
@@ -129,16 +192,15 @@ export async function PUT(
         tag: form.get("tag"),
         id_danh_muc: Number(form.get("id_danh_muc")),
         hinh: hinhChinh,
+
+        ...(het_mon !== undefined && { het_mon }),
+        ...(luot_xem !== undefined && { luot_xem }),
       },
       { where: { id: productId } }
     );
 
-    // ---------------------------------------------------
-    // 3️⃣ HÌNH PHỤ
-    // ---------------------------------------------------
 
-    const oldImages = form.getAll("hinh_phu_old").map((v) => String(v));
-
+    const oldImages = form.getAll("hinh_phu_old").map(String);
     const newFiles = form
       .getAll("hinh_phu_file")
       .filter((v): v is File => v instanceof File && v.size > 0);
@@ -164,15 +226,9 @@ export async function PUT(
       });
     }
 
-    // ---------------------------------------------------
-    // 4️⃣ BIẾN THỂ
-    // ---------------------------------------------------
     const raw = form.get("bien_the");
-
-    let bienTheList: IBienTheInput[] = [];
-    if (typeof raw === "string") {
-      bienTheList = JSON.parse(raw) as IBienTheInput[];
-    }
+    const bienTheList: IBienTheInput[] =
+      typeof raw === "string" ? JSON.parse(raw) : [];
 
     const idsClient = bienTheList
       .map((bt) => bt.id)
@@ -181,9 +237,7 @@ export async function PUT(
     await BienTheModel.destroy({
       where: {
         id_san_pham: productId,
-        id: {
-          [Op.notIn]: idsClient.length ? idsClient : [0],
-        },
+        id: { [Op.notIn]: idsClient.length ? idsClient : [0] },
       },
     });
 
@@ -199,9 +253,7 @@ export async function PUT(
         );
       } else {
         await BienTheModel.create({
-          ten: bt.ten,
-          trang_thai: bt.trang_thai,
-          gia_them: bt.gia_them,
+          ...bt,
           id_san_pham: productId,
         });
       }
@@ -214,11 +266,11 @@ export async function PUT(
   } catch (err) {
     console.error("PUT ERROR:", err);
     return NextResponse.json(
-      {
-        success: false,
-        message: err instanceof Error ? err.message : "Lỗi cập nhật",
-      },
+      { success: false, message: "Lỗi cập nhật" },
       { status: 500 }
     );
+  
   }
+
 }
+

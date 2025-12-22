@@ -94,7 +94,7 @@ export default function TrangChuPage() {
 
   if (loading)
     return (
-      <div className="pt-[80px] text-center py-16 text-gray-500">
+      <div className="pt-[80px] h-[700px] text-center py-16 text-gray-500">
         Đang tải dữ liệu...
       </div>
     );
