@@ -1,80 +1,154 @@
 import { NextResponse } from "next/server";
 import { YeuThichModel, SanPhamModel } from "@/lib/models";
+import jwt from "jsonwebtoken";
 
-// ================== GET: Lấy danh sách yêu thích của 1 user ==================
+function getUserIdFromRequest(req: Request): number | null {
+  const auth = req.headers.get("authorization");
+  if (!auth) return null;
+
+  const token = auth.replace("Bearer ", "");
+  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+
+  return decoded.id;
+}
+
 export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id_nguoi_dung = searchParams.get("id_nguoi_dung");
-
-    if (!id_nguoi_dung) {
-      return NextResponse.json({ success: false, message: "Thiếu id_nguoi_dung" }, { status: 400 });
-    }
+    const id_nguoi_dung = getUserIdFromRequest(req);
+    if (!id_nguoi_dung)
+      return NextResponse.json({ success: false }, { status: 401 });
 
     const list = await YeuThichModel.findAll({
       where: { id_nguoi_dung },
-      include: [
-        {
-          model: SanPhamModel,
-          as: "san_pham",
-          attributes: ["id", "ten", "hinh", "gia_goc", "slug"]
-        }
-      ]
+      include: [{
+        model: SanPhamModel,
+        as: "san_pham",
+      }],
     });
 
     return NextResponse.json({ success: true, data: list });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
+  } catch {
+    return NextResponse.json({ success: false }, { status: 500 });
   }
 }
-
-// ================== POST: Thêm yêu thích ==================
 export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const { id_nguoi_dung, id_san_pham } = body;
+  const id_nguoi_dung = getUserIdFromRequest(req);
+  if (!id_nguoi_dung)
+    return NextResponse.json({ success: false }, { status: 401 });
 
-    if (!id_nguoi_dung || !id_san_pham) {
-      return NextResponse.json({ success: false, message: "Thiếu dữ liệu" }, { status: 400 });
-    }
+  const { id_san_pham } = await req.json();
 
-    // Kiểm tra đã tồn tại chưa
-    const existing = await YeuThichModel.findOne({
-      where: { id_nguoi_dung, id_san_pham },
-    });
+  const existing = await YeuThichModel.findOne({
+    where: { id_nguoi_dung, id_san_pham },
+  });
 
-    if (existing) {
-      return NextResponse.json({ success: false, message: "Đã có trong yêu thích" }, { status: 400 });
-    }
+  if (existing)
+    return NextResponse.json({ success: false });
 
-    const newYT = await YeuThichModel.create({ id_nguoi_dung, id_san_pham });
+  await YeuThichModel.create({ id_nguoi_dung, id_san_pham });
 
-    return NextResponse.json({ success: true, data: newYT });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
-  }
+  return NextResponse.json({ success: true });
 }
 
-// ================== DELETE: Xóa yêu thích ==================
 export async function DELETE(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const id_nguoi_dung = searchParams.get("id_nguoi_dung");
-    const id_san_pham = searchParams.get("id_san_pham");
+  const id_nguoi_dung = getUserIdFromRequest(req);
+  if (!id_nguoi_dung)
+    return NextResponse.json({ success: false }, { status: 401 });
 
-    if (!id_nguoi_dung || !id_san_pham) {
-      return NextResponse.json({ success: false, message: "Thiếu dữ liệu" }, { status: 400 });
-    }
+  const { searchParams } = new URL(req.url);
+  const id_san_pham = searchParams.get("id_san_pham");
 
-    const deleted = await YeuThichModel.destroy({
-      where: { id_nguoi_dung, id_san_pham },
-    });
+  await YeuThichModel.destroy({
+    where: { id_nguoi_dung, id_san_pham },
+  });
 
-    return NextResponse.json({ success: true, deleted });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({ success: false, message: "Lỗi server" }, { status: 500 });
-  }
+  return NextResponse.json({ success: true });
 }
+
+// export async function GET(req: Request) {
+//   try {
+//     const userId = req.user.id; // từ middleware
+
+//     const list = await YeuThichModel.findAll({
+//       where: { id_nguoi_dung: userId },
+//       include: [
+//         {
+//           model: SanPhamModel,
+//           as: "san_pham",
+//           attributes: ["id", "ten", "hinh", "gia_goc", "slug"],
+//         },
+//       ],
+//     });
+
+//     return NextResponse.json({ success: true, data: list });
+//   } catch (err) {
+//     return NextResponse.json(
+//       { success: false, message: "Lỗi server" },
+//       { status: 500 }
+//     );
+//   }
+// }
+// export async function POST(req: Request) {
+//   try {
+//     const userId = req.user.id;
+//     const { id_san_pham } = await req.json();
+
+//     if (!id_san_pham) {
+//       return NextResponse.json(
+//         { success: false, message: "Thiếu id_san_pham" },
+//         { status: 400 }
+//       );
+//     }
+
+//     const existing = await YeuThichModel.findOne({
+//       where: { id_nguoi_dung: userId, id_san_pham },
+//     });
+
+//     if (existing) {
+//       return NextResponse.json(
+//         { success: false, message: "Đã có trong yêu thích" },
+//         { status: 400 }
+//       );
+//     }
+
+//     const yt = await YeuThichModel.create({
+//       id_nguoi_dung: userId,
+//       id_san_pham,
+//     });
+
+//     return NextResponse.json({ success: true, data: yt });
+//   } catch {
+//     return NextResponse.json(
+//       { success: false, message: "Lỗi server" },
+//       { status: 500 }
+//     );
+//   }
+// }
+// export async function DELETE(req: Request) {
+//   try {
+//     const userId = req.user.id;
+//     const { searchParams } = new URL(req.url);
+//     const id_san_pham = searchParams.get("id_san_pham");
+
+//     if (!id_san_pham) {
+//       return NextResponse.json(
+//         { success: false, message: "Thiếu id_san_pham" },
+//         { status: 400 }
+//       );
+//     }
+
+//     await YeuThichModel.destroy({
+//       where: {
+//         id_nguoi_dung: userId,
+//         id_san_pham,
+//       },
+//     });
+
+//     return NextResponse.json({ success: true });
+//   } catch {
+//     return NextResponse.json(
+//       { success: false, message: "Lỗi server" },
+//       { status: 500 }
+//     );
+//   }
+// }
