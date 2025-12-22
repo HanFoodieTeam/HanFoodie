@@ -358,7 +358,7 @@ export default function ChiTietSanPhamPage() {
           <div>
             <p className="font-semibold">Tên</p>
             <input
-              className="border p-2 w-full rounded mt-1"
+              aria-label="Tên sản phẩm"
               name="ten"
               value={form.ten}
               onChange={handleInputChange}
@@ -370,11 +370,12 @@ export default function ChiTietSanPhamPage() {
           <div>
           <p className="font-semibold mb-1">Danh mục</p>
           <select
-            className="border p-2 rounded w-full"
+            aria-label="Danh mục sản phẩm"
             name="id_danh_muc"
             value={form.id_danh_muc}
             onChange={handleInputChange}
           >
+
             <option value={0}>-- Chọn danh mục --</option>
             {danhMuc.map((dm) => (
               <option key={dm.id} value={dm.id}>
@@ -384,11 +385,14 @@ export default function ChiTietSanPhamPage() {
           </select>
         </div>
           <div>
-            <p className="font-semibold">Lượt xem</p>
+            <label htmlFor="luot_xem" className="font-semibold">
+              Lượt xem
+            </label>
             <input
+              id="luot_xem"
               type="number"
-              className="border p-2 w-full rounded mt-1"
               name="luot_xem"
+              className="border p-2 w-full rounded mt-1"
               value={form.luot_xem}
               onChange={(e) =>
                 setForm((prev) => ({
@@ -400,130 +404,139 @@ export default function ChiTietSanPhamPage() {
           </div>
 
 
+
           <div>
-            <p className="font-semibold">Slug</p>
+            <label htmlFor="slug" className="font-semibold">
+              Slug
+            </label>
             <input
-              className="border p-2 w-full rounded mt-1"
+              id="slug"
               name="slug"
+              className="border p-2 w-full rounded mt-1"
               value={form.slug}
               onChange={handleInputChange}
             />
           </div>
 
+
           <div>
-            <p className="font-semibold">Giá gốc</p>
+            <label htmlFor="gia_goc" className="font-semibold">
+              Giá gốc
+            </label>
             <input
+              id="gia_goc"
               type="number"
-              className="border p-2 w-full rounded mt-1"
               name="gia_goc"
+              className="border p-2 w-full rounded mt-1"
               value={form.gia_goc}
               onChange={handleInputChange}
             />
           </div>
 
           <div>
-            <p className="font-semibold">Phong cách</p>
+            <label htmlFor="phong_cach" className="font-semibold">
+              Phong cách
+            </label>
             <input
-              className="border p-2 w-full rounded mt-1"
+              id="phong_cach"
               name="phong_cach"
+              className="border p-2 w-full rounded mt-1"
               value={form.phong_cach}
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex items-center gap-4">
-            <label className="font-semibold">Trạng thái món</label>
 
+          <div className="flex items-center gap-4">
+            <label htmlFor="het_mon" className="font-semibold">
+              Trạng thái món
+            </label>
             <select
+              id="het_mon"
+              className="border p-2 rounded"
               value={form.het_mon ? "het" : "con"}
               onChange={(e) => {
-                const value: string | null =
+                const value =
                   e.target.value === "het"
-                    ? new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+                    ? new Date().toISOString().slice(0, 10)
                     : null;
-
-                setForm((prev) => ({
-                  ...prev,
-                  het_mon: value,
-                }));
+                setForm((prev) => ({ ...prev, het_mon: value }));
               }}
-              className="border p-2 rounded"
             >
               <option value="con">Còn món</option>
               <option value="het">Hết món</option>
             </select>
-
-
           </div>
 
 
+
           <div>
-            <p className="font-semibold">Tag</p>
+            <label htmlFor="tag" className="font-semibold">
+              Tag
+            </label>
             <input
-              className="border p-2 w-full rounded mt-1"
+              id="tag"
               name="tag"
+              className="border p-2 w-full rounded mt-1"
               value={form.tag}
               onChange={handleInputChange}
             />
           </div>
+
         </div>
 
         {/* MÔ TẢ */}
         <div>
-  <p className="font-semibold mb-1">Mô tả</p>
+          <p className="font-semibold mb-1">Mô tả</p>
 
-  <div className="border rounded-lg p-2 bg-white">
-    <TinyMCEEditor
-      apiKey="YOUR_TINYMCE_API_KEY"
-      value={form.mo_ta ?? ""}
-      onEditorChange={(content) =>
-        setForm((prev) => ({
-          ...prev,
-          mo_ta: content, // ✅ lưu HTML
-        }))
-      }
-      init={{
-        height: 300,
-        menubar: false,
-        plugins: [
-          "advlist",
-          "autolink",
-          "lists",
-          "link",
-          "image",
-          "charmap",
-          "fullscreen",
-          "wordcount",
-        ],
-        toolbar:
-          "undo redo | formatselect | bold italic underline | " +
-          "alignleft aligncenter alignright alignjustify | " +
-          "bullist numlist outdent indent | link image | removeformat",
-        branding: false,
-      }}
-    />
-  </div>
-</div>
+          <div className="border rounded-lg p-2 bg-white">
+            <TinyMCEEditor
+              apiKey="b0ltf47z16t202dzee5j66umb4r9m5ypez273jxv802r6t8n"
+              value={form.mo_ta ?? ""}
+              onEditorChange={(content) =>
+                setForm((prev) => ({
+                  ...prev,
+                  mo_ta: content, // ✅ lưu HTML
+                }))
+              }
+              init={{
+                height: 300,
+                menubar: false,
+                plugins: [
+                  "advlist",
+                  "autolink",
+                  "lists",
+                  "link",
+                  "image",
+                  "charmap",
+                  "fullscreen",
+                  "wordcount",
+                ],
+                toolbar:
+                  "undo redo | formatselect | bold italic underline | " +
+                  "alignleft aligncenter alignright alignjustify | " +
+                  "bullist numlist outdent indent | link image | removeformat",
+                branding: false,
+              }}
+            />
+          </div>
+        </div>
 
 
 
         {/* HÌNH CHÍNH */}
         <div>
-          <h2 className="font-semibold mb-2">Hình chính</h2>
-          <div className="flex items-center gap-4">
-            {form.hinh ? (
-              // use img tag because some URLs might be remote and next/image may require domain config
-              <img src={form.hinh} alt="Hình chính" className="w-40 border rounded" />
-            ) : (
-              <div className="w-40 h-28 bg-gray-100 flex items-center justify-center rounded">No image</div>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              ref={hinhChinhRef}
-              onChange={handleHinhChinhChange}
-            />
-          </div>
+          <label htmlFor="hinh_chinh" className="font-semibold mb-2 block">
+            Hình chính
+          </label>
+          <input
+            id="hinh_chinh"
+            type="file"
+            accept="image/*"
+            ref={hinhChinhRef}
+            onChange={handleHinhChinhChange}
+          />
         </div>
+
 
         {/* HÌNH PHỤ */}
         <div>
@@ -558,7 +571,13 @@ export default function ChiTietSanPhamPage() {
             })}
           </div>
 
-          <input type="file" multiple accept="image/*" onChange={handleHinhPhuNew} />
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            aria-label="Hình phụ sản phẩm"
+            onChange={handleHinhPhuNew}
+          />
         </div>
 
         {/* BIẾN THỂ */}
@@ -588,6 +607,7 @@ export default function ChiTietSanPhamPage() {
 
               <div>
                 <select
+                  aria-label="Trạng thái biến thể"
                   value={bt.trang_thai}
                   onChange={(e) =>
                     updateBienThe(index, "trang_thai", Number(e.target.value))
@@ -596,6 +616,7 @@ export default function ChiTietSanPhamPage() {
                   <option value={1}>Hoạt động</option>
                   <option value={0}>Ẩn</option>
                 </select>
+
 
               </div>
 

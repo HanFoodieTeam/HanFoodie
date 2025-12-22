@@ -192,43 +192,57 @@ useEffect(() => {
       <div className="w-full min-h-screen bg-white px-8 py-8 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="col-span-2">
-            <label className="font-semibold">Tên sản phẩm</label>
+            <label htmlFor="ten" className="font-semibold">
+              Tên sản phẩm
+            </label>
             <input
+              id="ten"
               name="ten"
               onChange={onChange}
               className="w-full border rounded-lg px-4 py-3"
             />
+
           </div>
 
 
           <div>
-            <label className="font-semibold">Lượt xem</label>
+            <label htmlFor="luot_xem" className="font-semibold">
+              Lượt xem
+            </label>
             <input
+              id="luot_xem"
               type="number"
               name="luot_xem"
               min={0}
               defaultValue={0}
               onChange={onChange}
               className="w-full border rounded-lg px-4 py-3"
-              placeholder="Nhập số lượt xem"
             />
+
           </div>
 
 
           <div>
-            <label className="font-semibold">Giá gốc</label>
-            <input
-              type="number"
-              name="gia_goc"
-              value={form.gia_goc}
-              onChange={onChange}
-              className="w-full border rounded-lg px-4 py-3"
-            />
+            <label htmlFor="gia_goc" className="font-semibold">
+                Giá gốc
+              </label>
+              <input
+                id="gia_goc"
+                type="number"
+                name="gia_goc"
+                value={form.gia_goc}
+                onChange={onChange}
+                className="w-full border rounded-lg px-4 py-3"
+              />
+
           </div>
 
           <div>
-            <label className="font-semibold">Slug</label>
+            <label htmlFor="slug" className="font-semibold">
+              Slug
+            </label>
             <input
+              id="slug"
               name="slug"
               value={form.slug}
               onChange={(e) => {
@@ -237,17 +251,21 @@ useEffect(() => {
               }}
               className="w-full border rounded-lg px-4 py-3"
             />
+
           </div>
 
           <div>
-            <label className="font-semibold">Danh mục</label>
-
+           <label htmlFor="id_danh_muc" className="font-semibold">
+              Danh mục
+            </label>
             <select
+              id="id_danh_muc"
               name="id_danh_muc"
               value={form.id_danh_muc}
               onChange={onChange}
               className="w-full border rounded-lg px-4 py-3 bg-white"
             >
+
               <option value={0}>-- Chọn danh mục --</option>
 
               {danhMuc.map((dm) => (
@@ -262,21 +280,29 @@ useEffect(() => {
 
 
           <div>
-            <label className="font-semibold">Tag</label>
+            <label htmlFor="tag" className="font-semibold">
+              Tag
+            </label>
             <input
+              id="tag"
               name="tag"
               onChange={onChange}
               className="w-full border rounded-lg px-4 py-3"
             />
+
           </div>
 
           <div>
-            <label className="font-semibold">Phong cách</label>
+            <label htmlFor="phong_cach" className="font-semibold">
+              Phong cách
+            </label>
             <input
+              id="phong_cach"
               name="phong_cach"
               onChange={onChange}
               className="w-full border rounded-lg px-4 py-3"
             />
+
           </div>
 
           <div className="md:col-span-2">
@@ -284,7 +310,7 @@ useEffect(() => {
 
             <div className="border rounded-lg p-2">
               <TinyMCEEditor
-                apiKey="YOUR_TINYMCE_API_KEY"
+                apiKey="b0ltf47z16t202dzee5j66umb4r9m5ypez273jxv802r6t8n"
                 value={form.mo_ta ?? ""}
                 onEditorChange={(content) =>
                   setForm((prev) => ({
@@ -312,6 +338,7 @@ useEffect(() => {
                   branding: false,
                 }}
               />
+
             </div>
           </div>
 
@@ -323,34 +350,40 @@ useEffect(() => {
         {/* ================= HÌNH ẢNH ================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <label className="font-semibold">Hình chính</label>
+            <label htmlFor="hinh_chinh" className="font-semibold">
+              Hình chính
+            </label>
             <input
+              id="hinh_chinh"
               type="file"
-              onChange={(e) =>
-                setHinhChinh(e.target.files?.[0] ?? null)
-              }
+              onChange={(e) => setHinhChinh(e.target.files?.[0] ?? null)}
             />
+
 
             {hinhChinh && (
               <img
                 src={URL.createObjectURL(hinhChinh)}
+                alt="Hình chính sản phẩm"
                 className="w-40 mt-3 rounded-lg shadow"
               />
+
             )}
           </div>
 
           <div>
-            <label className="font-semibold">Hình phụ</label>
+            <label htmlFor="hinh_phu" className="font-semibold">
+              Hình phụ
+            </label>
             <input
+              id="hinh_phu"
               type="file"
               multiple
               onChange={(e) => {
-                const files = e.target.files
-                  ? Array.from(e.target.files)
-                  : [];
+                const files = e.target.files ? Array.from(e.target.files) : [];
                 setHinhPhu((prev) => [...prev, ...files]);
               }}
             />
+
 
             {hinhPhu.length > 0 && (
               <div className="flex flex-wrap gap-3 mt-3">
@@ -358,8 +391,10 @@ useEffect(() => {
                   <img
                     key={i}
                     src={URL.createObjectURL(file)}
+                    alt={`Hình phụ sản phẩm ${i + 1}`}
                     className="w-28 h-28 object-cover rounded-lg shadow"
                   />
+
                 ))}
               </div>
             )}

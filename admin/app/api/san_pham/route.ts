@@ -107,6 +107,7 @@ export async function GET(req: Request) {
 
     if (withDanhMuc) {
       danhMuc = await DanhMucModel.findAll({
+        where: { an_hien: true || 1 },
         order: [["thu_tu", "ASC"]],
       });
     }

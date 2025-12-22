@@ -62,6 +62,7 @@ export async function GET(
 
     // ✅ LẤY ĐẦY ĐỦ DANH MỤC (14)
     const danhMuc = await DanhMucModel.findAll({
+      where: { an_hien: true || 1 },
       order: [["thu_tu", "ASC"]],
     });
 
