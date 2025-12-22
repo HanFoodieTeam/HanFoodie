@@ -1,0 +1,109 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+
+export default function ResetPasswordForm() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const [token, setToken] = useState<string>("");
+  const [matKhauMoi, setMatKhauMoi] = useState<string>("");
+  const [nhapLaiMatKhau, setNhapLaiMatKhau] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+
+  useEffect(() => {
+    const t = searchParams.get("token");
+    if (t) setToken(t);
+  }, [searchParams]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!token) {
+      setMessage("Token không hợp lệ");
+      return;
+    }
+
+    if (!matKhauMoi || !nhapLaiMatKhau) {
+      setMessage("Vui lòng nhập đủ mật khẩu");
+      return;
+    }
+
+    if (matKhauMoi !== nhapLaiMatKhau) {
+      setMessage("Mật khẩu nhập lại không khớp");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const res = await fetch("/api/dat_lai_mat_khau", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, matKhauMoi }),
+      });
+
+      const data: { message?: string; error?: string } = await res.json();
+
+      if (res.ok) {
+        setMessage(data.message || "Đặt lại mật khẩu thành công!");
+        setTimeout(() => router.push("/"), 2000);
+      } else {
+        setMessage(data.error || "Có lỗi xảy ra");
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("Không thể kết nối server.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4 p-8 max-w-md mx-auto my-5 bg-white rounded-xl shadow-lg"
+    >
+      <h2 className="text-2xl font-bold text-center mb-4">Đặt lại mật khẩu</h2>
+
+      <input
+        type="password"
+        placeholder="Nhập mật khẩu mới"
+        value={matKhauMoi}
+        onChange={(e) => setMatKhauMoi(e.target.value)}
+        required
+        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0A0A]"
+      />
+
+      <input
+        type="password"
+        placeholder="Nhập lại mật khẩu"
+        value={nhapLaiMatKhau}
+        onChange={(e) => setNhapLaiMatKhau(e.target.value)}
+        required
+        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0A0A]"
+      />
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-[#6A0A0A] text-white p-3 rounded-lg hover:bg-red-700 transition"
+      >
+        {loading ? "Đang lưu..." : "Đặt lại mật khẩu"}
+      </button>
+
+      {message && (
+        <p
+          className={`text-center mt-2 text-sm ${
+            message.includes("thành công") ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+    </form>
+  );
+}

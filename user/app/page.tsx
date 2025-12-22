@@ -1,103 +1,311 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { useEffect, useState } from "react";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+import DanhMucSection from "./components/danhmucsection";
+import SanPhamHotSection from "./components/sanphamsection";
+import Link from "next/link";
+import { IBaiViet, IBanner, IDanhMuc, ISanPham } from "@/lib/cautrucdata";
+
+export default function TrangChuPage() {
+  const [danhMuc, setDanhMuc] = useState<IDanhMuc[]>([]);
+  const [spHot, setSpHot] = useState<ISanPham[]>([]);
+  const [combo, setCombo] = useState<ISanPham[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [baiVietMoi, setBaiVietMoi] = useState<IBaiViet[]>([]);
+  const [spMuaNhieu, setSpMuaNhieu] = useState<ISanPham[]>([]);
+
+  const [bannerChinh, setBannerChinh] = useState<IBanner[]>([]);
+  const [bannerPhu, setBannerPhu] = useState<IBanner[]>([]);
+  const [currentPhu, setCurrentPhu] = useState(0);
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [resDM, resSP, resCombo, resBV, resSP_MN, resBC, resBP] = await Promise.all([
+          fetch("/api/danh_muc"),
+          fetch("/api/trang_chu/sp_hot"),
+          fetch("/api/trang_chu/combo"),
+          fetch("/api/trang_chu/bai_viet"),
+          fetch("/api/trang_chu/sp_mua_nhieu"),
+          fetch("/api/trang_chu/banner?loai=0"),
+          fetch("/api/trang_chu/banner?loai=1"),
+        ]);
+
+        setDanhMuc(await resDM.json());
+        setSpHot(await resSP.json());
+        setCombo(await resCombo.json());
+        setBaiVietMoi(await resBV.json());
+        setSpMuaNhieu(await resSP_MN.json());
+        setBannerChinh((await resBC.json()).data || []);
+        setBannerPhu((await resBP.json()).data || []);
+
+
+      } catch (error) {
+        console.error("Lỗi tải dữ liệu:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+  const [current, setCurrent] = useState(0);
+
+  // banner chính
+  useEffect(() => {
+    if (bannerChinh.length === 0) return;
+
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % bannerChinh.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [bannerChinh]);
+  const handlePrev = () => {
+    setCurrent((prev) =>
+      prev === 0 ? bannerChinh.length - 1 : prev - 1
+    );
+  };
+  const handleNext = () => {
+    setCurrent((prev) => (prev + 1) % bannerChinh.length);
+  };
+
+  // banner phụ
+  useEffect(() => {
+    if (bannerPhu.length === 0) return;
+    const timer = setInterval(() => {
+      setCurrentPhu((prev) => (prev + 1) % bannerPhu.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [bannerPhu]);
+
+  const nextPhu = () => {
+    setCurrentPhu((prev) => (prev + 1) % bannerPhu.length);
+  };
+
+  const prevPhu = () => {
+    setCurrentPhu((prev) =>
+      prev === 0 ? bannerPhu.length - 1 : prev - 1
+    );
+  };
+
+  if (loading)
+    return (
+      <div className="pt-[80px] h-[700px] text-center py-16 text-gray-500">
+        Đang tải dữ liệu...
+      </div>
+    );
+  return (<>
+    <main className="">
+
+
+      <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+        {bannerChinh.length > 0 && (
+          <div className="relative w-full h-full">
+            {bannerChinh[current].link ? (
+              <a href={bannerChinh[current].link}>
+                <img src={bannerChinh[current].hinh} alt="Banner chính"
+                  className="w-full h-full object-cover transition-all duration-500 cursor-pointer"
+                  onError={(e) => (e.currentTarget.src = "/noimg.png")} />
+              </a>
+            ) : (
+              <img
+                src={bannerChinh[current].hinh}
+                alt="Banner chính"
+                className="w-full h-full object-cover transition-all duration-500"
+                onError={(e) => (e.currentTarget.src = "/noimg.png")}
+              />
+            )}
+            <button
+              onClick={handlePrev}
+              className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full">
+              ❮
+            </button>
+
+            <button
+              onClick={handleNext}
+              className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full" >
+              ❯
+            </button>
+
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              {bannerChinh.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrent(index)}
+                  className={`h-3 rounded-full transition-all ${current === index ? "bg-white w-6" : "bg-white/50 w-3"
+                    }`}
+                ></button>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+
+
+      <div className=" py-4 space-y-4 ">
+        <DanhMucSection data={danhMuc} />
+        <h2 className="text-2xl font-semibold mb-3 text-[#6A0A0A]">
+          Sản phẩm nổi bật
+        </h2>
+        <SanPhamHotSection data={spHot} />
+        <h2 className="text-2xl font-semibold mb-3 text-[#6A0A0A]">
+          Sản phẩm bán chạy
+        </h2>
+        <SanPhamHotSection data={spMuaNhieu} />
+
+        <section className="relative w-full h-[200px] rounded-lg overflow-hidden mt-4">
+          {bannerPhu.length > 0 && (
+            <div className="relative w-full h-full">
+
+              {bannerPhu[currentPhu].link ? (
+                <a href={bannerPhu[currentPhu].link} target="_blank" rel="noopener noreferrer">
+                  <img src={bannerPhu[currentPhu].hinh} alt="Banner phụ"
+                    className="w-full h-full object-cover transition-all duration-500 cursor-pointer"
+                    onError={(e) => (e.currentTarget.src = "/noimg.png")} />
+                </a>
+              ) : (
+                <img src={bannerPhu[currentPhu].hinh} alt="Banner phụ"
+                  className="w-full h-full object-cover transition-all duration-500"
+                  onError={(e) => (e.currentTarget.src = "/noimg.png")} />
+              )}
+
+              {/* Nút lùi */}
+              <button
+                onClick={prevPhu}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full">
+                ❮
+              </button>
+
+              {/* Nút tới */}
+              <button
+                onClick={nextPhu}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full">
+                ❯
+              </button>
+
+              {/* Chấm điều hướng */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                {bannerPhu.map((_, index) => (
+                  <button key={index} onClick={() => setCurrentPhu(index)}
+                    className={`h-3 rounded-full transition-all ${currentPhu === index ? "bg-white w-6" : "bg-white/50 w-3"
+                      }`}
+                  ></button>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* COMBO   */}
+        <section className="relative z-10">
+          <h2 className="text-lg font-semibold mb-3">Combo hấp dẫn</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {combo.slice(0, 6).map((sp) => (
+              <Link
+                key={sp.id}
+                href={`/chi_tiet/${sp.id}`}
+
+
+                className="flex bg-white rounded-md border border-gray-200 shadow-sm hover:shadow-md 
+                 overflow-hidden transition-all hover:-translate-y-1 h-[120px]" >
+                <div className="w-[30%] flex items-center justify-center bg-gray-100">
+                  <img
+                    src={sp.hinh || "/noimg.png"}
+                    alt={sp.ten}
+                    className="w-[100%] h-[100%] object-cover rounded"
+                  />
+                </div>
+
+                <div className="w-[70%] p-1.5 flex flex-col justify-between">
+                  <div>
+                    <h1
+                      className="font-semibold text-gray-800 text-[16px] leading-tight line-clamp-2"
+                      title={sp.ten}>
+                      {sp.ten}
+                    </h1>
+
+                    <p
+                      className="text-[14px] text-gray-600 line-clamp-2 mt-1"
+                      title={sp.mo_ta}>
+                      {sp.mo_ta || "Thưởng thức hương vị tuyệt hảo từ HanFoodie."}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-[13px] text-gray-400">
+                    </span>
+
+                    <span className="text-[16px] font-semibold text-red-600">
+                      {sp.gia_goc?.toLocaleString("vi-VN")}đ
+                    </span>
+                  </div>
+
+                </div>
+              </Link>
+            ))}
+          </div>
+
+
+        </section>
+
+        <section className="relative z-10 mt-6">
+          <h2 className="text-lg font-semibold mb-3">Bài viết mới nhất</h2>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {baiVietMoi.map((bv) => (
+              <a
+                key={bv.id}
+                href={`/bai_viet/${bv.id}`}
+                className="bg-white rounded-md border border-gray-200 shadow-sm 
+                 overflow-hidden hover:shadow-lg transition-all 
+                 hover:-translate-y-1 h-[280px] flex flex-col">
+
+                <div className="w-full h-[150px] bg-gray-100 flex items-center justify-center">
+                  <img
+                    src={bv.hinh || "/noimg.png"}
+                    alt={bv.tieu_de}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                <div className="p-2 flex flex-col flex-grow justify-between">
+                  <h3
+                    className="font-semibold text-gray-900 text-[15px] line-clamp-2"
+                    title={bv.tieu_de}>
+                    {bv.tieu_de}
+                  </h3>
+
+                  <p
+                    className="text-[13px] text-gray-600 line-clamp-2"
+                    title={bv.noi_dung}>
+                    {(bv.noi_dung ?? "").slice(0, 120)}
+                  </p>
+
+                  <div className="flex items-center justify-between text-[12px] text-gray-400 mt-2">
+                    <span>
+                      {bv.ngay_dang
+                        ? new Date(bv.ngay_dang).toLocaleDateString("vi-VN")
+                        : "Đang cập nhật"}
+                    </span>
+
+                    <span>{bv.luot_xem} lượt xem</span>
+                  </div>
+
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+
+      </div>
+    </main>
+  </>
+
   );
+
 }
