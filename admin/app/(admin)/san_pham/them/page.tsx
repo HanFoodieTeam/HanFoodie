@@ -469,8 +469,8 @@ export default function ThemSanPhamPage() {
   const [hinhPhu, setHinhPhu] = useState<File[]>([]);
   const [slugDaSua, setSlugDaSua] = useState(false);
   const danhMucFilter = danhMuc.filter((dm) =>
-  dm.ten.toLowerCase().includes(keywordDanhMuc.toLowerCase())
-);
+    dm.ten.toLowerCase().includes(keywordDanhMuc.toLowerCase())
+  );
 
 
   const [form, setForm] = useState<SanPhamInput>({
@@ -486,26 +486,26 @@ export default function ThemSanPhamPage() {
     het_mon: null,
   });
 
-// ================= LOAD DANH MỤC (TỪ API SẢN PHẨM) =================
-useEffect(() => {
-  const loadDanhMuc = async () => {
-    try {
-      const res = await fetch("/api/san_pham?with_danh_muc=1");
-      const json = await res.json();
+  // ================= LOAD DANH MỤC (TỪ API SẢN PHẨM) =================
+  useEffect(() => {
+    const loadDanhMuc = async () => {
+      try {
+        const res = await fetch("/api/san_pham?with_danh_muc=1");
+        const json = await res.json();
 
-      if (json.success && Array.isArray(json.danh_muc)) {
-        setDanhMuc(json.danh_muc);
-      } else {
+        if (json.success && Array.isArray(json.danh_muc)) {
+          setDanhMuc(json.danh_muc);
+        } else {
+          setDanhMuc([]);
+        }
+      } catch (err) {
+        console.error("Lỗi load danh mục", err);
         setDanhMuc([]);
       }
-    } catch (err) {
-      console.error("Lỗi load danh mục", err);
-      setDanhMuc([]);
-    }
-  };
+    };
 
-  loadDanhMuc();
-}, []);
+    loadDanhMuc();
+  }, []);
 
 
   // ================= ONCHANGE =================
@@ -669,16 +669,16 @@ useEffect(() => {
 
           <div>
             <label htmlFor="gia_goc" className="font-semibold">
-                Giá gốc
-              </label>
-              <input
-                id="gia_goc"
-                type="number"
-                name="gia_goc"
-                value={form.gia_goc}
-                onChange={onChange}
-                className="w-full border rounded-lg px-4 py-3"
-              />
+              Giá gốc
+            </label>
+            <input
+              id="gia_goc"
+              type="number"
+              name="gia_goc"
+              value={form.gia_goc}
+              onChange={onChange}
+              className="w-full border rounded-lg px-4 py-3"
+            />
 
           </div>
 
@@ -700,7 +700,7 @@ useEffect(() => {
           </div>
 
           <div>
-           <label htmlFor="id_danh_muc" className="font-semibold">
+            <label htmlFor="id_danh_muc" className="font-semibold">
               Danh mục
             </label>
             <select
@@ -755,8 +755,7 @@ useEffect(() => {
 
             <div className="border rounded-lg p-2">
               <TinyMCEEditor
-                apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-                value={form.mo_ta ?? ""}
+                apiKey="b0ltf47z16t202dzee5j66umb4r9m5ypez273jxv802r6t8n"
                 onEditorChange={(content) =>
                   setForm((prev) => ({
                     ...prev,
@@ -904,16 +903,15 @@ useEffect(() => {
         {/* ================= BUTTON LƯU ================= */}
         <div className="text-center pt-6">
           <button
-              onClick={submit}
-              disabled={dangLuu}
-              className={`font-medium px-6 py-2 rounded-lg shadow-md ${
-                dangLuu
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600 text-white"
+            onClick={submit}
+            disabled={dangLuu}
+            className={`font-medium px-6 py-2 rounded-lg shadow-md ${dangLuu
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
               }`}
-            >
-              {dangLuu ? "Đang lưu..." : "Lưu sản phẩm"}
-            </button>
+          >
+            {dangLuu ? "Đang lưu..." : "Lưu sản phẩm"}
+          </button>
 
         </div>
       </div>

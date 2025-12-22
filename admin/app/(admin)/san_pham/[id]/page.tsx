@@ -366,7 +366,7 @@
 //           </div>
 
 //         {/* FORM INFO */}
-        
+
 //           <div>
 //           <p className="font-semibold mb-1">Danh mục</p>
 //           <select
@@ -665,7 +665,7 @@ interface IBienTheInput {
   id?: number;
   ten: string;
   gia_them: number;
-  trang_thai: number; 
+  trang_thai: number;
 }
 const TinyMCEEditor = dynamic(
   () => import("@tinymce/tinymce-react").then((mod) => mod.Editor),
@@ -696,9 +696,9 @@ export default function ChiTietSanPhamPage() {
     phong_cach: "",
     tag: "",
     id_danh_muc: 0,
-    hinh: "", 
-    luot_xem: 0,       
-    het_mon: null as string | null,   
+    hinh: "",
+    luot_xem: 0,
+    het_mon: null as string | null,
   });
 
 
@@ -719,62 +719,62 @@ export default function ChiTietSanPhamPage() {
     }
 
     const loadAll = async () => {
-  setLoading(true);
-  try {
-    const res = await fetch(`/api/san_pham/${productId}`);
-    const json = await res.json();
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/san_pham/${productId}`);
+        const json = await res.json();
 
-    if (!json.success) {
-      toast.error("Không tìm thấy sản phẩm");
-      return;
-    }
+        if (!json.success) {
+          toast.error("Không tìm thấy sản phẩm");
+          return;
+        }
 
-    const sp: ISanPhamChiTiet = json.data;
+        const sp: ISanPhamChiTiet = json.data;
 
-    // danh mục (API đã trả sẵn)
-    if (json.danh_muc) setDanhMuc(json.danh_muc);
+        // danh mục (API đã trả sẵn)
+        if (json.danh_muc) setDanhMuc(json.danh_muc);
 
-      setForm({
-      ten: sp.ten,
-      slug: sp.slug,
-      gia_goc: sp.gia_goc,
-      mo_ta: sp.mo_ta ?? "",
-      phong_cach: sp.phong_cach ?? "",
-      tag: sp.tag ?? "",
-      id_danh_muc: sp.id_danh_muc,
-      hinh: sp.hinh ?? "",
-      luot_xem: sp.luot_xem ?? 0,
-      het_mon: sp.het_mon
-    ? new Date(sp.het_mon).toISOString().slice(0, 10)
-    : null,
-    });
+        setForm({
+          ten: sp.ten,
+          slug: sp.slug,
+          gia_goc: sp.gia_goc,
+          mo_ta: sp.mo_ta ?? "",
+          phong_cach: sp.phong_cach ?? "",
+          tag: sp.tag ?? "",
+          id_danh_muc: sp.id_danh_muc,
+          hinh: sp.hinh ?? "",
+          luot_xem: sp.luot_xem ?? 0,
+          het_mon: sp.het_mon
+            ? new Date(sp.het_mon).toISOString().slice(0, 10)
+            : null,
+        });
 
 
-    setHinhPhuOld(
-      (sp.hinh_anh ?? []).map((h) => ({
-        id: h.id,
-        hinh: h.hinh ?? "",
-      }))
-    );
+        setHinhPhuOld(
+          (sp.hinh_anh ?? []).map((h) => ({
+            id: h.id,
+            hinh: h.hinh ?? "",
+          }))
+        );
 
-    setBienThe(
-      (sp.bien_the ?? []).map((bt) => ({
-        id: bt.id ?? null,
-        id_san_pham: bt.id_san_pham,
-        ten: bt.ten,
-        gia_them: bt.gia_them ?? 0,
-        trang_thai: bt.trang_thai ? 1 : 0,
-      }))
-    );
+        setBienThe(
+          (sp.bien_the ?? []).map((bt) => ({
+            id: bt.id ?? null,
+            id_san_pham: bt.id_san_pham,
+            ten: bt.ten,
+            gia_them: bt.gia_them ?? 0,
+            trang_thai: bt.trang_thai ? 1 : 0,
+          }))
+        );
 
-    setSanPham(sp);
-  } catch (err) {
-    console.error(err);
-    toast.error("Lỗi khi tải dữ liệu");
-  } finally {
-    setLoading(false);
-  }
-};
+        setSanPham(sp);
+      } catch (err) {
+        console.error(err);
+        toast.error("Lỗi khi tải dữ liệu");
+      } finally {
+        setLoading(false);
+      }
+    };
 
 
     loadAll();
@@ -791,7 +791,7 @@ export default function ChiTietSanPhamPage() {
     setForm((prev) => ({
       ...prev,
       [name]:
-      name === "gia_goc" || name === "luot_xem"
+        name === "gia_goc" || name === "luot_xem"
           ? Number(value)
           : value,
     }));
@@ -952,7 +952,7 @@ export default function ChiTietSanPhamPage() {
                   id_san_pham: bt.id_san_pham,
                   ten: bt.ten,
                   gia_them: bt.gia_them ?? 0,
-                   trang_thai: bt.trang_thai ? 1 : 0,
+                  trang_thai: bt.trang_thai ? 1 : 0,
                 }))
               );
             }
@@ -992,25 +992,25 @@ export default function ChiTietSanPhamPage() {
             />
           </div>
 
-        {/* FORM INFO */}
-        
-          <div>
-          <p className="font-semibold mb-1">Danh mục</p>
-          <select
-            aria-label="Danh mục sản phẩm"
-            name="id_danh_muc"
-            value={form.id_danh_muc}
-            onChange={handleInputChange}
-          >
+          {/* FORM INFO */}
 
-            <option value={0}>-- Chọn danh mục --</option>
-            {danhMuc.map((dm) => (
-              <option key={dm.id} value={dm.id}>
-                {dm.ten}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div>
+            <p className="font-semibold mb-1">Danh mục</p>
+            <select
+              aria-label="Danh mục sản phẩm"
+              name="id_danh_muc"
+              value={form.id_danh_muc}
+              onChange={handleInputChange}
+            >
+
+              <option value={0}>-- Chọn danh mục --</option>
+              {danhMuc.map((dm) => (
+                <option key={dm.id} value={dm.id}>
+                  {dm.ten}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label htmlFor="luot_xem" className="font-semibold">
               Lượt xem
@@ -1117,8 +1117,7 @@ export default function ChiTietSanPhamPage() {
 
           <div className="border rounded-lg p-2 bg-white">
             <TinyMCEEditor
-              apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-              value={form.mo_ta ?? ""}
+              apiKey="b0ltf47z16t202dzee5j66umb4r9m5ypez273jxv802r6t8n"
               onEditorChange={(content) =>
                 setForm((prev) => ({
                   ...prev,
