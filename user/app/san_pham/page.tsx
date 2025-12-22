@@ -105,12 +105,51 @@ function SanPhamContent() {
     }
   }, [danhMucSlug, loading]);
 
-  // ================== TOGGLE YÊU THÍCH ==================
-const toggleFavorite = async (id_san_pham: number) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    setToast("Vui lòng đăng nhập");
-    return;
+  // ================== SCROLL KHI SEARCH ==================
+useEffect(() => {
+  if (loading || dsDanhMuc.length === 0) return;
+
+  const rawKeyword = searchParams.get("search")?.trim();
+  if (!rawKeyword) return;
+
+  const keywordNoTone = removeVietnameseTones(rawKeyword.toLowerCase());
+
+  // Tìm danh mục theo keyword
+  let targetDanhMuc = dsDanhMuc.find(dm =>
+    (dm.slug && removeVietnameseTones(dm.slug.toLowerCase()) === keywordNoTone) ||
+    removeVietnameseTones(dm.ten.toLowerCase()).includes(keywordNoTone)
+  );
+
+  if (!targetDanhMuc) {
+    const keywords = keywordNoTone.split(/\s+/);
+    targetDanhMuc = dsDanhMuc.find(dm =>
+      dm.san_pham.some(sp => {
+        const spName = removeVietnameseTones(sp.ten.toLowerCase());
+        return keywords.every(k => spName.includes(k));
+      })
+    );
+  }
+
+  if (targetDanhMuc?.slug) {
+    const el = document.getElementById(`danh-muc-${targetDanhMuc.slug}`);
+    if (el) {
+      // delay 50ms để chắc chắn DOM đã render
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    }
+  }
+}, [dsDanhMuc, searchParams, loading]);
+
+
+  // =================== HÀM LOẠI BỎ DẤU ===================
+  function removeVietnameseTones(str: string) {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+
   }
 
   const isFavorite = favorites.includes(id_san_pham);
@@ -214,9 +253,10 @@ const toggleFavorite = async (id_san_pham: number) => {
                       <h3 className="font-medium line-clamp-1">
                         {sp.ten}
                       </h3>
-                      <p className="text-sm text-gray-500 truncate">
-                        {sp.mo_ta}
-                      </p>
+                      <div
+                        className="text-sm text-gray-600 line-clamp-2"
+                        dangerouslySetInnerHTML={{ __html: sp.mo_ta || "" }}
+                      />
                     </Link>
 
                     <div className="flex justify-between items-center px-4 pb-4">

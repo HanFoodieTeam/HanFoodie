@@ -36,12 +36,13 @@ export default function SuaDanhMuc() {
   const [allLoaiTuyChon, setAllLoaiTuyChon] = useState<ILoaiTuyChon[]>([]);
   const [allMonThem, setAllMonThem] = useState<IMonThem[]>([]);
   const [file, setFile] = useState<File | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [showLoaiTuyChonDropdown, setShowLoaiTuyChonDropdown] = useState(false);
-  const [monThemType, setMonThemType] = useState<0 | 1>(0); // 0=Topping, 1=Món ăn kèm
+  const [monThemType, setMonThemType] = useState<0 | 1>(0);
   const [showMonThemDropdown, setShowMonThemDropdown] = useState(false);
 
   const filteredMonThem: IMonThem[] = allMonThem.filter(
@@ -87,8 +88,8 @@ export default function SuaDanhMuc() {
         type === "number"
           ? Number(value)
           : type === "radio"
-            ? value === "true"
-            : value,
+          ? value === "true"
+          : value,
     }));
   };
 
@@ -122,6 +123,7 @@ export default function SuaDanhMuc() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!form.ten.trim()) {
       setError("Tên danh mục không được để trống");
       return;
@@ -164,8 +166,10 @@ export default function SuaDanhMuc() {
     return <div className="p-4 text-center">Đang tải dữ liệu...</div>;
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow-md max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-center">CẬP NHẬT DANH MỤC</h1>
+    <div className="p-4 md:p-6 bg-white rounded-xl shadow-md max-w-5xl mx-auto">
+      <h1 className="text-xl md:text-2xl font-bold mb-4 text-center">
+        CẬP NHẬT DANH MỤC
+      </h1>
 
       {error && (
         <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
@@ -175,9 +179,9 @@ export default function SuaDanhMuc() {
 
       <form
         onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5"
       >
-        {/* Tên & Slug */}
+        {/* Tên */}
         <div>
           <label className="block mb-1">Tên danh mục</label>
           <input
@@ -187,20 +191,26 @@ export default function SuaDanhMuc() {
             className="border border-gray-300 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 p-2 rounded w-full"
           />
         </div>
+
+        {/* Slug */}
         <div>
           <label className="block mb-1">Slug</label>
           <input
             name="slug"
             value={form.slug || ""}
             onChange={handleChange}
-            className="border border-gray-300  p-2 rounded w-full"
+            className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
-        {/* Hình ảnh */}
+        {/* Hình */}
         <div>
           <label className="block mb-1">Hình ảnh</label>
-          <input type="file" accept="image/*" onChange={handleUpload} className="border border-gray-300 p-2 rounded w-full"
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleUpload}
+            className="border border-gray-300 p-2 rounded w-full"
           />
           {form.hinh && (
             <Image
@@ -226,11 +236,9 @@ export default function SuaDanhMuc() {
           />
         </div>
 
-
-        {/* Loại tuỳ chọn + Loại món thêm + Món thêm */}
+        {/* Tuỳ chọn & Món thêm */}
         <div className="md:col-span-2 flex flex-col gap-4">
-          <div className="flex gap-4 flex-col md:flex-row">
-            {/* Loại món thêm */}
+          <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <label className="block mb-1">Loại món thêm</label>
               <select
@@ -244,7 +252,7 @@ export default function SuaDanhMuc() {
                 <option value={1}>Món ăn kèm</option>
               </select>
             </div>
-            {/* Loại tuỳ chọn */}
+
             <div className="flex-1 relative">
               <label className="block mb-1">Loại tuỳ chọn</label>
               <div
@@ -257,6 +265,7 @@ export default function SuaDanhMuc() {
                   ? `${form.loai_tuy_chon_ids.length} loại đã chọn`
                   : "Chọn loại tuỳ chọn..."}
               </div>
+
               {showLoaiTuyChonDropdown && (
                 <div className="absolute z-10 mt-1 w-full max-h-60 overflow-auto border rounded bg-white shadow-lg p-2">
                   {allLoaiTuyChon.map((l) => (
@@ -275,11 +284,8 @@ export default function SuaDanhMuc() {
                 </div>
               )}
             </div>
-
-
           </div>
 
-          {/* Món thêm */}
           <div className="relative">
             <label className="block mb-1">Món thêm</label>
             <div
@@ -338,12 +344,12 @@ export default function SuaDanhMuc() {
           </div>
         </div>
 
-
         {/* Submit */}
         <div className="md:col-span-2 text-right">
           <button
             disabled={loading}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg shadow-md disabled:opacity-50">
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg shadow-md disabled:opacity-50"
+          >
             {loading ? "Đang lưu..." : "Cập nhật danh mục"}
           </button>
         </div>

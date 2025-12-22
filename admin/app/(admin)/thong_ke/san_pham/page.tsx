@@ -86,41 +86,41 @@ export default function SanPhamPage() {
 
   /* UI */
   return (
-    <div className="w-full min-h-screen px-[5px] py-[5px] space-y-4">
+    <div className="w-full min-h-screen p-3 md:p-5 space-y-4">
       <h1 className="text-lg md:text-xl font-semibold">
         Thống kê sản phẩm
       </h1>
 
       {/* Bộ lọc thời gian */}
-      <div className="flex flex-wrap items-end gap-2">
-        <div className="flex flex-col">
+      <div className="flex flex-col md:flex-row md:items-end gap-3">
+        <div className="flex flex-col w-full md:w-auto">
           <label className="text-xs font-medium">Từ ngày</label>
           <input
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded px-2 py-1 text-sm w-full"
           />
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full md:w-auto">
           <label className="text-xs font-medium">Đến ngày</label>
           <input
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded px-2 py-1 text-sm w-full"
           />
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full md:w-auto">
           <label className="text-xs font-medium">Thống kê theo</label>
           <select
             value={filterTime}
             onChange={(e) =>
               setFilterTime(e.target.value as "ngay" | "thang" | "nam")
             }
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded px-2 py-1 text-sm w-full"
           >
             <option value="ngay">Ngày</option>
             <option value="thang">Tháng</option>
@@ -130,7 +130,7 @@ export default function SanPhamPage() {
 
         <button
           onClick={loadData}
-          className="px-4 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+          className="px-5 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 w-full md:w-auto"
         >
           Xem
         </button>
@@ -144,8 +144,8 @@ export default function SanPhamPage() {
       </div>
 
       {/* Bảng chi tiết */}
-      <div className="bg-white shadow-sm rounded-lg p-3">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+      <div className="bg-white shadow-sm rounded-lg p-3 md:p-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-3">
           <h2 className="text-base font-semibold">
             Thống kê chi tiết
           </h2>
@@ -161,7 +161,7 @@ export default function SanPhamPage() {
                   | "yeu_thich"
               )
             }
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded px-2 py-1 text-sm w-full md:w-auto"
           >
             <option value="all">Tất cả</option>
             <option value="ban_chay">Bán chạy</option>
@@ -182,13 +182,13 @@ export default function SanPhamPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={3} className="p-3 text-center">
+                  <td colSpan={3} className="p-4 text-center">
                     Đang tải...
                   </td>
                 </tr>
               ) : filteredTableData.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="p-3 text-center text-gray-500">
+                  <td colSpan={3} className="p-4 text-center text-gray-500">
                     Không có dữ liệu
                   </td>
                 </tr>

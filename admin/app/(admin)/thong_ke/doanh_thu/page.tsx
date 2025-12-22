@@ -98,41 +98,41 @@ export default function DoanhThuPage() {
 
   /* UI */
   return (
-    <div className="w-full min-h-screen px-[5px] py-[5px] space-y-4">
+    <div className="w-full min-h-screen p-3 md:p-5 space-y-4">
       <h1 className="text-lg md:text-xl font-semibold">
         Thống kê doanh thu
       </h1>
 
       {/* Bộ lọc */}
-      <div className="flex flex-wrap items-end gap-2">
-        <div className="flex flex-col">
+      <div className="flex flex-col md:flex-row md:items-end gap-3">
+        <div className="flex flex-col w-full md:w-auto">
           <label className="text-xs font-medium">Từ ngày</label>
           <input
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded px-2 py-1 text-sm w-full"
           />
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full md:w-auto">
           <label className="text-xs font-medium">Đến ngày</label>
           <input
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded px-2 py-1 text-sm w-full"
           />
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full md:w-auto">
           <label className="text-xs font-medium">Thống kê theo</label>
           <select
             value={filter}
             onChange={(e) =>
               setFilter(e.target.value as "ngay" | "thang" | "nam")
             }
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded px-2 py-1 text-sm w-full"
           >
             <option value="ngay">Ngày</option>
             <option value="thang">Tháng</option>
@@ -143,14 +143,14 @@ export default function DoanhThuPage() {
         <button
           onClick={loadData}
           disabled={loading}
-          className="px-4 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
+          className="px-5 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50 w-full md:w-auto"
         >
           {loading ? "Đang tải..." : "Xem"}
         </button>
       </div>
 
       {/* Box tổng quan */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="rounded-lg p-4 bg-green-50 shadow-sm">
           <p className="text-xs text-green-700 font-medium">
             {label} doanh thu cao nhất
@@ -195,8 +195,8 @@ export default function DoanhThuPage() {
       </div>
 
       {/* Bảng */}
-      <div className="bg-white shadow-sm rounded-lg p-3">
-        <h2 className="text-base font-semibold mb-2">
+      <div className="bg-white shadow-sm rounded-lg p-3 md:p-4">
+        <h2 className="text-base font-semibold mb-3">
           Tổng hợp doanh thu
         </h2>
 
@@ -212,7 +212,7 @@ export default function DoanhThuPage() {
             <tbody>
               {doanhThu.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="p-3 text-center text-gray-500">
+                  <td colSpan={3} className="p-4 text-center text-gray-500">
                     Không có dữ liệu
                   </td>
                 </tr>

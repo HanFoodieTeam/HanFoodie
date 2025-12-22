@@ -35,11 +35,14 @@ function BaiVietListContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [confirmItem, setConfirmItem] = useState<IBaiViet | null>(null);
 
-  // Fetch dữ liệu
   const fetchData = async (pageNumber: number, searchTerm: string) => {
     try {
       setLoading(true);
-      const qs = new URLSearchParams({ page: String(pageNumber), limit: "5", search: searchTerm });
+      const qs = new URLSearchParams({
+        page: String(pageNumber),
+        limit: "5",
+        search: searchTerm,
+      });
       const res = await fetch(`/api/bai_viet?${qs.toString()}`);
       const json: IBaiVietResponse = await res.json();
       if (json.success) {
@@ -56,7 +59,6 @@ function BaiVietListContent() {
     }
   };
 
-  // Debounce tìm kiếm
   useEffect(() => {
     const delay = setTimeout(() => {
       setPage(1);
@@ -66,7 +68,6 @@ function BaiVietListContent() {
     return () => clearTimeout(delay);
   }, [search]);
 
-  // Khi đổi trang
   useEffect(() => {
     fetchData(page, search);
     router.replace(`/bai_viet?search=${encodeURIComponent(search)}&page=${page}`);
@@ -85,9 +86,11 @@ function BaiVietListContent() {
         body: JSON.stringify({ an_hien: newState }),
       });
       if (!res.ok) throw new Error("Lỗi cập nhật trạng thái");
-      setData((prev) => prev.map((bv) => (bv.id === id ? { ...bv, an_hien: newState } : bv)));
+      setData((prev) =>
+        prev.map((bv) => (bv.id === id ? { ...bv, an_hien: newState } : bv))
+      );
     } catch (err) {
-      console.error(" PATCH lỗi:", err);
+      console.error("PATCH lỗi:", err);
       alert("Không thể cập nhật trạng thái!");
     } finally {
       setConfirmItem(null);
@@ -99,7 +102,6 @@ function BaiVietListContent() {
     setPage(p);
   };
 
-  const truncateContent = (text: string, length = 80) => (text.length > length ? text.slice(0, length) + "..." : text);
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
@@ -107,52 +109,56 @@ function BaiVietListContent() {
   };
 
   return (
-    <div>
-      {/* Thanh tiêu đề + tìm kiếm */}
-      <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
-        <h1 className="text-2xl font-bold text-gray-800">Quản lý Bài Viết</h1>
-        <div className="flex gap-2 flex-wrap items-center">
-          <div className="flex items-center border border-gray-400 rounded-lg px-3 py-1.5 bg-white relative">
+    <div className="px-4 md:px-0">
+      {/* Header + search */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+          Quản lý Bài Viết
+        </h1>
+
+        <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+          <div className="relative flex items-center border border-gray-400 rounded-lg px-3 py-1.5 bg-white">
             <input
               type="text"
               placeholder="Tìm theo tiêu đề..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="outline-none w-64 text-sm"
+              className="outline-none w-full sm:w-64 text-sm pr-6"
             />
             {search && (
               <button
                 onClick={() => setSearch("")}
                 className="absolute right-2 text-gray-500 hover:text-red-500"
-                title="Xoá nội dung"
               >
-                X
+                ✕
               </button>
             )}
           </div>
+
           <Link
             href="/bai_viet/them"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg shadow text-sm"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow text-sm text-center"
           >
             Thêm Bài Viết
           </Link>
         </div>
       </div>
 
-      {/* Bảng dữ liệu */}
+      {/* Table */}
       <div className="overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-200">
-        <table className="min-w-full text-sm border-collapse">
-          <thead className="bg-gray-300 text-gray-700 uppercase text-sm text-center">
+        <table className="min-w-[900px] w-full text-sm">
+          <thead className="bg-gray-300 text-gray-700 uppercase text-center">
             <tr>
-              <th className="px-3 py-2 w-20 text-center">HÌNH</th>
-              <th className="px-3 py-2 text-center">TIÊU ĐỀ</th>
-              <th className="px-3 py-2 text-center">NỘI DUNG</th>
-              <th className="px-3 py-2 text-center">LƯỢT XEM</th>
-              <th className="px-3 py-2 text-center">NGÀY ĐĂNG</th>
-              <th className="px-3 py-2 text-center">ẨN/HIỆN</th>
-              <th className="px-3 py-2 text-center">SỬA</th>
+              <th className="px-3 py-2 w-24">HÌNH</th>
+              <th className="px-3 py-2">TIÊU ĐỀ</th>
+              <th className="px-3 py-2">NỘI DUNG</th>
+              <th className="px-3 py-2">LƯỢT XEM</th>
+              <th className="px-3 py-2">NGÀY ĐĂNG</th>
+              <th className="px-3 py-2">ẨN/HIỆN</th>
+              <th className="px-3 py-2">SỬA</th>
             </tr>
           </thead>
+
           <tbody>
             {loading ? (
               <tr>
@@ -168,40 +174,56 @@ function BaiVietListContent() {
               </tr>
             ) : (
               data.map((bv) => (
-                <tr key={bv.id} className="border-t hover:bg-gray-100 transition-all">
+                <tr
+                  key={bv.id}
+                  className="border-t hover:bg-gray-100 transition"
+                >
                   <td className="px-3 py-2">
                     {bv.hinh ? (
                       <img
                         src={bv.hinh}
                         alt={bv.tieu_de}
-                        className="w-20 h-20 object-cover rounded-lg mx-auto border border-gray-200 shadow-sm"
-                        onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.png"; }}
+                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg mx-auto border shadow-sm"
+                        onError={(e) =>
+                          ((e.target as HTMLImageElement).src =
+                            "/placeholder.png")
+                        }
                       />
                     ) : (
-                      <div className="w-20 h-20 bg-gray-200 rounded-lg mx-auto flex items-center justify-center text-gray-400 text-xs border border-gray-300">
+                      <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-200 rounded-lg mx-auto flex items-center justify-center text-xs text-gray-400">
                         Chưa có
                       </div>
                     )}
                   </td>
-                  <td className="px-3 py-2 max-w-[200px] truncate font-medium" title={bv.tieu_de}>
+
+                  <td className="px-3 py-2 max-w-[180px] truncate font-medium">
                     {bv.tieu_de}
                   </td>
-                  <td className="px-3 py-2 max-w-[250px] truncate" title={bv.noi_dung}>
+
+                  <td className="px-3 py-2 max-w-[220px] truncate">
                     {bv.noi_dung}
                   </td>
-                  <td className="px-3 py-2 text-center">{bv.luot_xem}</td>
-                  <td className="px-3 py-2 text-center">{formatDate(bv.ngay_dang)}</td>
+
+                  <td className="px-3 py-2 text-center">
+                    {bv.luot_xem}
+                  </td>
+
+                  <td className="px-3 py-2 text-center">
+                    {formatDate(bv.ngay_dang)}
+                  </td>
+
                   <td
-                    className="px-3 py-2 text-center cursor-pointer text-2xl"
+                    className="px-3 py-2 text-center cursor-pointer text-xl"
                     onClick={() => handleToggleClick(bv)}
-                    title="Bấm để đổi trạng thái"
                   >
                     {bv.an_hien ? "✅" : "❌"}
                   </td>
 
-
                   <td className="px-3 py-2 text-center">
-                    <Link href={`/bai_viet/${bv.id}`} className="text-blue-600 hover:text-blue-800 font-medium">
+                    <Link
+                      href={`/bai_viet/${bv.id}`}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
                       Sửa
                     </Link>
                   </td>
@@ -212,40 +234,65 @@ function BaiVietListContent() {
         </table>
       </div>
 
-      {/* Phân trang */}
-      <div className="flex justify-center mt-4 gap-2 text-sm">
-        <button onClick={() => goToPage(page - 1)} disabled={page <= 1} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">
+      {/* Pagination */}
+      <div className="flex flex-wrap justify-center mt-4 gap-2 text-sm">
+        <button
+          onClick={() => goToPage(page - 1)}
+          disabled={page <= 1}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        >
           Trước
         </button>
+
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
           <button
             key={p}
             onClick={() => goToPage(p)}
-            className={`px-3 py-1 rounded ${p === page ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+            className={`px-3 py-1 rounded ${
+              p === page
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
           >
             {p}
           </button>
         ))}
-        <button onClick={() => goToPage(page + 1)} disabled={page >= totalPages} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">
+
+        <button
+          onClick={() => goToPage(page + 1)}
+          disabled={page >= totalPages}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        >
           Sau
         </button>
       </div>
 
       {/* Modal xác nhận */}
       {confirmItem && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 shadow-lg w-[380px]">
-            <h2 className="text-xl font-semibold mb-3 text-center text-gray-800">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-md">
+            <h2 className="text-lg md:text-xl font-semibold mb-3 text-center">
               Xác nhận thay đổi trạng thái
             </h2>
-            <p className="text-center mb-5 text-lg">
-              Bạn có muốn <span className="text-red-600 font-semibold">{confirmItem.an_hien ? "ẩn" : "hiển thị"}</span> bài viết <span className="font-semibold text-gray-700">{confirmItem.tieu_de}</span> không?
+            <p className="text-center mb-5">
+              Bạn có muốn{" "}
+              <span className="text-red-600 font-semibold">
+                {confirmItem.an_hien ? "ẩn" : "hiển thị"}
+              </span>{" "}
+              bài viết{" "}
+              <span className="font-semibold">{confirmItem.tieu_de}</span> không?
             </p>
-            <div className="flex justify-center space-x-4">
-              <button onClick={confirmToggle} className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 text-lg rounded-lg">
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={confirmToggle}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg"
+              >
                 Có
               </button>
-              <button onClick={() => setConfirmItem(null)} className="bg-gray-300 hover:bg-gray-400 px-5 py-2 text-lg rounded-lg">
+              <button
+                onClick={() => setConfirmItem(null)}
+                className="bg-gray-300 hover:bg-gray-400 px-5 py-2 rounded-lg"
+              >
                 Không
               </button>
             </div>

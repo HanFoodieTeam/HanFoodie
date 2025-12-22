@@ -61,7 +61,6 @@ export default function TongQuanPage() {
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
 
-  /* load data */
   const loadData = async (): Promise<void> => {
     setLoading(true);
     try {
@@ -98,8 +97,8 @@ export default function TongQuanPage() {
     loadData();
   }, [filter, from, to]);
 
-  if (loading) return <div className="p-[5px] text-sm">Đang tải…</div>;
-  if (!data) return <div className="p-[5px] text-red-600">Không có dữ liệu</div>;
+  if (loading) return <div className="p-2 text-sm">Đang tải…</div>;
+  if (!data) return <div className="p-2 text-red-600">Không có dữ liệu</div>;
 
   /* ===== chart ===== */
 
@@ -107,8 +106,8 @@ export default function TongQuanPage() {
     filter === "thang"
       ? d.thang ?? ""
       : filter === "nam"
-        ? d.nam ?? ""
-        : d.ngay ?? ""
+      ? d.nam ?? ""
+      : d.ngay ?? ""
   );
 
   const chartData = {
@@ -178,18 +177,20 @@ export default function TongQuanPage() {
   /* ===== render ===== */
 
   return (
-    <div className="w-full min-h-screen px-[5px] py-[5px] space-y-3">
-      <h1 className="text-lg font-semibold">Tổng quan hệ thống</h1>
+    <div className="w-full min-h-screen p-3 md:p-5 space-y-4">
+      <h1 className="text-lg md:text-xl font-semibold">
+        Tổng quan hệ thống
+      </h1>
 
-      {/* stat boxes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+      {/* stat cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
         {cards.map((c, i) => (
           <Link key={i} href={c.link}>
             <div
               className="
                 flex items-center gap-3
-                p-3
-                min-h-[70px]          /* ↓ giảm ~100px so với trước */
+                p-3 md:p-4
+                min-h-[72px]
                 bg-white rounded-md
                 shadow-sm hover:shadow transition
               "
@@ -197,7 +198,7 @@ export default function TongQuanPage() {
               {c.icon}
               <div>
                 <p className="text-sm text-gray-500">{c.title}</p>
-                <p className="text-xl font-semibold leading-tight">
+                <p className="text-lg md:text-xl font-semibold leading-tight">
                   {c.value}
                 </p>
               </div>
@@ -207,37 +208,42 @@ export default function TongQuanPage() {
       </div>
 
       {/* chart */}
-      <div className="bg-white rounded-md shadow-sm p-3">
+      <div className="bg-white rounded-md shadow-sm p-3 md:p-4">
         {/* filters */}
-        <div className="flex flex-wrap items-center gap-2 mb-2">
+        <div className="flex flex-col md:flex-row md:items-center gap-2 mb-3">
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value as FilterType)}
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded px-2 py-1 text-sm w-full md:w-auto"
           >
             <option value="ngay">Ngày</option>
             <option value="thang">Tháng</option>
             <option value="nam">Năm</option>
           </select>
 
-          <span className="text-sm">Từ</span>
-          <input
-            type="date"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
-          />
-          <span className="text-sm">Tới</span>
-          <input
-            type="date"
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
-          />
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Từ</span>
+            <input
+              type="date"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              className="border rounded px-2 py-1 text-sm"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Tới</span>
+            <input
+              type="date"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              className="border rounded px-2 py-1 text-sm"
+            />
+          </div>
         </div>
 
         {/* chart area */}
-        <div className="relative h-[400px] lg:h-[520px]">
+        <div className="relative h-[280px] md:h-[420px] xl:h-[520px]">
           <Line data={chartData} options={chartOptions} />
         </div>
       </div>

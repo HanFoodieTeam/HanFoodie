@@ -74,20 +74,20 @@ export default function DanhGiaPage() {
         });
 
   return (
-    <div className="w-full min-h-screen px-[5px] py-[5px] space-y-4">
-      <h1 className="text-lg font-semibold">
+    <div className="w-full min-h-screen p-3 md:p-5 space-y-4">
+      <h1 className="text-lg md:text-xl font-semibold">
         Thống kê đánh giá sản phẩm
       </h1>
 
       {/* ================= FILTER ================= */}
-      <div className="flex flex-wrap gap-2 items-end">
+      <div className="flex flex-col md:flex-row md:items-end gap-3">
         <div>
           <label className="text-xs font-medium">Từ ngày</label>
           <input
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="border rounded px-2 py-1 block text-sm"
+            className="border rounded px-2 py-1 block text-sm w-full"
           />
         </div>
 
@@ -97,7 +97,7 @@ export default function DanhGiaPage() {
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="border rounded px-2 py-1 block text-sm"
+            className="border rounded px-2 py-1 block text-sm w-full"
           />
         </div>
 
@@ -108,7 +108,7 @@ export default function DanhGiaPage() {
             onChange={(e) =>
               setFilterTime(e.target.value as "ngay" | "thang" | "nam")
             }
-            className="border rounded px-2 py-1 block text-sm"
+            className="border rounded px-2 py-1 block text-sm w-full"
           >
             <option value="ngay">Ngày</option>
             <option value="thang">Tháng</option>
@@ -118,14 +118,14 @@ export default function DanhGiaPage() {
 
         <button
           onClick={loadData}
-          className="bg-blue-600 text-white px-4 py-1.5 rounded shadow hover:bg-blue-700 text-sm"
+          className="bg-blue-600 text-white px-5 py-2 rounded shadow hover:bg-blue-700 text-sm w-full md:w-auto"
         >
           Xem
         </button>
       </div>
 
-      {/* ================= Doanh thu (highlight đánh giá) ================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+      {/* ================= HIGHLIGHT ================= */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {data.length > 0 && (
           <div className="bg-green-100 rounded-lg p-4 shadow-sm">
             <p className="text-sm font-semibold text-green-800 mb-1">
@@ -194,8 +194,8 @@ export default function DanhGiaPage() {
       </div>
 
       {/* ================= TABLE ================= */}
-      <div className="bg-white rounded-lg shadow-sm p-3">
-        <h2 className="text-base font-semibold mb-2">
+      <div className="bg-white rounded-lg shadow-sm p-3 md:p-4">
+        <h2 className="text-base font-semibold mb-3">
           Chi tiết đánh giá
         </h2>
 
@@ -216,13 +216,13 @@ export default function DanhGiaPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="p-3 text-center">
+                  <td colSpan={8} className="p-4 text-center">
                     Đang tải…
                   </td>
                 </tr>
               ) : filteredList.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-3 text-center text-gray-500">
+                  <td colSpan={8} className="p-4 text-center text-gray-500">
                     Không có dữ liệu
                   </td>
                 </tr>
@@ -244,7 +244,7 @@ export default function DanhGiaPage() {
                           SP
                         </div>
                       )}
-                      <span>{sp.ten}</span>
+                      <span className="whitespace-nowrap">{sp.ten}</span>
                     </td>
                     <td className="p-2 text-right">{sp.tong_danh_gia}</td>
                     <td className="p-2 text-right font-semibold text-yellow-500">
