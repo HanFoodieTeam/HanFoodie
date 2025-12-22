@@ -98,6 +98,43 @@ function SanPhamContent() {
     }
   }, [danhMucSlug, loading]);
 
+  // ================== SCROLL KHI SEARCH ==================
+useEffect(() => {
+  if (loading || dsDanhMuc.length === 0) return;
+
+  const rawKeyword = searchParams.get("search")?.trim();
+  if (!rawKeyword) return;
+
+  const keywordNoTone = removeVietnameseTones(rawKeyword.toLowerCase());
+
+  // Tìm danh mục theo keyword
+  let targetDanhMuc = dsDanhMuc.find(dm =>
+    (dm.slug && removeVietnameseTones(dm.slug.toLowerCase()) === keywordNoTone) ||
+    removeVietnameseTones(dm.ten.toLowerCase()).includes(keywordNoTone)
+  );
+
+  if (!targetDanhMuc) {
+    const keywords = keywordNoTone.split(/\s+/);
+    targetDanhMuc = dsDanhMuc.find(dm =>
+      dm.san_pham.some(sp => {
+        const spName = removeVietnameseTones(sp.ten.toLowerCase());
+        return keywords.every(k => spName.includes(k));
+      })
+    );
+  }
+
+  if (targetDanhMuc?.slug) {
+    const el = document.getElementById(`danh-muc-${targetDanhMuc.slug}`);
+    if (el) {
+      // delay 50ms để chắc chắn DOM đã render
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    }
+  }
+}, [dsDanhMuc, searchParams, loading]);
+
+
   // =================== HÀM LOẠI BỎ DẤU ===================
   function removeVietnameseTones(str: string) {
     return str
