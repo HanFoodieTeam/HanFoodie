@@ -143,7 +143,7 @@ export default function ChiTietSanPhamPage() {
 
   if (!data) {
     return (
-      <div className="p-6 text-gray-500 text-center mt-[var(--header-h)]">
+      <div className="p-6 h-[700px] text-gray-500 text-center mt-[var(--header-h)]">
         Đang tải sản phẩm...
       </div>
     );
