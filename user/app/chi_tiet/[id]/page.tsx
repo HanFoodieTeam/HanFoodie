@@ -190,33 +190,33 @@ const isHetMon = (() => {
         <div className="bg-white shadow-lg rounded-2xl px-10 py-10 grid grid-cols-[2fr_1fr] gap-10 relative">
           <div className="flex gap-6">
             <div className="flex flex-col gap-4">
-              {hinh_phu.length > 0 ? (
-                hinh_phu.map((img) => (
-                  <Image
-                    key={img.id}
-                    src={img.hinh}
-                    alt={`Hình phụ sản phẩm ${san_pham.ten}`}
-                    width={80}
-                    height={80}
-                    onMouseEnter={() => !isHetMon && setMainImage(img.hinh)}
-                    className={`object-cover rounded-lg border-2 transition
-                      ${img.hinh === mainImage
-                        ? "border-red-500 scale-105"
-                        : "border-transparent hover:border-gray-300"}
-                      ${isHetMon ? "cursor-not-allowed opacity-60" : "cursor-pointer"}
-                    `}
-                  />
-                ))
-              ) : (
-                <Image
-                  src={mainImage}
-                  alt={`Ảnh sản phẩm ${san_pham.ten}`}
-                  width={80}
-                  height={80}
-                  className="rounded-lg opacity-50"
-                />
-              )}
-            </div>
+        {hinh_phu.length > 0 ? (
+          hinh_phu.map((img) => (
+            <Image
+              key={img.id}
+              src={img.hinh}
+              alt={`Hình phụ sản phẩm ${san_pham.ten}`}
+              width={80}
+              height={80}
+              onMouseEnter={() => !isHetMon && setMainImage(img.hinh)}
+              className={`object-cover rounded-lg border-2 transition
+                ${img.hinh === mainImage
+                  ? "border-red-500 scale-105"
+                  : "border-transparent hover:border-gray-300"}
+                ${isHetMon ? "cursor-not-allowed opacity-60" : "cursor-pointer"}
+              `}
+            />
+          ))
+        ) : (
+          <Image
+            src={mainImage}
+            alt={`Ảnh sản phẩm ${san_pham.ten}`}
+            width={80}
+            height={80}
+            className="rounded-lg opacity-50"
+          />
+        )}
+      </div>
 
 
            <div className="relative w-[500px] h-[400px] rounded-xl shadow-lg overflow-hidden">

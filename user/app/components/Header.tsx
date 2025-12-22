@@ -12,10 +12,12 @@ import { INguoiDung } from "../../lib/cautrucdata";
 import { useCart } from "../context/giohangcontext";
 import QuenMatKhauForm from "./quen_mat_khau";
 import { useRouter } from "next/navigation";
+import { useYeuThich } from "@/app/context/yeuthichcontext";
 
 
 export default function Header() {
   const { count } = useCart();
+  const { count: yeuThichCount } = useYeuThich();
   const router = useRouter();
   const [showRegister, setShowRegister] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
@@ -143,9 +145,15 @@ useEffect(() => {
 
 
 
-            <Link href="/yeu_thich">
+            <Link href="/yeu_thich" className="relative">
               <Heart className="w-6 h-6" />
+              {yeuThichCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {yeuThichCount}
+                </span>
+              )}
             </Link>
+
 
             <Link href="/gio_hang" className="relative">
               <ShoppingBag className="w-6 h-6" />

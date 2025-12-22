@@ -112,7 +112,7 @@ export default function ChiTietDonHangPage() {
   }, [id, user]);
 
   if (loading) {
-    return <p className="p-8 text-center text-gray-600">Đang tải chi tiết đơn hàng...</p>;
+    return <p className="p-8 text-center h-[700px]  text-gray-600">Đang tải chi tiết đơn hàng...</p>;
   }
 
   if (!donHang) {
