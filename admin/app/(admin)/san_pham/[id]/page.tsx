@@ -1261,7 +1261,9 @@ export default function ChiTietSanPhamPage() {
           </button>
         </div>
 
-        {/* BUTTON SAVE */}
+
+
+        {/* BUTTON SAVEe */}
         <div className="text-center pt-4">
           <button className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg shadow-md disabled:opacity-50" onClick={handleSave}>
             Lưu thay đổi

@@ -462,6 +462,8 @@ export default function YeuThichPage() {
 
                       {/* ❤️ Nút yêu thích */}
                       <button
+                        type="button"
+                        aria-label={isFavorite ? "Bỏ khỏi yêu thích" : "Thêm vào yêu thích"}
                         onClick={() => toggleFavorite(sp.id)}
                         className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110"
                       >
@@ -474,6 +476,7 @@ export default function YeuThichPage() {
                           }`}
                         />
                       </button>
+
                     </div>
 
                     <Link href={`/chi_tiet/${sp.id}`}>
