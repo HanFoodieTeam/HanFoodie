@@ -263,7 +263,7 @@ export default function DonHangPage() {
                 </p>
 
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   {dsSanPham.map((sp, i) => (
                     <div
                       key={i}
@@ -302,7 +302,51 @@ export default function DonHangPage() {
                       </p>
                     </div>
                   ))}
-                </div>
+                </div> */}
+                <div className="space-y-2">
+  {dsSanPham.map((sp, i) => (
+    <div
+      key={i}
+      className="border border-gray-200 p-4 rounded-xl bg-white shadow-sm mb-4
+                 hover:shadow-md transition
+                 flex items-center gap-4"
+    >
+      {/* ẢNH */}
+      <Image
+        src={xuLyAnh(sp.hinh)}
+        alt={sp.ten}
+        width={80}
+        height={80}
+        className="rounded-lg object-cover shrink-0"
+      />
+
+      {/* THÔNG TIN */}
+      <div className="flex-1">
+        <p className="font-medium">{sp.ten}</p>
+
+        {sp.ten_bien_the && (
+          <p className="text-sm text-gray-600">{sp.ten_bien_the}</p>
+        )}
+
+        {sp.json_mon_them?.length ? (
+          <p className="text-sm text-gray-600">
+            {sp.json_mon_them.map((m) => m.ten).join(", ")}
+          </p>
+        ) : null}
+
+        <p className="text-sm text-gray-500">
+          Số lượng: {sp.so_luong}
+        </p>
+      </div>
+
+      {/* GIÁ */}
+      <p className="text-[#e8594f] font-semibold text-sm whitespace-nowrap">
+        {(sp.gia * sp.so_luong).toLocaleString("vi-VN")}₫
+      </p>
+    </div>
+  ))}
+</div>
+
 
                 <div className="flex justify-between items-center mt-3 border-t pt-3">
                   <p className="text-gray-700 font-medium">

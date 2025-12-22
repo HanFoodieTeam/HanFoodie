@@ -234,8 +234,8 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="mt-0 bg-[#640000] text-white py-14">
-      <div className="mx-auto max-w-[80%] grid grid-cols-1 md:grid-cols-4 gap-10 px-4">
+    <footer className="mt-0 bg-[#640000] text-white py-3">
+      <div className="mx-auto max-w-[80%] grid grid-cols-1 md:grid-cols-4 gap-10 px-3">
         
         {/* Cột 1 - Logo + mô tả */}
         <div>
@@ -295,7 +295,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mt-10 border-t border-white/20 pt-5 text-center text-sm opacity-80">
+      <div className="mt-1 border-t border-white/20 pt-5 text-center text-sm opacity-80">
         © 2025 HanFoodie - Korean Food Store. All rights reserved.
       </div>
     </footer>

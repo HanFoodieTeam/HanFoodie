@@ -267,7 +267,13 @@ const isHetMon = (() => {
 
               <p className="text-sm text-gray-700 mb-1">{san_pham.tag}</p>
               <p className="text-sm text-gray-700 mb-3">{san_pham.phong_cach}</p>
-              <p className="text-gray-700 text-sm">{san_pham.mo_ta}</p>
+              <div
+                className="prose prose-sm max-w-none text-gray-700"
+                dangerouslySetInnerHTML={{
+                  __html: san_pham.mo_ta || "",
+                }}
+              />
+
             </div>
 
             <button
