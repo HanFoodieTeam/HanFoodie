@@ -1118,6 +1118,7 @@ export default function ChiTietSanPhamPage() {
           <div className="border rounded-lg p-2 bg-white">
             <TinyMCEEditor
               apiKey="b0ltf47z16t202dzee5j66umb4r9m5ypez273jxv802r6t8n"
+              initialValue={form.mo_ta}
               onEditorChange={(content) =>
                 setForm((prev) => ({
                   ...prev,
@@ -1150,18 +1151,43 @@ export default function ChiTietSanPhamPage() {
 
 
         {/* HÌNH CHÍNH */}
-        <div>
-          <label htmlFor="hinh_chinh" className="font-semibold mb-2 block">
-            Hình chính
-          </label>
-          <input
-            id="hinh_chinh"
-            type="file"
-            accept="image/*"
-            ref={hinhChinhRef}
-            onChange={handleHinhChinhChange}
-          />
-        </div>
+<div>
+  <label htmlFor="hinh_chinh" className="font-semibold mb-2 block">
+    Hình chính
+  </label>
+
+  {/* PREVIEW HÌNH CHÍNH */}
+  {form.hinh && (
+    <div className="relative inline-block mb-3">
+      <img
+        src={form.hinh}
+        alt="Hình chính"
+        className="w-32 h-32 object-cover border rounded"
+      />
+      <button
+        type="button"
+        onClick={() => {
+          setForm((prev) => ({ ...prev, hinh: "" }));
+          if (hinhChinhRef.current) {
+            hinhChinhRef.current.value = "";
+          }
+        }}
+        className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full px-2"
+      >
+        ✕
+      </button>
+    </div>
+  )}
+
+  <input
+    id="hinh_chinh"
+    type="file"
+    accept="image/*"
+    ref={hinhChinhRef}
+    onChange={handleHinhChinhChange}
+  />
+</div>
+
 
 
         {/* HÌNH PHỤ */}
