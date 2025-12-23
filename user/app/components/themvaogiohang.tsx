@@ -319,7 +319,7 @@ const tuy_chon = (data.tuy_chon ?? [])
             {bien_the.length > 0 && (
               <div>
                 <h4 className="text-base font-semibold mb-2 border-b pb-2">
-                  Độ cay (Chọn 1)
+                  Biến thể (Chọn 1)
                 </h4>
                 <div className="space-y-2">
                   {bien_the.map((b) => {
